@@ -19,6 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.pokedex.mainViews.HomeView
+import com.example.pokedex.mainViews.MyTeamsView
+import com.example.pokedex.mainViews.ProfileView
+import com.example.pokedex.mainViews.SavedView
+import com.example.pokedex.mainViews.SearchView
 import com.example.pokedex.ui.theme.PokedexTheme
 
 
@@ -28,12 +33,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PokedexTheme {
+                var selectedTabIndex by remember { mutableStateOf(2) }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    bottomBar = { TabBar() }
+                    bottomBar = { TabBar(selectedTabIndex, onTabSelected = { selectedTabIndex = it }) }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        MainContent()
+                        MainContent(selectedTabIndex)
                     }
                 }
             }
@@ -42,26 +48,22 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TabBar() {
-    var selectedTabIndex by remember { mutableStateOf(2) }
+fun TabBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
     val tabs = listOf("Saved", "My Teams", "Home", "Search", "Profile")
 
     TabRow(selectedTabIndex = selectedTabIndex) {
         tabs.forEachIndexed { index, title ->
             Tab(
                 selected = selectedTabIndex == index,
-                onClick = { selectedTabIndex = index },
+                onClick = { onTabSelected(index) },
                 text = { Text(title) }
             )
         }
     }
-
 }
 
 @Composable
-fun MainContent(modifier: Modifier = Modifier) {
-    var selectedTabIndex by remember { mutableStateOf(2) }
-
+fun MainContent(selectedTabIndex: Int, modifier: Modifier = Modifier) {
     when (selectedTabIndex) {
         0 -> SavedView()
         1 -> MyTeamsView()
@@ -71,62 +73,11 @@ fun MainContent(modifier: Modifier = Modifier) {
     }
 }
 
-@Composable
-fun SavedView(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Saved View")
-    }
-}
-
-@Composable
-fun MyTeamsView(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("My Teams View")
-    }
-
-}
-
-@Composable
-fun HomeView(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Home View")
-    }
-}
-
-@Composable
-fun SearchView(modifier: Modifier = Modifier) {
-    Box (
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Search View")
-    }
-
-}
-
-@Composable
-fun ProfileView(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Profile View")
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     PokedexTheme {
-        TabBar()
+        var selectedTabIndex by remember { mutableStateOf(2) }
+        TabBar(selectedTabIndex, onTabSelected = { selectedTabIndex = it })
     }
 }

@@ -30,7 +30,6 @@ import com.example.pokedex.ui.theme.PokedexTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             PokedexTheme {
                 var selectedTabIndex by remember { mutableStateOf(2) }

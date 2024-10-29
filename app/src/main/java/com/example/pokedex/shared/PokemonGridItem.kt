@@ -19,8 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.pokedex.R
@@ -28,15 +27,12 @@ import java.util.jar.Attributes.Name
 
 @Composable
 fun PokemonGridItem(modifier: Modifier = Modifier, pokemon: Pokemon) {
-        Column()
+    Column()
         {
-            Text(
-                text = "Pokemon: ${pokemon.name}"
-            )
             AsyncImage(
                 model = pokemon.imageURL,
                 contentDescription = "Picture of a Pokemon",
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize()
             )
         }
 

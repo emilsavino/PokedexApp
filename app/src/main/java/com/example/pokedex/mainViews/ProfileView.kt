@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews
 
+import android.provider.ContactsContract.CommonDataKinds.Email
 import android.view.Display.Mode
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,6 +25,46 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import com.example.pokedex.R
+
+class ProfileViewModel : ViewModel() {
+    private val _userEmail = MutableStateFlow("name@dtu.dk")
+    val userEmail: StateFlow<String> = _userEmail
+
+    private val _userPassword = MutableStateFlow("********")
+    val userPassword: StateFlow<String> = _userPassword
+
+    fun updateEmail(newEmail: String){
+        viewModelScope.launch {
+            _userEmail.value = newEmail
+        }
+    }
+
+    fun changePassword(newPassword : String){
+        viewModelScope.launch {
+            _userPassword.value = newPassword
+        }
+    }
+
+    fun signOut(){
+        // TODO: Add functionality to sign out
+    }
+
+    fun deleteAccount(){
+        // TODO: Add functionality to delete account
+    }
+
+}
 
 @Composable
 fun ProfileButton(
@@ -45,7 +87,13 @@ fun ProfileButton(
 }
 
 @Composable
-fun ProfileView(modifier: Modifier = Modifier) {
+fun ProfileView(
+    profileViewModel: ProfileViewModel = viewModel(),
+    modifier: Modifier = Modifier
+){
+
+    val email = profileViewModel.userEmail.collectAsState().value
+    val password = profileViewModel.userPassword.collectAsState().value
 
     Box(
         modifier = modifier
@@ -56,13 +104,26 @@ fun ProfileView(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
         ){
-            Text("Profile Picture")
+
+            Image(
+                painter = painterResource(id = R.drawable.charmander),
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(Color.Gray)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("name@dtu.dk")
+            Text(email)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(password)
 
             Spacer(modifier = Modifier.height(16.dp))
 

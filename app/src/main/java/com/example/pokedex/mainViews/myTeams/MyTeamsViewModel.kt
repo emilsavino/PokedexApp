@@ -1,6 +1,5 @@
-package com.example.pokedex.mainViews
+package com.example.pokedex.mainViews.myTeams
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.data.PokemonRepository

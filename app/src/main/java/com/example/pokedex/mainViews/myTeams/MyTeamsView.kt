@@ -1,4 +1,4 @@
-package com.example.pokedex.mainViews
+package com.example.pokedex.mainViews.myTeams
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,14 +1,13 @@
 package com.example.pokedex.mainViews
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,18 +22,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
+
 @Composable
 fun MyTeamsView(modifier: Modifier = Modifier) {
     val viewModel = MyTeamsViewModel()
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MakeHeader()
 
         MakeGrids(viewModel)
-
     }
 }
 
@@ -52,22 +53,27 @@ private fun MakeGrids(viewModel: MyTeamsViewModel) {
     var teamNumber = 1
     for (team in viewModel.mockData) {
         Text(
+            modifier = Modifier.padding(10.dp),
             text = "Team $teamNumber",
+            fontSize = 20.sp
         )
         teamNumber++
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.padding(16.dp)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            items(team) { pokemon ->
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(4.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.Gray)
-
-                )
+            for (pokemon in team.chunked(3)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    for (item in pokemon) {
+                        Box(
+                            modifier = Modifier
+                                .size(110.dp)
+                                .clip(RoundedCornerShape(15.dp))
+                                .background(Color.Gray)
+                        )
+                    }
+                }
             }
         }
     }

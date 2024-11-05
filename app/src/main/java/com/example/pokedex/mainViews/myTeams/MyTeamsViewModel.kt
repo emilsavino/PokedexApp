@@ -32,7 +32,6 @@ class MyTeamsViewModel: ViewModel() {
         }
         pokemonRepository.fetchTeams()
     }
-
 }
 
 sealed class TeamsUIState {

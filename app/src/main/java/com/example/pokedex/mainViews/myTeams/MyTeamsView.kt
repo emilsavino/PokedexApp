@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.myTeams
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,6 +27,7 @@ fun MyTeamsView(modifier: Modifier = Modifier) {
 
     Column(
         modifier = Modifier
+            .background(Color(0xFFFFDD99))
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -65,7 +68,6 @@ private fun MakeContent(viewModel: MyTeamsViewModel) {
             MakeTeamsGrid(teams.teams)
         }
     }
-
 }
 
 @Composable

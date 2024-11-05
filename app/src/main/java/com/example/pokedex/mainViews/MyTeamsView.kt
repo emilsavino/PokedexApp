@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,37 +33,44 @@ fun MyTeamsView(modifier: Modifier = Modifier) {
     ) {
         MakeHeader()
 
-        for (team in viewModel.mockData) {
-            Text(
-                text = "Team"
-            )
+        MakeGrids(viewModel)
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier.padding(16.dp)
-            ) {
-                items(team.size) { index ->
-                    val pokemon = team[index]
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color.Gray)
-                            .padding(8.dp)
-                    )
-                }
-            }
-        }
     }
 }
 
 @Composable
-fun MakeHeader() {
+private fun MakeHeader() {
     Text(
         modifier = Modifier.padding(16.dp),
         text = "TEAMS",
         fontSize = 60.sp
     )
+}
+
+@Composable
+private fun MakeGrids(viewModel: MyTeamsViewModel) {
+    var teamNumber = 1
+    for (team in viewModel.mockData) {
+        Text(
+            text = "Team $teamNumber",
+        )
+        teamNumber++
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            items(team) { pokemon ->
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.Gray)
+
+                )
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)

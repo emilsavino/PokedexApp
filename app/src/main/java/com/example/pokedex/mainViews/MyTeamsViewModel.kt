@@ -1,19 +1,43 @@
 package com.example.pokedex.mainViews
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.pokedex.data.PokemonRepository
 import com.example.pokedex.shared.Pokemon
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class MyTeamsViewModel: ViewModel() {
-    var teams: List<List<Pokemon>> by mutableStateOf(listOf())
-    var mockData: List<List<Int>> by mutableStateOf(
-        listOf(
-            listOf(1, 2, 3, 4, 5, 6),
-            listOf(4, 5, 6, 7, 8, 9),
-            listOf(7, 8, 9, 10, 11, 12),
-        )
-    )
+    private val pokemonRepository = PokemonRepository()
+    private val mutableTeamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Empty)
+    val teamsState: MutableStateFlow<TeamsUIState> = mutableTeamsState
 
+    init {
+        viewModelScope.launch {
+            pokemonRepository.teamsFlow
+                .collect { teams ->
+                    mutableTeamsState.update {
+                        TeamsUIState.Data(teams)
+                    }
+                }
+        }
+        fetchTeams()
+    }
+
+
+    private fun fetchTeams() = viewModelScope.launch {
+        mutableTeamsState.update {
+            TeamsUIState.Loading
+        }
+        pokemonRepository.fetchTeams()
+    }
+
+}
+
+sealed class TeamsUIState {
+    data class Data(val teams: List<List<Pokemon>>): TeamsUIState()
+    object Loading: TeamsUIState()
+    object Empty: TeamsUIState()
 }

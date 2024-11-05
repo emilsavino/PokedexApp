@@ -20,7 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonGridItem
 
 
 @Composable
@@ -61,17 +62,12 @@ private fun MakeGrids(viewModel: MyTeamsViewModel) {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            for (pokemon in team.chunked(3)) {
+            for (pokemons in team.chunked(3)) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    for (item in pokemon) {
-                        Box(
-                            modifier = Modifier
-                                .size(110.dp)
-                                .clip(RoundedCornerShape(15.dp))
-                                .background(Color.Gray)
-                        )
+                    for (pokemon in pokemons) {
+                        PokemonGridItem(pokemon = Pokemon("Pikachu", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"))
                     }
                 }
             }

@@ -14,11 +14,19 @@ class PokemonRepository {
     private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
     val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
 
+    private val mutableSavedPokemonsFlow = MutableSharedFlow<List<Pokemon>>()
+    val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
+
     suspend fun fetchPokemons() {
         mutablePokemonsFlow.emit(dataSource.fetchPokemons())
     }
 
     suspend fun fetchTeams() {
         mutableTeamsFlow.emit(dataSource.fetchTeams())
+    }
+
+    suspend fun fetchSaved()
+    {
+        mutableSavedPokemonsFlow.emit(dataSource.fetchSavedPokemons())
     }
 }

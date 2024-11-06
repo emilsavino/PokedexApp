@@ -31,4 +31,9 @@ class MockPokemonDataStore {
     suspend fun fetchTeams(): List<List<Pokemon>> {
         return teams
     }
+
+    suspend fun fetchSavedPokemons(): List<Pokemon>
+    {
+        return pokemons
+    }
 }

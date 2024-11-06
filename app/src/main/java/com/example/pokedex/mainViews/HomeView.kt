@@ -59,6 +59,7 @@ fun HomeView(modifier: Modifier = Modifier) {
             PokemonOfDayView(pokemon = pokemonList[0])
         }
         GamesRow()
+        RecentlyViewedPokemonView(recentPokemons = pokemonList)
     }
 }
 
@@ -141,11 +142,50 @@ fun GamesRow() {
 
 @Composable
 fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>) {
-
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "Recently viewed Pokémon",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(8.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            for(pokemon in recentPokemons) {
+                RecentlyViewedPokemon(pokemon = pokemon)
+            }
+        }
+    }
 }
 
 @Composable
-fun RecentlyViewedPokemon() {
-
+fun RecentlyViewedPokemon(pokemon: Pokemon) {
+    Box(
+        modifier = Modifier
+            .width(150.dp)
+            .height(100.dp)
+            .background(Color(0xFFB2DFDB), RoundedCornerShape(8.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = pokemon.imageURL),
+                contentDescription = pokemon.name,
+                modifier = Modifier.size(40.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = pokemon.name,
+                fontSize = 12.sp
+            )
+        }
+    }
 }
 

@@ -9,7 +9,7 @@ class PokemonRepository {
     private val dataSource = MockPokemonDataStore()
 
     private val mutablePokemonsFlow = MutableSharedFlow<List<Pokemon>>()
-    val fruitsFlow: Flow<List<Pokemon>> = mutablePokemonsFlow.asSharedFlow()
+    val pokemonsFlow: Flow<List<Pokemon>> = mutablePokemonsFlow.asSharedFlow()
 
     private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
     val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()

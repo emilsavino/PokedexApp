@@ -35,7 +35,7 @@ class SearchViewModel(
 
     private fun filterPokemons(query: String) {
         viewModelScope.launch {
-            pokemonRepository.fruitsFlow
+            pokemonRepository.pokemonsFlow
                 .filter { it.isNotEmpty() }
                 .collect { pokemons ->
                     _filteredPokemons.value = if (query.isBlank()) {

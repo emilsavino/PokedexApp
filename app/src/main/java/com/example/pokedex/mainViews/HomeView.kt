@@ -48,3 +48,7 @@ fun RecentlyViewedView() {
 
 }
 
+fun RecentlyViewedPokemon() {
+
+}
+

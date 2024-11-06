@@ -57,7 +57,8 @@ fun HomeView(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-    ) {
+            .background(Color(0xFFFFDD99)),
+        ) {
         if (pokemonList.isNotEmpty()) {
             PokemonOfDayView(pokemon = pokemonList[0])
         }

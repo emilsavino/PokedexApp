@@ -1,6 +1,7 @@
 package com.example.pokedex.mainViews.saved
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import com.example.pokedex.data.PokemonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,15 +15,15 @@ import kotlinx.coroutines.launch
 class SavedViewModel : ViewModel()
 {
     private val pokemonRepository = PokemonRepository()
-    private val mutableSavedState = MutableStateFlow<SavedUIState>(SavedUIState.Empty)
-    val savedState: StateFlow<SavedUIState> = mutableSavedState
+    private val mutableStateFlow = MutableStateFlow<List<Pokemon>>(emptyList())
+    val savedState: StateFlow<List<Pokemon>> = mutableStateFlow
 
     init {
         viewModelScope.launch {
             pokemonRepository.savedPokemonsFlow
                 .collect { saved ->
-                    mutableSavedState.update {
-                        SavedUIState.Data(saved)
+                    mutableStateFlow.update {
+                        saved
                     }
                 }
         }
@@ -30,16 +31,7 @@ class SavedViewModel : ViewModel()
     }
 
     private fun fetchSaved() = viewModelScope.launch {
-        mutableSavedState.update {
-            SavedUIState.Loading
-        }
         pokemonRepository.fetchSaved()
     }
 
-}
-
-sealed class SavedUIState {
-    data class Data(val saved:List<Pokemon>): SavedUIState()
-    object Loading: SavedUIState()
-    object Empty: SavedUIState()
 }

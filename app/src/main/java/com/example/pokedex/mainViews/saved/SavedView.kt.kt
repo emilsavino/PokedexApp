@@ -17,7 +17,7 @@ import com.example.pokedex.shared.Pokemon
 fun SavedView(modifier: Modifier = Modifier)
 {
     val savedViewModel = SavedViewModel()
-    val pokemons : SavedUIState = savedViewModel.savedState.collectAsState().value
+    val pokemons = savedViewModel.savedState.collectAsState().value
     Column(
         modifier = modifier
             .fillMaxSize(),
@@ -34,23 +34,7 @@ fun SavedView(modifier: Modifier = Modifier)
 private fun MakeContent(viewModel: SavedViewModel) {
     val savedUIState = viewModel.savedState.collectAsState().value
 
-    when (savedUIState) {
-        is SavedUIState.Empty -> {
-            Text(
-                text = "No teams found",
-                fontSize = 20.sp
-            )
-        }
-        is SavedUIState.Loading -> {
-            Text(
-                text = "Loading...",
-                fontSize = 20.sp
-            )
-        }
-        is SavedUIState.Data -> {
-            SavedRow(savedUIState.saved)
-        }
-    }
+    SavedRow(savedUIState)
 }
 
 @Composable

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,7 +58,7 @@ fun HomeView(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
     ) {
-        if(pokemonList.isNotEmpty()) {
+        if (pokemonList.isNotEmpty()) {
             PokemonOfDayView(pokemon = pokemonList[0])
         }
         GamesRow()
@@ -115,6 +118,11 @@ fun PokemonOfDayView(pokemon: Pokemon) {
 
 @Composable
 fun GamesRow() {
+    Text(
+        text = "Pokémon Games",
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(8.dp)
+    )
     Row(
         modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -150,14 +158,15 @@ fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>) {
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(8.dp)
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.padding(8.dp),
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            for(pokemon in recentPokemons) {
-                RecentlyViewedPokemon(pokemon = pokemon)
+            items(recentPokemons.size) { index ->
+                RecentlyViewedPokemon(pokemon = recentPokemons[index])
             }
         }
     }
@@ -168,7 +177,7 @@ fun RecentlyViewedPokemon(pokemon: Pokemon) {
     Box(
         modifier = Modifier
             .width(150.dp)
-            .height(100.dp)
+            .height(120.dp)
             .background(Color(0xFFB2DFDB), RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {

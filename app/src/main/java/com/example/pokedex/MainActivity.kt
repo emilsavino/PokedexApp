@@ -21,7 +21,7 @@ import com.example.pokedex.mainViews.HomeView
 import com.example.pokedex.mainViews.myTeams.MyTeamsView
 import com.example.pokedex.mainViews.ProfileView
 import com.example.pokedex.mainViews.SavedView
-import com.example.pokedex.mainViews.SearchView
+import com.example.pokedex.mainViews.search.SearchView
 import com.example.pokedex.ui.theme.PokedexTheme
 
 

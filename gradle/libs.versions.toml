@@ -1,5 +1,4 @@
 [versions]
-accompanistFlowlayout = "0.24.13-rc"
 agp = "8.5.2"
 coilCompose = "3.0.0-rc01"
 coilComposeVersion = "2.0.0-rc01"
@@ -14,7 +13,18 @@ activityCompose = "1.9.2"
 composeBom = "2024.04.01"
 
 [libraries]
-accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
+# Jetpack Compose dependencies
+androidx-compose-ui = "androidx.compose.ui:ui:1.5.1"
+androidx-compose-material3 = "androidx.compose.material3:material3:1.0.0"
+androidx-compose-ui-tooling-preview = "androidx.compose.ui:ui-tooling-preview:1.5.1"
+
+# Lifecycle and ViewModel for Compose
+androidx-lifecycle-viewmodel-compose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+androidx-lifecycle-runtime-compose = "androidx.lifecycle:lifecycle-runtime-compose:2.5.1"
+
+# Compose preview support
+androidx-compose-ui-tooling = "androidx.compose.ui:ui-tooling:1.5.1"
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-kt-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }

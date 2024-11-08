@@ -1,42 +1,33 @@
 package com.example.pokedex.shared
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import com.example.pokedex.R
-import java.util.jar.Attributes.Name
 
 @Composable
 fun PokemonGridItem(modifier: Modifier = Modifier, pokemon: Pokemon) {
-    Column()
-        {
-            AsyncImage(
-                model = pokemon.imageURL,
-                contentDescription = "Picture of a Pokemon",
-                modifier = modifier.fillMaxSize()
-            )
-        }
-
-        }
+    Box(
+        modifier = modifier
+            .size(110.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(Color.Gray)
+    ) {
+        AsyncImage(
+            model = pokemon.imageURL,
+            contentDescription = "Picture of a Pokemon",
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

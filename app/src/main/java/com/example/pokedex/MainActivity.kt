@@ -3,7 +3,6 @@ package com.example.pokedex
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,14 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pokedex.mainViews.HomeView
-import com.example.pokedex.mainViews.MyTeamsView
+import com.example.pokedex.mainViews.myTeams.MyTeamsView
 import com.example.pokedex.mainViews.ProfileView
-import com.example.pokedex.mainViews.SavedView
-import com.example.pokedex.mainViews.SearchView
+import com.example.pokedex.mainViews.saved.SavedView
+import com.example.pokedex.mainViews.search.SearchView
 import com.example.pokedex.ui.theme.PokedexTheme
 
 

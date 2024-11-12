@@ -7,25 +7,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokedex.data.PokemonRepository
-import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchView(modifier: Modifier = Modifier) {
     val pokemonRepository = remember { PokemonRepository() }
@@ -127,7 +125,8 @@ fun SearchView(modifier: Modifier = Modifier) {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
                     onClick = { /* Add filter logic */ },
@@ -174,13 +173,14 @@ fun SearchView(modifier: Modifier = Modifier) {
                                 model = pokemon.imageURL,
                                 contentDescription = "${pokemon.name} Image",
                                 modifier = Modifier
-                                    .size(80.dp)
+                                    .size(100.dp)
                                     .padding(end = 2.dp)
                             )
                             Text(
                                 text = pokemon.name,
                                 color = Color.Black,
-                                fontSize = TextUnit(16F, TextUnitType.Unspecified)
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }

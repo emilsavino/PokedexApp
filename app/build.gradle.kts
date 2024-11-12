@@ -84,6 +84,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.coil.kt.coil.compose)
     implementation(libs.coil.network.okhttp)
-    implementation(libs.accompanist.flowlayout)
+    implementation(libs.coil.compose.v210)
+    //implementation(libs.accompanist.flowlayout)
 
 }

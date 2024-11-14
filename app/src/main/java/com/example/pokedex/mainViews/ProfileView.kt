@@ -70,13 +70,13 @@ class ProfileViewModel : ViewModel() {
 fun ProfileButton(
     text: String,
     onClick: () -> Unit,
-    containerColor: Color = Color.Gray,
+    containerColor: Color = Color.LightGray,
     contentColor: Color = Color.Black
 ){
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Gray,
+            containerColor = Color.LightGray,
             contentColor = Color.Black
         ),
         modifier = Modifier.fillMaxWidth()
@@ -98,7 +98,7 @@ fun ProfileView(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.LightGray),
+            .background(Color(0xFFFFDD99)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -114,7 +114,7 @@ fun ProfileView(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color.Gray)
+                    .background(Color.LightGray)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -130,7 +130,7 @@ fun ProfileView(
             ProfileButton(
                 text = "Change Password",
                 onClick = { /* Add button functionality */ },
-                containerColor = Color.Gray,
+                containerColor = Color.LightGray,
                 contentColor = Color.Black
             )
 
@@ -139,7 +139,7 @@ fun ProfileView(
             ProfileButton(
                 text = "Sign Out",
                 onClick = { /* Add button functionality */ },
-                containerColor = Color.Gray,
+                containerColor = Color.LightGray,
                 contentColor = Color.Red
             )
 
@@ -148,7 +148,7 @@ fun ProfileView(
             ProfileButton(
                 text = "Delete Account",
                 onClick = { /* Add button functionality */ },
-                containerColor = Color.Gray,
+                containerColor = Color.LightGray,
                 contentColor = Color.Red
             )
 

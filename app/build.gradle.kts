@@ -63,6 +63,7 @@ dependencies {
     // Lifecycle and ViewModel for Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.navigation.compose)
 
     // Compose preview support (optional)
     debugImplementation(libs.androidx.compose.ui.tooling)

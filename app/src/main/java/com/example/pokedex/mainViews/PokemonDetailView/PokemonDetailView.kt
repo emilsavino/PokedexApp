@@ -1,4 +1,4 @@
-package com.example.pokedex.mainViews
+package com.example.pokedex.mainViews.PokemonDetailView
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -52,14 +51,6 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
         ) {
             Text(text = "Go back")
         }
-    }
-}
-
-class PokemonDetailViewModel {
-    val pokemonRepository = PokemonRepository()
-
-    fun getPokemonByName(pokemonName: String): Pokemon {
-        return pokemonRepository.getPokemonByName(pokemonName)
     }
 }
 

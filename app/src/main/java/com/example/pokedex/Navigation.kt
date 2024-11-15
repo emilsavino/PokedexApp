@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.pokedex.mainViews.HomeView
-import com.example.pokedex.mainViews.PokemonDetailView
+import com.example.pokedex.mainViews.PokemonDetailView.PokemonDetailView
 import com.example.pokedex.mainViews.ProfileView
 import com.example.pokedex.mainViews.myTeams.MyTeamsView
 import com.example.pokedex.mainViews.saved.SavedView
@@ -26,13 +26,13 @@ fun Navigation(navController: NavHostController) {
             MyTeamsView(navController = navController)
         }
         composable(Screen.Home.route) {
-            HomeView()
+            HomeView(navController = navController)
         }
         composable(Screen.Search.route) {
-            SearchView()
+            SearchView(navController = navController)
         }
         composable(Screen.Profile.route) {
-            ProfileView()
+            ProfileView(navController = navController)
         }
         composable(
             route = Screen.PokemonDetails.route,

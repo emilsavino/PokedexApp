@@ -20,12 +20,14 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pokedex.data.PokemonRepository
 import kotlinx.coroutines.launch
 
 @Composable
-fun SearchView(modifier: Modifier = Modifier) {
+fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
     val pokemonRepository = remember { PokemonRepository() }
     val viewModel = remember { SearchViewModel(pokemonRepository) }
 
@@ -201,5 +203,6 @@ fun SearchView(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun SearchViewPreview() {
-    SearchView()
+    val navController = rememberNavController()
+    SearchView(navController = navController)
 }

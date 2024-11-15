@@ -30,20 +30,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.ImagePainter
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.example.pokedex.data.MockPokemonDataStore
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeView(modifier: Modifier = Modifier) {
+fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
 
     val coroutineScope = rememberCoroutineScope()
     var pokemonList by remember { mutableStateOf<List<Pokemon>>(emptyList()) }
@@ -71,7 +70,8 @@ fun HomeView(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun HomeViewPreview() {
-    HomeView()
+    val navController = rememberNavController()
+    HomeView(navController = navController)
 }
 
 @Composable

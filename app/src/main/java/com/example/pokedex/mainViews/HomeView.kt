@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,7 +62,7 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
             .background(Color(0xFFFFDD99)),
         ) {
         if (pokemonList.isNotEmpty()) {
-            PokemonOfDayView(pokemon = pokemonList[0], navController)
+            PokemonOfDayView(pokemon = pokemonList[7], navController)
         }
         GamesRow()
         RecentlyViewedPokemonView(recentPokemons = pokemonList, navController = navController)
@@ -178,28 +179,32 @@ fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>, navController: NavC
 
 @Composable
 fun RecentlyViewedPokemon(pokemon: Pokemon, navController: NavController) {
-    Box(
+    Box (
         modifier = Modifier
             .width(150.dp)
             .height(120.dp)
             .background(Color(0xFFB2DFDB), RoundedCornerShape(8.dp))
             .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
-        contentAlignment = Alignment.Center
+
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(model = pokemon.imageURL),
-                contentDescription = pokemon.name,
-                modifier = Modifier.size(40.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text(
-                text = pokemon.name,
-                fontSize = 12.sp
-            )
-        }
+        Image(
+            painter = rememberAsyncImagePainter(model = pokemon.imageURL),
+            contentDescription = pokemon.name,
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center),
+            contentScale = ContentScale.Fit
+        )
+
+        Text(
+            text = pokemon.name,
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .align(Alignment.BottomCenter)
+        )
+
     }
 }
 

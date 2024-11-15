@@ -29,4 +29,8 @@ class PokemonRepository {
     {
         mutableSavedPokemonsFlow.emit(dataSource.fetchSavedPokemons())
     }
+
+    fun getPokemonByName(name: String): Pokemon {
+        return dataSource.fetchPokemonByName(name)!!
+    }
 }

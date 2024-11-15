@@ -17,6 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.mainViews.HomeView
 import com.example.pokedex.mainViews.myTeams.MyTeamsView
 import com.example.pokedex.mainViews.ProfileView
@@ -24,57 +30,60 @@ import com.example.pokedex.mainViews.saved.SavedView
 import com.example.pokedex.mainViews.search.SearchView
 import com.example.pokedex.ui.theme.PokedexTheme
 
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             PokedexTheme {
-                var selectedTabIndex by remember { mutableStateOf(2) }
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    bottomBar = { TabBar(selectedTabIndex, onTabSelected = { selectedTabIndex = it }) }
-                ) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        MainContent(selectedTabIndex)
-                    }
-                }
+                MainContent()
             }
         }
     }
 }
 
 @Composable
-fun TabBar(selectedTabIndex: Int, onTabSelected: (Int) -> Unit) {
-    val tabs = listOf("Saved", "My Teams", "Home", "Search", "Profile")
+fun TabBar(navController: NavController) {
+    val tabs = listOf(
+        Screen.Saved to "Saved",
+        Screen.MyTeams to "My Teams",
+        Screen.Home to "Home",
+        Screen.Search to "Search",
+        Screen.Profile to "Profile"
+    )
+
+    val currentDestination = navController.currentDestination?.route
+    val selectedTabIndex = tabs.indexOfFirst { it.first.route == currentDestination }.takeIf { it >= 0 } ?: 2
 
     TabRow(selectedTabIndex = selectedTabIndex) {
-        tabs.forEachIndexed { index, title ->
+        tabs.forEachIndexed { index, tab ->
             Tab(
                 selected = selectedTabIndex == index,
-                onClick = { onTabSelected(index) },
-                text = { Text(title) }
+                onClick = {
+                    navController.navigate(tab.first.route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                text = { Text(tab.second) }
             )
         }
     }
 }
 
 @Composable
-fun MainContent(selectedTabIndex: Int, modifier: Modifier = Modifier) {
-    when (selectedTabIndex) {
-        0 -> SavedView()
-        1 -> MyTeamsView()
-        2 -> HomeView()
-        3 -> SearchView()
-        4 -> ProfileView()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PokedexTheme {
-        var selectedTabIndex by remember { mutableStateOf(2) }
-        TabBar(selectedTabIndex, onTabSelected = { selectedTabIndex = it })
+fun MainContent() {
+    val navController = rememberNavController()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            TabBar(navController = navController)
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            Navigation(navController = navController)
+        }
     }
 }

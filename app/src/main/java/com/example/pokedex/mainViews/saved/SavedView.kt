@@ -15,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 
 @Composable
-fun SavedView(modifier: Modifier = Modifier)
+fun SavedView(modifier: Modifier = Modifier, navController: NavController)
 {
     val savedViewModel = SavedViewModel()
     Column(
@@ -32,12 +34,12 @@ fun SavedView(modifier: Modifier = Modifier)
             fontSize = 60.sp,
             modifier = modifier.padding(10.dp)
         )
-        SavedList(savedViewModel)
+        SavedList(savedViewModel, navController)
     }
 
 }
 @Composable
-fun SavedList (savedViewModel: SavedViewModel)
+fun SavedList (savedViewModel: SavedViewModel, navController: NavController)
 {
     val pokemons = savedViewModel.savedState.collectAsState().value
     val pokemonsChunked = pokemons.chunked(3)
@@ -46,13 +48,13 @@ fun SavedList (savedViewModel: SavedViewModel)
         )
     {
         items(pokemonsChunked) { item: List<Pokemon> ->
-            SavedRow(pokemons = item)
+            SavedRow(pokemons = item, navController = navController)
         }
     }
 }
 
 @Composable
-fun SavedRow(modifier: Modifier = Modifier, pokemons : List<Pokemon>)
+fun SavedRow(modifier: Modifier = Modifier, pokemons : List<Pokemon>, navController: NavController)
 {
     Row (modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(19.dp)
@@ -60,7 +62,7 @@ fun SavedRow(modifier: Modifier = Modifier, pokemons : List<Pokemon>)
     {
         for (pokemon in pokemons)
         {
-            PokemonGridItem(pokemon = pokemon)
+            PokemonGridItem(navController, pokemon = pokemon)
         }
     }
 
@@ -70,5 +72,6 @@ fun SavedRow(modifier: Modifier = Modifier, pokemons : List<Pokemon>)
 @Composable
 fun SavedViewPreview()
 {
-    SavedView()
+    val navController = rememberNavController()
+    SavedView(navController = navController)
 }

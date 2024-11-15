@@ -1,6 +1,7 @@
 package com.example.pokedex.shared
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -11,15 +12,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.pokedex.Screen
 
 @Composable
-fun PokemonGridItem(modifier: Modifier = Modifier, pokemon: Pokemon) {
+fun PokemonGridItem(navController: NavController, pokemon: Pokemon) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .size(110.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.Gray)
+            .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
     ) {
         AsyncImage(
             model = pokemon.imageURL,
@@ -29,9 +33,4 @@ fun PokemonGridItem(modifier: Modifier = Modifier, pokemon: Pokemon) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PokemonGridItemPreview() {
-    val testPokemon = Pokemon("Pikachu", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png")
-    PokemonGridItem(pokemon = testPokemon)
-}
+

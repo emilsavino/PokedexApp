@@ -13,10 +13,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.pokedex.data.PokemonRepository
 import com.example.pokedex.shared.Pokemon
 
 @Composable
-fun PokemonDetailView(pokemon: Pokemon) {
+fun PokemonDetailView(pokemonName: String) {
+    val viewModel = PokemonDetailViewModel()
+    val pokemon = viewModel.getPokemonByName(pokemonName)
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -36,15 +40,15 @@ fun PokemonDetailView(pokemon: Pokemon) {
                 .align(CenterHorizontally),
             text = pokemon.name,
             fontSize = 20.sp,
-
         )
-
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PokemonDetailViewPreview() {
-    val testPokemon = Pokemon("Pikachu", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png")
-    PokemonDetailView(pokemon = testPokemon)
+class PokemonDetailViewModel {
+    val pokemonRepository = PokemonRepository()
+
+    fun getPokemonByName(pokemonName: String): Pokemon {
+        return pokemonRepository.getPokemonByName(pokemonName)
+    }
 }
+

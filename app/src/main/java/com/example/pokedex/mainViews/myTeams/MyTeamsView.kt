@@ -17,11 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 
 @Composable
-fun MyTeamsView(modifier: Modifier = Modifier) {
+fun MyTeamsView(navController: NavController) {
     val viewModel = MyTeamsViewModel()
     Column(
         modifier = Modifier
@@ -32,7 +34,7 @@ fun MyTeamsView(modifier: Modifier = Modifier) {
     ) {
         MakeHeader()
 
-        MakeContent(viewModel)
+        MakeContent(navController, viewModel)
     }
 }
 
@@ -46,7 +48,7 @@ private fun MakeHeader() {
 }
 
 @Composable
-private fun MakeContent(viewModel: MyTeamsViewModel) {
+private fun MakeContent(navController: NavController, viewModel: MyTeamsViewModel) {
     val teams = viewModel.teamsState.collectAsState().value
 
     when (teams) {
@@ -63,13 +65,13 @@ private fun MakeContent(viewModel: MyTeamsViewModel) {
             )
         }
         is TeamsUIState.Data -> {
-            MakeTeamsGrid(teams.teams)
+            MakeTeamsGrid(navController, teams.teams)
         }
     }
 }
 
 @Composable
-private fun MakeTeamsGrid(teams: List<List<Pokemon>>) {
+private fun MakeTeamsGrid(navController: NavController, teams: List<List<Pokemon>>) {
     var teamNumber = 1
     for (team in teams) {
         Text(
@@ -86,7 +88,7 @@ private fun MakeTeamsGrid(teams: List<List<Pokemon>>) {
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     for (pokemon in pokemons) {
-                        PokemonGridItem(pokemon = pokemon)
+                        PokemonGridItem(navController, pokemon = pokemon)
                     }
                 }
             }
@@ -97,5 +99,6 @@ private fun MakeTeamsGrid(teams: List<List<Pokemon>>) {
 @Preview(showBackground = true)
 @Composable
 fun MyTeamsViewPreview() {
-    MyTeamsView()
+    val navController = rememberNavController()
+    MyTeamsView(navController = navController)
 }

@@ -72,6 +72,10 @@ class MockPokemonDataStore {
         listOf(pokemons[6], pokemons[7], pokemons[8], pokemons[9], pokemons[10], pokemons[11]),
     )
 
+    fun fetchPokemonByName(name: String): Pokemon? {
+        return pokemons.find { it.name == name }
+    }
+
     suspend fun fetchPokemons(): List<Pokemon> {
         return pokemons
     }

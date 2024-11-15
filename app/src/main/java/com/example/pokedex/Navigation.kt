@@ -42,7 +42,7 @@ fun Navigation(navController: NavHostController) {
         ) { backStackEntry ->
             val pokemonName = backStackEntry.arguments?.getString("pokemonName")
             if (pokemonName != null) {
-                PokemonDetailView(pokemonName)
+                PokemonDetailView(pokemonName, navController)
             }
         }
     }

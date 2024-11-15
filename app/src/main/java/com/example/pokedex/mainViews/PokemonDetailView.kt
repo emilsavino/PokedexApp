@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -12,12 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.pokedex.data.PokemonRepository
 import com.example.pokedex.shared.Pokemon
 
 @Composable
-fun PokemonDetailView(pokemonName: String) {
+fun PokemonDetailView(pokemonName: String, navController: NavController) {
     val viewModel = PokemonDetailViewModel()
     val pokemon = viewModel.getPokemonByName(pokemonName)
 
@@ -41,6 +43,15 @@ fun PokemonDetailView(pokemonName: String) {
             text = pokemon.name,
             fontSize = 20.sp,
         )
+
+        Button(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .padding(10.dp)
+        ) {
+            Text(text = "Go back")
+        }
     }
 }
 

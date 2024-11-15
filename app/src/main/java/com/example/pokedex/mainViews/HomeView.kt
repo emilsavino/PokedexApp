@@ -2,6 +2,7 @@ package com.example.pokedex.mainViews
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.pokedex.Screen
 import com.example.pokedex.data.MockPokemonDataStore
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch
@@ -59,10 +61,10 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
             .background(Color(0xFFFFDD99)),
         ) {
         if (pokemonList.isNotEmpty()) {
-            PokemonOfDayView(pokemon = pokemonList[0])
+            PokemonOfDayView(pokemon = pokemonList[0], navController)
         }
         GamesRow()
-        RecentlyViewedPokemonView(recentPokemons = pokemonList)
+        RecentlyViewedPokemonView(recentPokemons = pokemonList, navController = navController)
     }
 }
 
@@ -75,11 +77,12 @@ fun HomeViewPreview() {
 }
 
 @Composable
-fun PokemonOfDayView(pokemon: Pokemon) {
+fun PokemonOfDayView(pokemon: Pokemon, NavController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable { NavController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -150,7 +153,7 @@ fun GamesRow() {
 }
 
 @Composable
-fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>) {
+fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>, navController: NavController) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -167,19 +170,20 @@ fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(recentPokemons.size) { index ->
-                RecentlyViewedPokemon(pokemon = recentPokemons[index])
+                RecentlyViewedPokemon(pokemon = recentPokemons[index], navController = navController)
             }
         }
     }
 }
 
 @Composable
-fun RecentlyViewedPokemon(pokemon: Pokemon) {
+fun RecentlyViewedPokemon(pokemon: Pokemon, navController: NavController) {
     Box(
         modifier = Modifier
             .width(150.dp)
             .height(120.dp)
-            .background(Color(0xFFB2DFDB), RoundedCornerShape(8.dp)),
+            .background(Color(0xFFB2DFDB), RoundedCornerShape(8.dp))
+            .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         contentAlignment = Alignment.Center
     ) {
         Column(

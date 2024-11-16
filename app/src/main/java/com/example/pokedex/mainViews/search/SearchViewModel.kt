@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SearchViewModel(private val pokemonRepository: PokemonRepository) : ViewModel() {
+class SearchViewModel: ViewModel() {
+    private val pokemonRepository = PokemonRepository()
+
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
 

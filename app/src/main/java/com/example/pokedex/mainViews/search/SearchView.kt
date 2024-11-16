@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -30,74 +31,12 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
-    val pokemonRepository = remember { PokemonRepository() }
-    val viewModel = remember { SearchViewModel(pokemonRepository) }
+    val viewModel = remember { SearchViewModel() }
 
     val searchText by viewModel.searchText.collectAsState()
     val pokemons by viewModel.pokemons.collectAsState(initial = emptyList())
 
     val coroutineScope = rememberCoroutineScope()
-
-    val textSelectionColors = TextSelectionColors(
-        handleColor = Color.Black,
-        backgroundColor = Color.LightGray
-    )
-
-    val customTextFieldColors = TextFieldColors(
-        focusedTextColor = Color.Black,
-        unfocusedTextColor = Color.Black,
-        disabledTextColor = Color.Gray,
-        errorTextColor = Color.Red,
-
-        focusedContainerColor = Color(0xfff2f2f2),
-        unfocusedContainerColor = Color(0xfff2f2f2),
-        disabledContainerColor = Color.LightGray,
-        errorContainerColor = Color(0xfff2f2f2),
-
-        cursorColor = Color.Black,
-        errorCursorColor = Color.Red,
-        textSelectionColors = textSelectionColors,
-
-        focusedIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent,
-        disabledIndicatorColor = Color.Transparent,
-        errorIndicatorColor = Color.Red,
-
-        focusedLeadingIconColor = Color.Black,
-        unfocusedLeadingIconColor = Color.Black,
-        disabledLeadingIconColor = Color.Gray,
-        errorLeadingIconColor = Color.Red,
-
-        focusedTrailingIconColor = Color.Black,
-        unfocusedTrailingIconColor = Color.Black,
-        disabledTrailingIconColor = Color.Gray,
-        errorTrailingIconColor = Color.Red,
-
-        focusedLabelColor = Color.Black,
-        unfocusedLabelColor = Color.Black,
-        disabledLabelColor = Color.Gray,
-        errorLabelColor = Color.Red,
-
-        focusedPlaceholderColor = Color.Black,
-        unfocusedPlaceholderColor = Color.Black,
-        disabledPlaceholderColor = Color.Gray,
-        errorPlaceholderColor = Color.Red,
-
-        focusedSupportingTextColor = Color.Black,
-        unfocusedSupportingTextColor = Color.Black,
-        disabledSupportingTextColor = Color.Gray,
-        errorSupportingTextColor = Color.Red,
-
-        focusedPrefixColor = Color.Black,
-        unfocusedPrefixColor = Color.Black,
-        disabledPrefixColor = Color.Gray,
-        errorPrefixColor = Color.Red,
-
-        focusedSuffixColor = Color.Black,
-        unfocusedSuffixColor = Color.Black,
-        disabledSuffixColor = Color.Gray,
-        errorSuffixColor = Color.Red
-    )
 
     Box(
         modifier = modifier
@@ -122,7 +61,6 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                     .background(Color.Transparent),
                 shape = RoundedCornerShape(24.dp),
                 maxLines = 1,
-                colors = customTextFieldColors
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -134,7 +72,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
             ) {
                 Button(
                     onClick = { /* Add filter logic */ },
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xfff2f2f2))
+                    colors = buttonColors(containerColor = Color(0xfff2f2f2))
                 ) {
                     Text(
                         text = "Filter",
@@ -143,7 +81,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                 }
                 Button(
                     onClick = { /* Add sort logic */ },
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xfff2f2f2))
+                    colors = buttonColors(containerColor = Color(0xfff2f2f2))
                 ) {
                     Text(
                         text = "Sort",
@@ -165,7 +103,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        colors = buttonColors(
                             containerColor = Color(0xfff2f2f2)
                         )
                     ) {

@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.pokedex.Screen
+import com.example.pokedex.navigation.Screen
 
 @Composable
 fun PokemonGridItem(navController: NavController, pokemon: Pokemon) {

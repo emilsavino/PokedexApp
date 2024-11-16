@@ -14,8 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.pokedex.data.PokemonRepository
-import com.example.pokedex.shared.Pokemon
 
 @Composable
 fun PokemonDetailView(pokemonName: String, navController: NavController) {

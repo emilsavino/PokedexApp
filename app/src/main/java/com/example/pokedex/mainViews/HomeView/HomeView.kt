@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.pokedex.Screen
+import com.example.pokedex.navigation.Screen
 import com.example.pokedex.data.MockPokemonDataStore
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch

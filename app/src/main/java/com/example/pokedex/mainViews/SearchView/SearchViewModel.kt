@@ -1,4 +1,4 @@
-package com.example.pokedex.mainViews.search
+package com.example.pokedex.mainViews.SearchView
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -6,12 +6,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.pokedex.mainViews.HomeView
+import com.example.pokedex.mainViews.HomeView.HomeView
 import com.example.pokedex.mainViews.PokemonDetailView.PokemonDetailView
-import com.example.pokedex.mainViews.ProfileView
-import com.example.pokedex.mainViews.myTeams.MyTeamsView
-import com.example.pokedex.mainViews.saved.SavedView
-import com.example.pokedex.mainViews.search.SearchView
+import com.example.pokedex.mainViews.ProfileView.ProfileView
+import com.example.pokedex.mainViews.MyTeamsView.MyTeamsView
+import com.example.pokedex.mainViews.SavedPokemonsView.SavedView
+import com.example.pokedex.mainViews.SearchView.SearchView
 
 @Composable
 fun Navigation(navController: NavHostController) {

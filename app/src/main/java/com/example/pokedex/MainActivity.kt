@@ -11,23 +11,9 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pokedex.mainViews.HomeView
-import com.example.pokedex.mainViews.myTeams.MyTeamsView
-import com.example.pokedex.mainViews.ProfileView
-import com.example.pokedex.mainViews.saved.SavedView
-import com.example.pokedex.mainViews.search.SearchView
 import com.example.pokedex.ui.theme.PokedexTheme
 
 class MainActivity : ComponentActivity() {

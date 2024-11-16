@@ -1,4 +1,4 @@
-package com.example.pokedex.mainViews.saved
+package com.example.pokedex.mainViews.SavedPokemonsView
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

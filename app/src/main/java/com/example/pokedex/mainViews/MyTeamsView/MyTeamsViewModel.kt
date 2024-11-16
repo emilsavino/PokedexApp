@@ -1,4 +1,4 @@
-package com.example.pokedex.mainViews.myTeams
+package com.example.pokedex.mainViews.MyTeamsView
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

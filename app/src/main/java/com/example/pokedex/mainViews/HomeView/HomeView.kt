@@ -1,4 +1,4 @@
-package com.example.pokedex.mainViews
+package com.example.pokedex.mainViews.HomeView
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

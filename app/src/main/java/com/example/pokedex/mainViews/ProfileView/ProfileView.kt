@@ -19,11 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.foundation.shape.CircleShape
@@ -32,35 +27,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.R
-
-class ProfileViewModel : ViewModel() {
-    private val _userEmail = MutableStateFlow("name@dtu.dk")
-    val userEmail: StateFlow<String> = _userEmail
-
-    private val _userPassword = MutableStateFlow("********")
-    val userPassword: StateFlow<String> = _userPassword
-
-    fun updateEmail(newEmail: String){
-        viewModelScope.launch {
-            _userEmail.value = newEmail
-        }
-    }
-
-    fun changePassword(newPassword : String){
-        viewModelScope.launch {
-            _userPassword.value = newPassword
-        }
-    }
-
-    fun signOut(){
-        // TODO: Add functionality to sign out
-    }
-
-    fun deleteAccount(){
-        // TODO: Add functionality to delete account
-    }
-
-}
 
 @Composable
 fun ProfileButton(

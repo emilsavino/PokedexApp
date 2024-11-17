@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
+import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.Option
 
 @Composable
@@ -54,12 +55,11 @@ fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavContro
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        IconButton(
-            onClick = { navController.popBackStack() },
+        BackButton(
+            navController = navController,
             modifier = Modifier.align(Alignment.Start)
-        ) {
-            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-        }
+        )
+        
         Text(text = "Who Is That Pokemon",
             fontSize = 35.sp,
             fontWeight = FontWeight.Bold,

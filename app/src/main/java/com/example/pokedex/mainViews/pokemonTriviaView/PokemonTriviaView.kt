@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.pokedex.shared.BackButton
 
 @Composable
 fun PokemonTriviaView(navController: NavController) {
@@ -38,12 +39,10 @@ fun PokemonTriviaView(navController: NavController) {
             .background(Color(0xFFFFDD99)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        IconButton(
-            onClick = { navController.popBackStack() },
+        BackButton(
+            navController = navController,
             modifier = Modifier.align(Alignment.Start)
-        ) {
-            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-        }
+        )
 
         Text(
             text = viewModel.question,

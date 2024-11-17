@@ -96,7 +96,7 @@ class MockPokemonDataStore {
     }
 
     private val whoIsThatPokemon = WhoIsThatPokemon(Pokemon("Ditto", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png")
-        , listOf(Option("Pikachu", Color.Black), Option("Charmander", Color.Black), Option("Squirtle", Color.Black), Option("Bulbasaur", Color.Black))
+        , listOf(Option("Pikachu", Color.Black), Option("Charmander", Color.Black), Option("Squirtle", Color.Black), Option("Ditto", Color.Black))
     )
 
     suspend fun fetchWhoIsThatPokemon(): WhoIsThatPokemon

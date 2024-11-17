@@ -95,7 +95,7 @@ fun OptionComposable(modifier : Modifier = Modifier, navController: NavControlle
         }
     ) {
         Text(text = option.name,
-            color = option.color,
+            color = whoIsThatPokemonViewModel.getColor(option),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold)
     }

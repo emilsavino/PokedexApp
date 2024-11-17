@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.WhoIsThatPokemon
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,6 +22,25 @@ class WhoIsThatPokemonViewModel: ViewModel() {
     ))
     val whoIsThatPokemonStateFlow: StateFlow<WhoIsThatPokemon> = _whoThepokemonMutableStateFlow.asStateFlow()
 
+    val hasAnswered = mutableStateOf(false)
+
+    fun getColor(option: Option) : Color
+    {
+        if (!hasAnswered.value)
+        {
+            return Color.Black
+        }
+
+        if (option.name == whoIsThatPokemonStateFlow.value.pokemon.name)
+        {
+            return Color.Green
+        }
+        else
+        {
+            return Color.Red
+        }
+    }
+
     init {
         viewModelScope.launch {
             whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow
@@ -41,23 +61,8 @@ class WhoIsThatPokemonViewModel: ViewModel() {
         }
     }
 
-    public fun guessed(guessedName : String)
+    fun guessed(guessedName : String)
     {
-        viewModelScope.launch {
-
-            val whoIsThatPokemon = whoIsThatPokemonStateFlow.value
-            for (option in whoIsThatPokemon.options)
-            {
-                if (guessedName == whoIsThatPokemon.pokemon.name)
-                {
-                    option.color = Color.Green
-                }
-                else
-                {
-                    option.color = Color.Red
-                }
-            }
-            whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow.emit(whoIsThatPokemon)
-        }
+        hasAnswered.value = true
     }
 }

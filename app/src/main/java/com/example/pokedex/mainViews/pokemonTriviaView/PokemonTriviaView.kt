@@ -58,7 +58,7 @@ fun PokemonTriviaView(navController: NavController) {
             text = viewModel.question,
             modifier = Modifier.padding(horizontal = 25.dp, vertical = 30.dp),
             fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
+            fontSize = 30.sp,
             textAlign = TextAlign.Center,
         )
 
@@ -81,7 +81,7 @@ fun answarButtons(viewModel: PokemonTriviaViewModel) {
     viewModel.options.forEachIndexed { index, option ->
         Box (
             modifier = Modifier
-                .size(300.dp, 80.dp)
+                .size(350.dp, 100.dp)
                 .clip(RoundedCornerShape(15.dp))
                 .background(viewModel.getBoxColor(index))
                 .clickable {
@@ -92,7 +92,7 @@ fun answarButtons(viewModel: PokemonTriviaViewModel) {
             Text(
                 text = option,
                 modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
-                fontSize = 20.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 textAlign = TextAlign.Center

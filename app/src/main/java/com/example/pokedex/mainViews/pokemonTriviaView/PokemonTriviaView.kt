@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -35,30 +38,30 @@ fun PokemonTriviaView(navController: NavController) {
             .background(Color(0xFFFFDD99)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        IconButton(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.align(Alignment.Start)
+        ) {
+            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+        }
+
         Text(
             text = viewModel.question,
-            modifier = Modifier.padding(horizontal = 25.dp, vertical = 30.dp),
+            modifier = Modifier.padding(horizontal = 25.dp),
             fontWeight = FontWeight.Bold,
             fontSize = 30.sp,
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.size(80.dp))
+        Spacer(modifier = Modifier.size(120.dp))
 
-        answarButtons(viewModel = viewModel)
-
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier.padding(20.dp)
-        ) {
-            Text(text = "Back")
-        }
+        AnswerButtons(viewModel = viewModel)
     }
 
 }
 
 @Composable
-fun answarButtons(viewModel: PokemonTriviaViewModel) {
+fun AnswerButtons(viewModel: PokemonTriviaViewModel) {
     viewModel.options.forEachIndexed { index, option ->
         Box (
             modifier = Modifier

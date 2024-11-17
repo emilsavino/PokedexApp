@@ -2,6 +2,8 @@ package com.example.pokedex.data
 
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.WhoIsThatPokemon
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MockPokemonDataStore {
     private val pokemons = listOf(
@@ -91,9 +93,10 @@ class MockPokemonDataStore {
     }
 
     private val whoIsThatPokemon = WhoIsThatPokemon(Pokemon("Ditto", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png")
-        , listOf("Pikachu", "Charmander", "Squirtle")
+        , listOf("Pikachu", "Charmander", "Squirtle", "DeanPhar")
     )
-    fun fetchWhoIsThatPokemon(): WhoIsThatPokemon
+
+    suspend fun fetchWhoIsThatPokemon(): WhoIsThatPokemon
     {
         return whoIsThatPokemon
     }

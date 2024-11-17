@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
+import com.example.pokedex.shared.Option
 
 @Composable
 fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavController)
@@ -68,14 +69,14 @@ fun Options (whoIsThatPokemonViewModel: WhoIsThatPokemonViewModel, navController
         .fillMaxHeight(),
     )
     {
-        items(whoIsThatPokemon.options) { item: String ->
-            Option(name = item, navController = navController, whoIsThatPokemonViewModel = whoIsThatPokemonViewModel)
+        items(whoIsThatPokemon.options) { item: Option ->
+            OptionComposable(option = item, navController = navController, whoIsThatPokemonViewModel = whoIsThatPokemonViewModel)
         }
     }
 }
 
 @Composable
-fun Option(modifier : Modifier = Modifier, navController: NavController, name : String, whoIsThatPokemonViewModel: WhoIsThatPokemonViewModel)
+fun OptionComposable(modifier : Modifier = Modifier, navController: NavController, option : Option, whoIsThatPokemonViewModel: WhoIsThatPokemonViewModel)
 {
     Button(
         modifier = modifier
@@ -85,14 +86,11 @@ fun Option(modifier : Modifier = Modifier, navController: NavController, name : 
             .fillMaxHeight(),
         onClick =
         {
-            if (name == whoIsThatPokemonViewModel.whoIsThatPokemonStateFlow.value.pokemon.name)
-            {
-
-            }
+            whoIsThatPokemonViewModel.guessed(guessedName = option.name)
         }
     ) {
-        Text(text = name,
-            color = Color.Black,
+        Text(text = option.name,
+            color = option.color,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold)
     }

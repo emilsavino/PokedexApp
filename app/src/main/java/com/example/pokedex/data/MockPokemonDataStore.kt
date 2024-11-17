@@ -1,5 +1,8 @@
 package com.example.pokedex.data
 
+import android.graphics.Path.Op
+import androidx.compose.ui.graphics.Color
+import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.WhoIsThatPokemon
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +96,7 @@ class MockPokemonDataStore {
     }
 
     private val whoIsThatPokemon = WhoIsThatPokemon(Pokemon("Ditto", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png")
-        , listOf("Pikachu", "Charmander", "Squirtle", "DeanPhar")
+        , listOf(Option("Pikachu", Color.Black), Option("Charmander", Color.Black), Option("Squirtle", Color.Black), Option("Bulbasaur", Color.Black))
     )
 
     suspend fun fetchWhoIsThatPokemon(): WhoIsThatPokemon

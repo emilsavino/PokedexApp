@@ -48,16 +48,13 @@ class WhoIsThatPokemonViewModel: ViewModel() {
             val whoIsThatPokemon = whoIsThatPokemonStateFlow.value
             for (option in whoIsThatPokemon.options)
             {
-                if (option.name == guessedName)
+                if (guessedName == whoIsThatPokemon.pokemon.name)
                 {
-                    if (guessedName == whoIsThatPokemon.pokemon.name)
-                    {
-                        option.color = Color.Green
-                    }
-                    else
-                    {
-                        option.color = Color.Red
-                    }
+                    option.color = Color.Green
+                }
+                else
+                {
+                    option.color = Color.Red
                 }
             }
             whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow.emit(whoIsThatPokemon)

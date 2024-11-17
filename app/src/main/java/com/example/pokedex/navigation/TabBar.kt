@@ -26,7 +26,7 @@ fun TabBar(navController: NavController) {
                 onClick = {
                     navController.navigate(tab.first.route) {
                         popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+                            saveState = false
                         }
                         launchSingleTop = true
                         restoreState = true

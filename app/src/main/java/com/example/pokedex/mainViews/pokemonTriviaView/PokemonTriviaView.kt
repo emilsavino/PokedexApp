@@ -5,9 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,41 +49,58 @@ fun PokemonTriviaView(navController: NavController) {
     val viewModel = remember { PokemonTriviaViewModel() }
 
     Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFFDD99)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = viewModel.question,
-            modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = 25.dp, vertical = 30.dp),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
-        viewModel.options.forEachIndexed { index, option ->
-            Box (
-                modifier = Modifier
-                    .size(300.dp, 80.dp)
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(viewModel.getBoxColor(index))
-                    .clickable {
-                        viewModel.hasAnswered = true
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = option,
-                    modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
-            }
+        Spacer(modifier = Modifier.size(80.dp))
 
-            Spacer(modifier = Modifier.size(10.dp))
+        answarButtons(viewModel = viewModel)
+
+        Button(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.padding(20.dp)
+        ) {
+            Text(text = "Back")
         }
     }
 
+}
+
+@Composable
+fun answarButtons(viewModel: PokemonTriviaViewModel) {
+    viewModel.options.forEachIndexed { index, option ->
+        Box (
+            modifier = Modifier
+                .size(300.dp, 80.dp)
+                .clip(RoundedCornerShape(15.dp))
+                .background(viewModel.getBoxColor(index))
+                .clickable {
+                    viewModel.hasAnswered = true
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = option,
+                modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Spacer(modifier = Modifier.size(10.dp))
+    }
 }
 
 @Preview(showBackground = true)

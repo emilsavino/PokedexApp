@@ -135,7 +135,7 @@ fun GamesRow(navController: NavController) {
             modifier = Modifier
                 .width(150.dp)
                 .height(120.dp)
-                .clickable { navController.navigate("whoIsThatPokemon") }
+                .clickable { navController.navigate(Screen.WhoIsThatPokemon.route) }
                 .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {

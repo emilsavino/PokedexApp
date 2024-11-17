@@ -1,6 +1,7 @@
 package com.example.pokedex.data
 
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.WhoIsThatPokemon
 
 class MockPokemonDataStore {
     private val pokemons = listOf(
@@ -87,5 +88,13 @@ class MockPokemonDataStore {
     suspend fun fetchSavedPokemons(): List<Pokemon>
     {
         return pokemons
+    }
+
+    private val whoIsThatPokemon = WhoIsThatPokemon(Pokemon("Ditto", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png")
+        , listOf("Pikachu", "Charmander", "Squirtle")
+    )
+    fun fetchWhoIsThatPokemon(): WhoIsThatPokemon
+    {
+        return whoIsThatPokemon
     }
 }

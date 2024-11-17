@@ -64,7 +64,7 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
         if (pokemonList.isNotEmpty()) {
             PokemonOfDayView(pokemon = pokemonList[7], navController)
         }
-        GamesRow()
+        GamesRow(navController = navController)
         RecentlyViewedPokemonView(recentPokemons = pokemonList, navController = navController)
     }
 }
@@ -122,7 +122,7 @@ fun PokemonOfDayView(pokemon: Pokemon, NavController: NavController) {
 }
 
 @Composable
-fun GamesRow() {
+fun GamesRow(navController: NavController) {
     Text(
         text = "Pokémon Games",
         style = MaterialTheme.typography.titleMedium,
@@ -135,6 +135,7 @@ fun GamesRow() {
             modifier = Modifier
                 .width(150.dp)
                 .height(120.dp)
+                .clickable { navController.navigate("whoIsThatPokemon") }
                 .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {

@@ -13,6 +13,7 @@ import com.example.pokedex.mainViews.MyTeamsView.MyTeamsView
 import com.example.pokedex.mainViews.SavedPokemonsView.SavedView
 import com.example.pokedex.mainViews.SearchView.SearchView
 import com.example.pokedex.mainViews.WhoIsThatPokemon.WhoIsThatPokemonView
+import com.example.pokedex.mainViews.pokemonTriviaView.PokemonTriviaView
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -49,6 +50,9 @@ fun Navigation(navController: NavHostController) {
         composable(Screen.WhoIsThatPokemon.route) {
             WhoIsThatPokemonView(navController = navController)
         }
+        composable(Screen.PokemonTrivia.route) {
+            PokemonTriviaView(navController = navController)
+        }
 
     }
 }
@@ -63,4 +67,5 @@ sealed class Screen(val route: String) {
         fun createRoute(pokemonName: String) = "pokemonDetails/$pokemonName"
     }
     object WhoIsThatPokemon : Screen("whoIsThatPokemon")
+    object PokemonTrivia : Screen("pokemonTrivia")
 }

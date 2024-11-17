@@ -147,7 +147,9 @@ fun GamesRow(navController: NavController) {
                 .height(120.dp)
                 .background(
                     MaterialTheme.colorScheme.secondary, RoundedCornerShape(8.dp)
-                ), contentAlignment = Alignment.Center
+                )
+                .clickable { navController.navigate(Screen.PokemonTrivia.route) },
+            contentAlignment = Alignment.Center
         ) {
             Text(text = "Pokémon Trivia", fontSize = 14.sp)
         }

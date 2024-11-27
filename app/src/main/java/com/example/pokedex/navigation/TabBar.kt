@@ -1,38 +1,36 @@
 package com.example.pokedex.navigation
 
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 
 @Composable
 fun TabBar(navController: NavController) {
     val tabs = listOf(
-        Screen.Saved to "Saved",
-        Screen.MyTeams to "My Teams",
-        Screen.Home to "Home",
-        Screen.Search to "Search",
-        Screen.Profile to "Profile"
+        Screen.Saved.route to "Saved",
+        Screen.MyTeams.route to "Teams",
+        Screen.Home.route to "Home",
+        Screen.Search.route to "Search",
+        Screen.Profile.route to "Profile"
     )
 
-    val currentDestination = navController.currentDestination?.route
-    val selectedTabIndex = tabs.indexOfFirst { it.first.route == currentDestination }.takeIf { it >= 0 } ?: 2
+    var selectedTabIndex by remember { mutableIntStateOf(2) }
 
-    TabRow(selectedTabIndex = selectedTabIndex) {
-        tabs.forEachIndexed { index, tab ->
-            Tab(
-                selected = selectedTabIndex == index,
+    NavigationBar {
+        tabs.forEachIndexed() { index, tab ->
+            NavigationBarItem(
+                icon = { Text(tab.second) },
+                selected = index == selectedTabIndex,
                 onClick = {
-                    navController.navigate(tab.first.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = false
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                text = { Text(tab.second) }
+                    selectedTabIndex = index
+                    navController.navigate(tab.first)
+                }
             )
         }
     }

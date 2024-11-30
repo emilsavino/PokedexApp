@@ -28,8 +28,7 @@ import kotlinx.coroutines.launch
 fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel = remember { SearchViewModel() }
 
-    val searchText by viewModel.searchText.collectAsState()
-    val pokemons by viewModel.pokemons.collectAsState(initial = emptyList())
+    val pokemons by viewModel.pokemonList.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -45,8 +44,8 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                 .padding(16.dp)
         ) {
             TextField(
-                value = searchText,
-                onValueChange = { viewModel.updateSearchText(it) },
+                value = viewModel.searchText.value,
+                onValueChange = { viewModel.searchText.value = it },
                 placeholder = { Text(
                     "Search...",
                     color = Color.Black
@@ -66,7 +65,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = { /* Add filter logic */ },
+                    onClick = { viewModel.searchPokemonList() },
                     colors = buttonColors(containerColor = Color(0xfff2f2f2))
                 ) {
                     Text(
@@ -75,7 +74,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                     )
                 }
                 Button(
-                    onClick = { /* Add sort logic */ },
+                    onClick = { viewModel.searchPokemonList() },
                     colors = buttonColors(containerColor = Color(0xfff2f2f2))
                 ) {
                     Text(
@@ -93,7 +92,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
             ) {
                 items(pokemons) { pokemon ->
                     Button(
-                        onClick = { /* Add Pokémon click logic */ },
+                        onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
@@ -104,9 +103,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             AsyncImage(
                                 model = pokemon.imageURL,
@@ -128,7 +125,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                 item {
                     LaunchedEffect(Unit) {
                         coroutineScope.launch {
-                            viewModel.fetchMorePokemons()
+                            viewModel.searchPokemonList()
                         }
                     }
                 }

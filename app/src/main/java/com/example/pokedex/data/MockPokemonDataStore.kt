@@ -103,4 +103,8 @@ class MockPokemonDataStore {
     {
         return whoIsThatPokemon
     }
+
+    suspend fun searchPokemonByName(name: String): List<Pokemon> {
+        return pokemons.filter { it.name.contains(name, ignoreCase = true) }
+    }
 }

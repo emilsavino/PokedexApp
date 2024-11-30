@@ -25,9 +25,12 @@ class PokemonRepository {
         mutableTeamsFlow.emit(dataSource.fetchTeams())
     }
 
-    suspend fun fetchSaved()
-    {
+    suspend fun fetchSaved() {
         mutableSavedPokemonsFlow.emit(dataSource.fetchSavedPokemons())
+    }
+
+    suspend fun searchPokemonByName(name: String) {
+        mutablePokemonsFlow.emit(dataSource.searchPokemonByName(name))
     }
 
     fun getPokemonByName(name: String): Pokemon {

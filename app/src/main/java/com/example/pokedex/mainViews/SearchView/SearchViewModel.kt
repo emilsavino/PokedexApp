@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.SearchView
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.data.PokemonRepository
@@ -12,26 +13,17 @@ import kotlinx.coroutines.launch
 class SearchViewModel: ViewModel() {
     private val pokemonRepository = PokemonRepository()
 
-    private val _searchText = MutableStateFlow("")
-    val searchText: StateFlow<String> = _searchText.asStateFlow()
+    var searchText = mutableStateOf("")
 
-    private val _pokemons = MutableStateFlow<List<Pokemon>>(emptyList())
-    val pokemons: StateFlow<List<Pokemon>> = _pokemons.asStateFlow()
+    private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
+    val pokemonList: StateFlow<List<Pokemon>> = _pokemonList.asStateFlow()
 
-    init {
-        fetchMorePokemons()
-    }
-
-    fun fetchMorePokemons() {
+    fun searchPokemonList() {
         viewModelScope.launch {
-            pokemonRepository.fetchPokemons()
+            pokemonRepository.searchPokemonByName(searchText.value)
             pokemonRepository.pokemonsFlow.collect { newPokemonList ->
-                _pokemons.value = _pokemons.value + newPokemonList
+                _pokemonList.value += newPokemonList
             }
         }
-    }
-
-    fun updateSearchText(newText: String) {
-        _searchText.value = newText
     }
 }

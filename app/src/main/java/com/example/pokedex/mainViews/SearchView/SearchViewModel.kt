@@ -20,6 +20,9 @@ class SearchViewModel: ViewModel() {
 
     fun searchPokemonList() {
         viewModelScope.launch {
+            if (pokemonList.value.isNotEmpty()) {
+                _pokemonList.value = emptyList()
+            }
             pokemonRepository.searchPokemonByName(searchText.value)
             pokemonRepository.pokemonsFlow.collect { newPokemonList ->
                 _pokemonList.value += newPokemonList

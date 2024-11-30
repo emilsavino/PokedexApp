@@ -18,6 +18,21 @@ class SearchViewModel: ViewModel() {
     private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
     val pokemonList: StateFlow<List<Pokemon>> = _pokemonList.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            pokemonRepository.pokemonsFlow.collect { newPokemonList ->
+                _pokemonList.value = newPokemonList
+            }
+        }
+        fetchPokemonList()
+    }
+
+    fun fetchPokemonList() {
+        viewModelScope.launch {
+            pokemonRepository.fetchPokemons()
+        }
+    }
+
     fun searchPokemonList() {
         viewModelScope.launch {
             if (pokemonList.value.isNotEmpty()) {

@@ -18,19 +18,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
+import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch
 
 @Composable
 fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
-    val viewModel = remember { SearchViewModel() }
+    val viewModel = viewModel<SearchViewModel>()
 
     val pokemons by viewModel.pokemonList.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = modifier
@@ -43,93 +43,104 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            TextField(
-                value = viewModel.searchText.value,
-                onValueChange = { viewModel.searchText.value = it },
-                placeholder = { Text(
-                    "Search...",
-                    color = Color.Black
-                ) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Transparent),
-                shape = RoundedCornerShape(24.dp),
-                maxLines = 1,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = { viewModel.searchPokemonList() },
-                    colors = buttonColors(containerColor = Color(0xfff2f2f2))
-                ) {
-                    Text(
-                        text = "Filter",
-                        color = Color.Black
-                    )
-                }
-                Button(
-                    onClick = { viewModel.searchPokemonList() },
-                    colors = buttonColors(containerColor = Color(0xfff2f2f2))
-                ) {
-                    Text(
-                        text = "Sort",
-                        color = Color.Black
-                    )
-                }
-            }
+            MakeSearchTools(viewModel = viewModel)
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                items(pokemons) { pokemon ->
-                    Button(
-                        onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = buttonColors(
-                            containerColor = Color(0xfff2f2f2)
-                        )
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            AsyncImage(
-                                model = pokemon.imageURL,
-                                contentDescription = "${pokemon.name} Image",
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .padding(end = 2.dp)
-                            )
-                            Text(
-                                text = pokemon.name,
-                                color = Color.Black,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
+            MakeSearchList(pokemons = pokemons, navController = navController)
+        }
+    }
+}
 
-                item {
-                    LaunchedEffect(Unit) {
-                        coroutineScope.launch {
-                            viewModel.searchPokemonList()
-                        }
-                    }
-                }
-            }
+@Composable
+fun MakeSearchTools(viewModel: SearchViewModel) {
+    TextField(
+        value = viewModel.searchText.value,
+        onValueChange = {
+            viewModel.searchText.value = it
+            viewModel.searchPokemonList()
+        },
+
+        placeholder = { Text(
+            "Search...",
+            color = Color.Black
+        ) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Transparent),
+        shape = RoundedCornerShape(24.dp),
+        maxLines = 1,
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            onClick = {  },
+            colors = buttonColors(containerColor = Color(0xfff2f2f2))
+        ) {
+            Text(
+                text = "Filter",
+                color = Color.Black
+            )
+        }
+        Button(
+            onClick = {  },
+            colors = buttonColors(containerColor = Color(0xfff2f2f2))
+        ) {
+            Text(
+                text = "Sort",
+                color = Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = 8.dp)
+    ) {
+        items(pokemons) { pokemon ->
+            SearchListItem(pokemon = pokemon, navController = navController)
+        }
+    }
+}
+
+@Composable
+fun SearchListItem(pokemon: Pokemon, navController: NavController) {
+    Button(
+        onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = buttonColors(
+            containerColor = Color(0xfff2f2f2)
+        )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            AsyncImage(
+                model = pokemon.imageURL,
+                contentDescription = "${pokemon.name} Image",
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(end = 2.dp)
+            )
+            Text(
+                text = pokemon.name,
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

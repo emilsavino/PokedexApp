@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.data.PokemonRepository
-import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.MockPokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,8 +15,8 @@ class SearchViewModel: ViewModel() {
 
     var searchText = mutableStateOf("")
 
-    private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
-    val pokemonList: StateFlow<List<Pokemon>> = _pokemonList.asStateFlow()
+    private val _pokemonList = MutableStateFlow<List<MockPokemon>>(emptyList())
+    val pokemonList: StateFlow<List<MockPokemon>> = _pokemonList.asStateFlow()
 
     init {
         viewModelScope.launch {

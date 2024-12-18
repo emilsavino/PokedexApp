@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.MockPokemon
 import com.example.pokedex.shared.PokemonGridItem
 
 @Composable
@@ -74,7 +74,7 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
 }
 
 @Composable
-private fun MakeTeamsGrid(navController: NavController, teams: List<List<Pokemon>>) {
+private fun MakeTeamsGrid(navController: NavController, teams: List<List<MockPokemon>>) {
     var teamNumber = 1
     for (team in teams) {
         Text(

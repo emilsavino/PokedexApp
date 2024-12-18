@@ -32,5 +32,4 @@ class ProfileViewModel : ViewModel() {
     fun deleteAccount(){
         // TODO: Add functionality to delete account
     }
-
 }

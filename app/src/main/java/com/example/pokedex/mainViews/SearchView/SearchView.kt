@@ -1,7 +1,6 @@
 package com.example.pokedex.mainViews.SearchView
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,8 +22,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
-import com.example.pokedex.shared.Pokemon
-import kotlinx.coroutines.launch
+import com.example.pokedex.shared.MockPokemon
 
 @Composable
 fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
@@ -101,7 +99,7 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
 }
 
 @Composable
-fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
+fun MakeSearchList(pokemons: List<MockPokemon>, navController: NavController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -113,7 +111,7 @@ fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
 }
 
 @Composable
-fun SearchListItem(pokemon: Pokemon, navController: NavController) {
+fun SearchListItem(pokemon: MockPokemon, navController: NavController) {
     Button(
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         modifier = Modifier

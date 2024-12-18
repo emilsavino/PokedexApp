@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonTriviaAnswer
 import com.example.pokedex.shared.PokemonTriviaModel
 

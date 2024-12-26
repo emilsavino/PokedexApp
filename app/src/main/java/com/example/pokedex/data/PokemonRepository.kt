@@ -43,4 +43,12 @@ object PokemonRepository {
     fun savePokemon(pokemon: Pokemon) {
         dataSource.savePokemon(pokemon)
     }
+
+    fun removeFromFavorites(pokemon: Pokemon) {
+        dataSource.removeFromFavourites(pokemon)
+    }
+
+    fun pokemonIsFavourite(pokemon: Pokemon): Boolean {
+        return dataSource.pokemonIsFavourite(pokemon)
+    }
 }

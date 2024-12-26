@@ -12,12 +12,13 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 
 @Composable
 fun PokemonDetailView(pokemonName: String, navController: NavController) {
-    val viewModel = PokemonDetailViewModel()
+    val viewModel = viewModel<PokemonDetailViewModel>()
     val pokemon = viewModel.getPokemonByName(pokemonName)
 
     Column(
@@ -47,7 +48,7 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
                 .align(CenterHorizontally)
                 .padding(10.dp)
         ) {
-            Text(text = "Add to Favorites")
+            Text(text = viewModel.favouriteButtonText)
         }
 
         Button(

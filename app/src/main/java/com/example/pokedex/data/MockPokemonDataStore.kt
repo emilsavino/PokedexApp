@@ -110,4 +110,12 @@ class MockPokemonDataStore {
     fun savePokemon(pokemon: Pokemon) {
         favouitePokemons.add(pokemon)
     }
+
+    fun removeFromFavourites(pokemon: Pokemon) {
+        favouitePokemons.remove(pokemon)
+    }
+
+    fun pokemonIsFavourite(pokemon: Pokemon): Boolean {
+        return favouitePokemons.contains(pokemon)
+    }
 }

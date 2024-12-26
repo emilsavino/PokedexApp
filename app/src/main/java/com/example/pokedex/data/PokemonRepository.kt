@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-class PokemonRepository {
+object PokemonRepository {
     private val dataSource = MockPokemonDataStore()
 
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()

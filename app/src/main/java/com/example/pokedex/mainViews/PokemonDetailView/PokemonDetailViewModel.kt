@@ -4,7 +4,7 @@ import com.example.pokedex.data.PokemonRepository
 import com.example.pokedex.shared.Pokemon
 
 class PokemonDetailViewModel {
-    val pokemonRepository = PokemonRepository()
+    val pokemonRepository = PokemonRepository
 
     fun getPokemonByName(pokemonName: String): Pokemon {
         return pokemonRepository.getPokemonByName(pokemonName)

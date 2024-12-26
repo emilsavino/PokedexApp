@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
-    private val pokemonRepository = PokemonRepository()
+    private val pokemonRepository = PokemonRepository
 
     var searchText = mutableStateOf("")
 

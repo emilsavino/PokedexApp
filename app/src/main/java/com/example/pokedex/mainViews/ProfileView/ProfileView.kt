@@ -50,13 +50,12 @@ fun ProfileButton(
 
 @Composable
 fun ProfileView(
-    profileViewModel: ProfileViewModel = viewModel(),
     modifier: Modifier = Modifier,
     navController: NavController
 ){
-
-    val email = profileViewModel.userEmail.collectAsState().value
-    val password = profileViewModel.userPassword.collectAsState().value
+    val viewModel = viewModel<ProfileViewModel>()
+    val email = viewModel.userEmail.collectAsState().value
+    val password = viewModel.userPassword.collectAsState().value
 
     Box(
         modifier = modifier

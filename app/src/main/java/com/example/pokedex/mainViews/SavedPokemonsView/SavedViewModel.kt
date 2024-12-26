@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class SavedViewModel : ViewModel()
 {
-    private val pokemonRepository = PokemonRepository()
+    private val pokemonRepository = PokemonRepository
     private val mutableStateFlow = MutableStateFlow<List<Pokemon>>(emptyList())
     val savedState: StateFlow<List<Pokemon>> = mutableStateFlow
 

@@ -32,8 +32,9 @@ private val BoxHeight = 120.dp
 private val Padding = 8.dp
 
 @Composable
-fun HomeView(modifier: Modifier = Modifier, navController: NavController, homeViewModel: HomeViewModel = viewModel()) {
-    val pokemonList = homeViewModel.pokemonList.collectAsState().value
+fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
+    val viewModel = viewModel<HomeViewModel>()
+    val pokemonList = viewModel.pokemonList.collectAsState().value
 
     Column(
         modifier = modifier

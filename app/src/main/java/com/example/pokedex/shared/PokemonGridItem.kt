@@ -16,7 +16,7 @@ import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
 
 @Composable
-fun PokemonGridItem(navController: NavController, pokemon: MockPokemon) {
+fun PokemonGridItem(navController: NavController, pokemon: Pokemon) {
     Box(
         modifier = Modifier
             .size(110.dp)

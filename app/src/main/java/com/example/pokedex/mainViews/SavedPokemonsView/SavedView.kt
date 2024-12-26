@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.pokedex.shared.MockPokemon
+import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 
 @Composable
@@ -49,14 +49,14 @@ fun SavedList (savedViewModel: SavedViewModel, navController: NavController)
         verticalArrangement = Arrangement.spacedBy(20.dp),
         )
     {
-        items(pokemonsChunked) { item: List<MockPokemon> ->
+        items(pokemonsChunked) { item: List<Pokemon> ->
             SavedRow(pokemons = item, navController = navController)
         }
     }
 }
 
 @Composable
-fun SavedRow(modifier: Modifier = Modifier, pokemons : List<MockPokemon>, navController: NavController)
+fun SavedRow(modifier: Modifier = Modifier, pokemons : List<Pokemon>, navController: NavController)
 {
     Row (modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(19.dp)

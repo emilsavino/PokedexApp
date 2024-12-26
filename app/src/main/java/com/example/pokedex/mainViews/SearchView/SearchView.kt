@@ -22,7 +22,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
-import com.example.pokedex.shared.MockPokemon
+import com.example.pokedex.shared.Pokemon
 
 @Composable
 fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
@@ -99,7 +99,7 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
 }
 
 @Composable
-fun MakeSearchList(pokemons: List<MockPokemon>, navController: NavController) {
+fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -111,7 +111,7 @@ fun MakeSearchList(pokemons: List<MockPokemon>, navController: NavController) {
 }
 
 @Composable
-fun SearchListItem(pokemon: MockPokemon, navController: NavController) {
+fun SearchListItem(pokemon: Pokemon, navController: NavController) {
     Button(
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         modifier = Modifier

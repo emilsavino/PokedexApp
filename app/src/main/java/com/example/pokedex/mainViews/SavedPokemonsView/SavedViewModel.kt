@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.pokedex.data.PokemonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.lifecycle.viewModelScope
-import com.example.pokedex.shared.MockPokemon
+import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 class SavedViewModel : ViewModel()
 {
     private val pokemonRepository = PokemonRepository()
-    private val mutableStateFlow = MutableStateFlow<List<MockPokemon>>(emptyList())
-    val savedState: StateFlow<List<MockPokemon>> = mutableStateFlow
+    private val mutableStateFlow = MutableStateFlow<List<Pokemon>>(emptyList())
+    val savedState: StateFlow<List<Pokemon>> = mutableStateFlow
 
     init {
         viewModelScope.launch {

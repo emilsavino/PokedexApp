@@ -1,6 +1,5 @@
 package com.example.pokedex.data
 
-import com.example.pokedex.shared.MockPokemon
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,14 +11,14 @@ class PokemonRepository {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    private val mutablePokemonsFlow = MutableSharedFlow<List<MockPokemon>>()
-    val pokemonsFlow: Flow<List<MockPokemon>> = mutablePokemonsFlow.asSharedFlow()
+    private val mutablePokemonsFlow = MutableSharedFlow<List<Pokemon>>()
+    val pokemonsFlow: Flow<List<Pokemon>> = mutablePokemonsFlow.asSharedFlow()
 
-    private val mutableTeamsFlow = MutableSharedFlow<List<List<MockPokemon>>>()
-    val teamsFlow: Flow<List<List<MockPokemon>>> = mutableTeamsFlow.asSharedFlow()
+    private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
+    val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
 
-    private val mutableSavedPokemonsFlow = MutableSharedFlow<List<MockPokemon>>()
-    val savedPokemonsFlow: Flow<List<MockPokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
+    private val mutableSavedPokemonsFlow = MutableSharedFlow<List<Pokemon>>()
+    val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
 
     suspend fun fetchPokemons() {
         mutablePokemonsFlow.emit(dataSource.fetchPokemons())
@@ -37,7 +36,7 @@ class PokemonRepository {
         mutablePokemonsFlow.emit(dataSource.searchPokemonByName(name))
     }
 
-    fun getPokemonByName(name: String): MockPokemon {
+    fun getPokemonByName(name: String): Pokemon {
         return dataSource.fetchPokemonByName(name)!!
     }
 }

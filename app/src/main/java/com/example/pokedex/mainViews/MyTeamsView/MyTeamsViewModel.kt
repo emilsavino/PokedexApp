@@ -3,7 +3,7 @@ package com.example.pokedex.mainViews.MyTeamsView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.data.PokemonRepository
-import com.example.pokedex.shared.MockPokemon
+import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ class MyTeamsViewModel: ViewModel() {
 }
 
 sealed class TeamsUIState {
-    data class Data(val teams: List<List<MockPokemon>>): TeamsUIState()
+    data class Data(val teams: List<List<Pokemon>>): TeamsUIState()
     object Loading: TeamsUIState()
     object Empty: TeamsUIState()
 }

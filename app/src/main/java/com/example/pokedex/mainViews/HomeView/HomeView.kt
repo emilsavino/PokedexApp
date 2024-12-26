@@ -25,7 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
-import com.example.pokedex.shared.MockPokemon
+import com.example.pokedex.shared.Pokemon
 
 private val BoxSize = 150.dp
 private val BoxHeight = 120.dp
@@ -56,7 +56,7 @@ fun HomeViewPreview() {
 }
 
 @Composable
-fun PokemonOfDayView(pokemon: MockPokemon, navController: NavController) {
+fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,7 +82,7 @@ fun PokemonOfDayView(pokemon: MockPokemon, navController: NavController) {
 }
 
 @Composable
-fun PokemonDetailsRow(pokemon: MockPokemon) {
+fun PokemonDetailsRow(pokemon: Pokemon) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -134,7 +134,7 @@ fun GameBox(text: String, color: Color, onClick: () -> Unit) {
 }
 
 @Composable
-fun RecentlyViewedPokemonView(recentPokemons: List<MockPokemon>, navController: NavController) {
+fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>, navController: NavController) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -158,7 +158,7 @@ fun RecentlyViewedPokemonView(recentPokemons: List<MockPokemon>, navController: 
 }
 
 @Composable
-fun RecentlyViewedPokemon(pokemon: MockPokemon, navController: NavController) {
+fun RecentlyViewedPokemon(pokemon: Pokemon, navController: NavController) {
     Box(
         modifier = Modifier
             .width(BoxSize)

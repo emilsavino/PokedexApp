@@ -42,6 +42,15 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
         )
 
         Button(
+            onClick = { viewModel.savePokemon(pokemon) },
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .padding(10.dp)
+        ) {
+            Text(text = "Add to Favorites")
+        }
+
+        Button(
             onClick = { navController.popBackStack() },
             modifier = Modifier
                 .align(CenterHorizontally)

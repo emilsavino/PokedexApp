@@ -39,4 +39,8 @@ object PokemonRepository {
     fun getPokemonByName(name: String): Pokemon {
         return dataSource.fetchPokemonByName(name)!!
     }
+
+    fun savePokemon(pokemon: Pokemon) {
+        dataSource.savePokemon(pokemon)
+    }
 }

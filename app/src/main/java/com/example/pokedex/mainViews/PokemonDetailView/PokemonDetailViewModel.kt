@@ -9,4 +9,8 @@ class PokemonDetailViewModel {
     fun getPokemonByName(pokemonName: String): Pokemon {
         return pokemonRepository.getPokemonByName(pokemonName)
     }
+
+    fun savePokemon(pokemon: Pokemon) {
+        pokemonRepository.savePokemon(pokemon)
+    }
 }

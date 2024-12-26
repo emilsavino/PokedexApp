@@ -69,6 +69,8 @@ class MockPokemonDataStore {
         Pokemon("Cyndaquil", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/155.png")
     )
 
+    private val favouitePokemons = mutableListOf<Pokemon>()
+
     private val teams = listOf(
         listOf(pokemons[0], pokemons[1], pokemons[2], pokemons[3], pokemons[4], pokemons[5]),
         listOf(pokemons[3], pokemons[4], pokemons[5], pokemons[6], pokemons[7], pokemons[8]),
@@ -89,7 +91,7 @@ class MockPokemonDataStore {
 
     suspend fun fetchSavedPokemons(): List<Pokemon>
     {
-        return pokemons
+        return favouitePokemons
     }
 
     private val whoIsThatPokemon = WhoIsThatPokemon(Pokemon("Ditto", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png")
@@ -103,5 +105,9 @@ class MockPokemonDataStore {
 
     suspend fun searchPokemonByName(name: String): List<Pokemon> {
         return pokemons.filter { it.name.contains(name, ignoreCase = true) }
+    }
+
+    fun savePokemon(pokemon: Pokemon) {
+        favouitePokemons.add(pokemon)
     }
 }

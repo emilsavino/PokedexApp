@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 
 class MyTeamsViewModel: ViewModel() {
     private val pokemonRepository = PokemonRepository
+
     private val mutableTeamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Empty)
     val teamsState: MutableStateFlow<TeamsUIState> = mutableTeamsState
 

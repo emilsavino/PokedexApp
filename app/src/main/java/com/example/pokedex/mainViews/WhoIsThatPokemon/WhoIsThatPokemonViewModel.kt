@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pokedex.data.PokemonRepository
 import com.example.pokedex.data.WhoIsThatPokemonRepository
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.Pokemon
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class WhoIsThatPokemonViewModel: ViewModel() {
-    private val whoIsThatPokemonRepository = WhoIsThatPokemonRepository()
+    private val pokemonRepository = PokemonRepository
 
     private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemon>(WhoIsThatPokemon(Pokemon("",""),
         listOf(Option(name = "", Color.Black))
@@ -43,7 +44,7 @@ class WhoIsThatPokemonViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
-            whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow
+            pokemonRepository.whoIsThatPokemonSharedFlow
                 .collect { whoThePokemon ->
                     _whoThepokemonMutableStateFlow.update {
                         whoThePokemon
@@ -56,7 +57,7 @@ class WhoIsThatPokemonViewModel: ViewModel() {
     private fun fetchWhoThatPokemon()
     {
         viewModelScope.launch {
-            whoIsThatPokemonRepository.getWhoIsThatPokemon()
+            pokemonRepository.getWhoIsThatPokemon()
 
         }
     }

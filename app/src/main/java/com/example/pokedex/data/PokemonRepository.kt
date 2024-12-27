@@ -1,12 +1,14 @@
 package com.example.pokedex.data
 
+import android.content.Context
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.WhoIsThatPokemon
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 object PokemonRepository {
-    private val dataSource = MockPokemonDataStore()
+    private lateinit var dataStore: MockPokemonDataStore
 
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
@@ -20,35 +22,51 @@ object PokemonRepository {
     private val mutableSavedPokemonsFlow = MutableSharedFlow<List<Pokemon>>()
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
 
+    private val whoIsThatPokemonMutableSharedFlow = MutableSharedFlow<WhoIsThatPokemon>()
+    val whoIsThatPokemonSharedFlow = whoIsThatPokemonMutableSharedFlow
+
+    fun init(context: Context) {
+        dataStore = MockPokemonDataStore(context)
+    }
+
+    suspend fun initializeCache() {
+        dataStore.initializeCache()
+    }
+
     suspend fun fetchPokemons() {
-        mutablePokemonsFlow.emit(dataSource.fetchPokemons())
+        mutablePokemonsFlow.emit(dataStore.fetchPokemons())
     }
 
     suspend fun fetchTeams() {
-        mutableTeamsFlow.emit(dataSource.fetchTeams())
+        mutableTeamsFlow.emit(dataStore.fetchTeams())
     }
 
     suspend fun fetchSaved() {
-        mutableSavedPokemonsFlow.emit(dataSource.fetchSavedPokemons())
+        mutableSavedPokemonsFlow.emit(dataStore.fetchSavedPokemons())
     }
 
     suspend fun searchPokemonByName(name: String) {
-        mutablePokemonsFlow.emit(dataSource.searchPokemonByName(name))
+        mutablePokemonsFlow.emit(dataStore.searchPokemonByName(name))
     }
 
     fun getPokemonByName(name: String): Pokemon {
-        return dataSource.fetchPokemonByName(name)!!
+        return dataStore.fetchPokemonByName(name)!!
     }
 
-    fun savePokemon(pokemon: Pokemon) {
-        dataSource.savePokemon(pokemon)
+    suspend fun savePokemon(pokemon: Pokemon) {
+        dataStore.savePokemon(pokemon)
     }
 
-    fun removeFromFavorites(pokemon: Pokemon) {
-        dataSource.removeFromFavourites(pokemon)
+    suspend fun removeFromFavorites(pokemon: Pokemon) {
+        dataStore.removeFromFavourites(pokemon)
     }
 
     fun pokemonIsFavourite(pokemon: Pokemon): Boolean {
-        return dataSource.pokemonIsFavourite(pokemon)
+        return dataStore.pokemonIsFavourite(pokemon)
+    }
+
+    suspend fun getWhoIsThatPokemon()
+    {
+        whoIsThatPokemonSharedFlow.emit(dataStore.fetchWhoIsThatPokemon())
     }
 }

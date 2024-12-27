@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,11 +16,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 
 @Composable
 fun PokemonDetailView(pokemonName: String, navController: NavController) {
     val viewModel = viewModel<PokemonDetailViewModel>()
     val pokemon = viewModel.getPokemonByName(pokemonName)
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -43,7 +46,11 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
         )
 
         Button(
-            onClick = { viewModel.savePokemon(pokemon) },
+            onClick = {
+                coroutineScope.launch {
+                    viewModel.savePokemon(pokemon)
+                }
+            },
             modifier = Modifier
                 .align(CenterHorizontally)
                 .padding(10.dp)

@@ -9,10 +9,7 @@ import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.WhoIsThatPokemon
 import com.google.gson.Gson
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore(name = "pokemon_preferences")
 
@@ -127,18 +124,14 @@ class MockPokemonDataStore(private val context: Context) {
 
     suspend fun savePokemon(pokemon: Pokemon) {
         if (!favouritePokemons.contains(pokemon)) {
-            // Add to cache
             favouritePokemons.add(pokemon)
-            // Update DataStore
             updateDataStore()
         }
     }
 
     suspend fun removeFromFavourites(pokemon: Pokemon) {
         if (favouritePokemons.contains(pokemon)) {
-            // Remove from cache
             favouritePokemons.remove(pokemon)
-            // Update DataStore
             updateDataStore()
         }
     }
@@ -154,7 +147,6 @@ class MockPokemonDataStore(private val context: Context) {
         }
     }
 
-    // Fetch saved Pokémon from DataStore (used during initialization)
     private suspend fun fetchSavedPokemonsFromDataStore(): List<Pokemon> {
         val preferences = context.dataStore.data.first()
         val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"

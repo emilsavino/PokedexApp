@@ -42,10 +42,10 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
             .background(Color(0xFFFFDD99)),
     ) {
         if (pokemonList.isNotEmpty()) {
-            PokemonOfDayView(pokemon = pokemonList[0], navController = navController)
+            PokemonOfDayView(pokemon = pokemonList[1], navController = navController)
         }
         GamesRow(navController = navController)
-        RecentlyViewedPokemonView(recentPokemons = pokemonList, navController = navController)
+        RecentlyViewedPokemons(recentPokemons = pokemonList, navController = navController)
     }
 }
 
@@ -70,14 +70,21 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(Padding))
-        Image(
-            painter = rememberAsyncImagePainter(model = pokemon.imageURL),
-            contentDescription = pokemon.name,
-            modifier = Modifier.size(120.dp),
-            contentScale = ContentScale.Fit
-        )
-        Spacer(modifier = Modifier.height(Padding))
+
+        Box(
+            modifier = Modifier.size(200.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = pokemon.imageURL),
+                contentDescription = pokemon.name,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .aspectRatio(1f),
+                contentScale = ContentScale.Fit
+            )
+        }
+
         PokemonDetailsRow(pokemon)
     }
 }
@@ -135,7 +142,7 @@ fun GameBox(text: String, color: Color, onClick: () -> Unit) {
 }
 
 @Composable
-fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>, navController: NavController) {
+fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavController) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -152,14 +159,14 @@ fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>, navController: NavC
             verticalArrangement = Arrangement.spacedBy(Padding)
         ) {
             items(recentPokemons.size) { index ->
-                RecentlyViewedPokemon(pokemon = recentPokemons[index], navController = navController)
+                RecentlyViewedPokemonItem(pokemon = recentPokemons[index], navController = navController)
             }
         }
     }
 }
 
 @Composable
-fun RecentlyViewedPokemon(pokemon: Pokemon, navController: NavController) {
+fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
     Box(
         modifier = Modifier
             .size(BoxSize)
@@ -186,7 +193,8 @@ fun RecentlyViewedPokemon(pokemon: Pokemon, navController: NavController) {
             )
             Text(
                 text = pokemon.name,
-                fontSize = 12.sp,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center
             )
         }

@@ -162,26 +162,33 @@ fun RecentlyViewedPokemonView(recentPokemons: List<Pokemon>, navController: NavC
 fun RecentlyViewedPokemon(pokemon: Pokemon, navController: NavController) {
     Box(
         modifier = Modifier
-            .width(BoxSize)
-            .height(BoxHeight)
+            .size(BoxSize)
             .background(Color(0xFFB2DFDB), RoundedCornerShape(Padding))
             .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = pokemon.imageURL),
-            contentDescription = pokemon.name,
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .align(Alignment.Center),
-            contentScale = ContentScale.Fit
-        )
-        Text(
-            text = pokemon.name,
-            fontSize = 12.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(bottom = Padding)
-                .align(Alignment.BottomCenter)
-        )
+                .padding(Padding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = pokemon.imageURL),
+                contentDescription = pokemon.name,
+                modifier = Modifier
+                    .fillMaxSize(1f)
+                    .aspectRatio(1f)
+                    .weight(1f)
+                    .padding(4.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = pokemon.name,
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }

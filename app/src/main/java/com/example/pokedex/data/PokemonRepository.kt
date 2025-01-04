@@ -1,14 +1,27 @@
 package com.example.pokedex.data
 
+import android.app.Application
 import android.content.Context
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.WhoIsThatPokemon
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+
+private val Context.dataStore by preferencesDataStore(name = "pokemon_preferences")
 
 object PokemonRepository {
-    private lateinit var dataStore: MockPokemonDataStore
+    private lateinit var application: Application
+    private var dataStore = MockPokemonDataStore()
+
+    private val favouritePokemons = mutableListOf<Pokemon>()
+    private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
+    private val gson = Gson()
 
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
@@ -25,12 +38,14 @@ object PokemonRepository {
     private val whoIsThatPokemonMutableSharedFlow = MutableSharedFlow<WhoIsThatPokemon>()
     val whoIsThatPokemonSharedFlow = whoIsThatPokemonMutableSharedFlow
 
-    fun init(context: Context) {
-        dataStore = MockPokemonDataStore(context)
+    fun init(application: Application) {
+        this.application = application
     }
 
     suspend fun initializeCache() {
-        dataStore.initializeCache()
+        val savedPokemons = fetchSavedPokemonsFromDataStore()
+        favouritePokemons.clear()
+        favouritePokemons.addAll(savedPokemons)
     }
 
     suspend fun fetchPokemons() {
@@ -42,7 +57,7 @@ object PokemonRepository {
     }
 
     suspend fun fetchSaved() {
-        mutableSavedPokemonsFlow.emit(dataStore.fetchSavedPokemons())
+        mutableSavedPokemonsFlow.emit(favouritePokemons)
     }
 
     suspend fun searchPokemonByName(name: String) {
@@ -54,15 +69,36 @@ object PokemonRepository {
     }
 
     suspend fun savePokemon(pokemon: Pokemon) {
-        dataStore.savePokemon(pokemon)
+        if (!favouritePokemons.contains(pokemon)) {
+            favouritePokemons.add(pokemon)
+            updateDataStore()
+        }
     }
 
-    suspend fun removeFromFavorites(pokemon: Pokemon) {
-        dataStore.removeFromFavourites(pokemon)
+    suspend fun removeFromFavourites(pokemon: Pokemon) {
+        if (favouritePokemons.contains(pokemon)) {
+            favouritePokemons.remove(pokemon)
+            updateDataStore()
+        }
     }
 
     fun pokemonIsFavourite(pokemon: Pokemon): Boolean {
-        return dataStore.pokemonIsFavourite(pokemon)
+        return favouritePokemons.contains(pokemon)
+    }
+
+    private suspend fun updateDataStore() {
+        val context = application.applicationContext
+        val pokemonJson = gson.toJson(favouritePokemons)
+        context.dataStore.edit { preferences ->
+            preferences[FAVOURITE_POKEMONS_KEY] = pokemonJson
+        }
+    }
+
+    private suspend fun fetchSavedPokemonsFromDataStore(): List<Pokemon> {
+        val context = application.applicationContext
+        val preferences = context.dataStore.data.first()
+        val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"
+        return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()
     }
 
     suspend fun getWhoIsThatPokemon()

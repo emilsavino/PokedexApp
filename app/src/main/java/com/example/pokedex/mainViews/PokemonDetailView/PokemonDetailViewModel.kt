@@ -20,7 +20,7 @@ class PokemonDetailViewModel: ViewModel() {
 
     suspend fun savePokemon(pokemon: Pokemon) {
         if (pokemonRepository.pokemonIsFavourite(pokemon)) {
-            pokemonRepository.removeFromFavorites(pokemon)
+            pokemonRepository.removeFromFavourites(pokemon)
         } else {
             pokemonRepository.savePokemon(pokemon)
         }

@@ -22,33 +22,30 @@ import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 
 @Composable
-fun SavedView(modifier: Modifier = Modifier, navController: NavController)
-{
-    val savedViewModel = SavedViewModel()
+fun SavedView(modifier: Modifier = Modifier, navController: NavController) {
+    val viewModel = SavedViewModel()
     Column(
-        modifier = modifier
-            .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        Text(text = "Favorites",
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Favorites",
             fontSize = 60.sp,
             modifier = modifier.padding(10.dp)
         )
-        SavedList(savedViewModel, navController)
+        SavedList(viewModel, navController)
         Spacer(modifier = Modifier.padding(10.dp))
     }
 
 }
 @Composable
-fun SavedList (savedViewModel: SavedViewModel, navController: NavController)
-{
+fun SavedList (savedViewModel: SavedViewModel, navController: NavController) {
     val pokemons = savedViewModel.savedState.collectAsState().value
     val pokemonsChunked = pokemons.chunked(3)
-    LazyColumn (modifier = Modifier,
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        )
-    {
+    LazyColumn (
+        modifier = Modifier,
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
         items(pokemonsChunked) { item: List<Pokemon> ->
             SavedRow(pokemons = item, navController = navController)
         }
@@ -56,24 +53,20 @@ fun SavedList (savedViewModel: SavedViewModel, navController: NavController)
 }
 
 @Composable
-fun SavedRow(modifier: Modifier = Modifier, pokemons : List<Pokemon>, navController: NavController)
-{
-    Row (modifier = modifier,
+fun SavedRow(modifier: Modifier = Modifier, pokemons : List<Pokemon>, navController: NavController) {
+    Row (
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(19.dp)
-    )
-    {
-        for (pokemon in pokemons)
-        {
+    ) {
+        for (pokemon in pokemons) {
             PokemonGridItem(navController, pokemon = pokemon)
         }
     }
-
 }
 
 @Preview (showBackground = true)
 @Composable
-fun SavedViewPreview()
-{
+fun SavedViewPreview() {
     val navController = rememberNavController()
     SavedView(navController = navController)
 }

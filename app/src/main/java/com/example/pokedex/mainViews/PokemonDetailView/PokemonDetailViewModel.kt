@@ -5,10 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.pokedex.data.PokemonRepository
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 
 class PokemonDetailViewModel: ViewModel() {
-    private val pokemonRepository = PokemonRepository
+    private val pokemonRepository = DependencyContainer.pokemonRepository
 
     var favouriteButtonText by mutableStateOf("")
 

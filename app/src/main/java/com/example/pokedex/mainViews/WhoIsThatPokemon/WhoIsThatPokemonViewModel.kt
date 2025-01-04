@@ -4,8 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pokedex.data.PokemonRepository
-import com.example.pokedex.data.WhoIsThatPokemonRepository
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.WhoIsThatPokemon
@@ -16,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class WhoIsThatPokemonViewModel: ViewModel() {
-    private val whoIsThatPokemonRepository = WhoIsThatPokemonRepository()
+    private val whoIsThatPokemonRepository = DependencyContainer.whoIsThatPokemonRepository
 
     private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemon>(WhoIsThatPokemon(Pokemon("",""),
         listOf(Option(name = "", Color.Black))
@@ -25,19 +24,15 @@ class WhoIsThatPokemonViewModel: ViewModel() {
 
     val hasAnswered = mutableStateOf(false)
 
-    fun getColor(option: Option) : Color
-    {
-        if (!hasAnswered.value)
-        {
+    fun getColor(option: Option) : Color {
+        if (!hasAnswered.value) {
             return Color.Black
         }
 
-        if (option.name == whoIsThatPokemonStateFlow.value.pokemon.name)
-        {
+        if (option.name == whoIsThatPokemonStateFlow.value.pokemon.name) {
             return Color.Green
         }
-        else
-        {
+        else {
             return Color.Red
         }
     }
@@ -54,16 +49,14 @@ class WhoIsThatPokemonViewModel: ViewModel() {
         fetchWhoThatPokemon()
     }
 
-    private fun fetchWhoThatPokemon()
-    {
+    private fun fetchWhoThatPokemon() {
         viewModelScope.launch {
             whoIsThatPokemonRepository.getWhoIsThatPokemon()
 
         }
     }
 
-    fun guessed(guessedName : String)
-    {
+    fun guessed(guessedName : String) {
         hasAnswered.value = true
     }
 }

@@ -1,22 +1,22 @@
 package com.example.pokedex.data
 
-import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.WhoIsThatPokemon
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 private val Context.dataStore by preferencesDataStore(name = "pokemon_preferences")
 
-object PokemonRepository {
-    private lateinit var application: Application
+class PokemonRepository(private val context: Context) {
     private var dataStore = MockPokemonDataStore()
 
     private val favouritePokemons = mutableListOf<Pokemon>()
@@ -35,8 +35,10 @@ object PokemonRepository {
     private val mutableSavedPokemonsFlow = MutableSharedFlow<List<Pokemon>>()
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
 
-    fun init(application: Application) {
-        this.application = application
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            initializeCache()
+        }
     }
 
     suspend fun initializeCache() {
@@ -84,7 +86,6 @@ object PokemonRepository {
     }
 
     private suspend fun updateDataStore() {
-        val context = application.applicationContext
         val pokemonJson = gson.toJson(favouritePokemons)
         context.dataStore.edit { preferences ->
             preferences[FAVOURITE_POKEMONS_KEY] = pokemonJson
@@ -92,7 +93,6 @@ object PokemonRepository {
     }
 
     private suspend fun fetchSavedPokemonsFromDataStore(): List<Pokemon> {
-        val context = application.applicationContext
         val preferences = context.dataStore.data.first()
         val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"
         return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()

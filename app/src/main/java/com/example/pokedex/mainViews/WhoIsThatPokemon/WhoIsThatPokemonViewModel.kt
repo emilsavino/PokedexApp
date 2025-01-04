@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class WhoIsThatPokemonViewModel: ViewModel() {
-    private val pokemonRepository = PokemonRepository
+    private val whoIsThatPokemonRepository = WhoIsThatPokemonRepository()
 
     private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemon>(WhoIsThatPokemon(Pokemon("",""),
         listOf(Option(name = "", Color.Black))
@@ -44,7 +44,7 @@ class WhoIsThatPokemonViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
-            pokemonRepository.whoIsThatPokemonSharedFlow
+            whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow
                 .collect { whoThePokemon ->
                     _whoThepokemonMutableStateFlow.update {
                         whoThePokemon
@@ -57,7 +57,7 @@ class WhoIsThatPokemonViewModel: ViewModel() {
     private fun fetchWhoThatPokemon()
     {
         viewModelScope.launch {
-            pokemonRepository.getWhoIsThatPokemon()
+            whoIsThatPokemonRepository.getWhoIsThatPokemon()
 
         }
     }

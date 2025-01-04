@@ -35,9 +35,6 @@ object PokemonRepository {
     private val mutableSavedPokemonsFlow = MutableSharedFlow<List<Pokemon>>()
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
 
-    private val whoIsThatPokemonMutableSharedFlow = MutableSharedFlow<WhoIsThatPokemon>()
-    val whoIsThatPokemonSharedFlow = whoIsThatPokemonMutableSharedFlow
-
     fun init(application: Application) {
         this.application = application
     }
@@ -99,10 +96,5 @@ object PokemonRepository {
         val preferences = context.dataStore.data.first()
         val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"
         return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()
-    }
-
-    suspend fun getWhoIsThatPokemon()
-    {
-        whoIsThatPokemonSharedFlow.emit(dataStore.fetchWhoIsThatPokemon())
     }
 }

@@ -1,9 +1,10 @@
-package com.example.pokedex.data
+package com.example.pokedex.repositorys
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.pokedex.data.MockPokemonDataStore
 import com.example.pokedex.shared.Pokemon
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope

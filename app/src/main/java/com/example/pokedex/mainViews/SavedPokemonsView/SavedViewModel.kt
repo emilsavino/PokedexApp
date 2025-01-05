@@ -1,7 +1,6 @@
 package com.example.pokedex.mainViews.SavedPokemonsView
 
 import androidx.lifecycle.ViewModel
-import com.example.pokedex.data.PokemonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer

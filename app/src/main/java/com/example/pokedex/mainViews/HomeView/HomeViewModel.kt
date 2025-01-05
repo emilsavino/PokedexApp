@@ -2,7 +2,6 @@ package com.example.pokedex.mainViews.HomeView
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pokedex.data.PokemonRepository
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow

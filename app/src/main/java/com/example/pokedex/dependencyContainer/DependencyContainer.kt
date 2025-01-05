@@ -1,8 +1,8 @@
 package com.example.pokedex.dependencyContainer
 
 import android.app.Application
-import com.example.pokedex.data.PokemonRepository
-import com.example.pokedex.data.WhoIsThatPokemonRepository
+import com.example.pokedex.repositorys.PokemonRepository
+import com.example.pokedex.repositorys.WhoIsThatPokemonRepository
 
 object DependencyContainer {
     private lateinit var application: Application

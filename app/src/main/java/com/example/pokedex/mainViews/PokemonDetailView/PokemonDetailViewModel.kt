@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.Sprites
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
+    private val favouritesRepository = DependencyContainer.favouritesRepository
 
     var favouriteButtonText by mutableStateOf("")
 
@@ -42,16 +42,16 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     }
 
     suspend fun savePokemon(pokemon: Pokemon) {
-        if (pokemonRepository.pokemonIsFavourite(pokemon)) {
-            pokemonRepository.removeFromFavourites(pokemon)
+        if (favouritesRepository.pokemonIsFavourite(pokemon)) {
+            favouritesRepository.removeFromFavourites(pokemon)
         } else {
-            pokemonRepository.savePokemon(pokemon)
+            favouritesRepository.makeFavourite(pokemon)
         }
         onFavouriteButton(pokemon)
     }
 
     private fun onFavouriteButton(pokemon: Pokemon)  {
-        favouriteButtonText = if (pokemonRepository.pokemonIsFavourite(pokemon)) {
+        favouriteButtonText = if (favouritesRepository.pokemonIsFavourite(pokemon)) {
             "Remove from Favourites"
         } else {
             "Add to Favourites"

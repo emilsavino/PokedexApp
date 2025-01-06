@@ -1,8 +1,9 @@
 package com.example.pokedex.dependencyContainer
 
 import android.app.Application
-import com.example.pokedex.repositorys.PokemonRepository
-import com.example.pokedex.repositorys.WhoIsThatPokemonRepository
+import com.example.pokedex.repositories.PokemonRepository
+import com.example.pokedex.repositories.WhoIsThatPokemonRepository
+import com.example.pokedex.repositories.FavouritesRepository
 
 object DependencyContainer {
     private lateinit var application: Application
@@ -12,10 +13,14 @@ object DependencyContainer {
     }
 
     val pokemonRepository: PokemonRepository by lazy {
-        PokemonRepository(application.applicationContext)
+        PokemonRepository()
     }
 
     val whoIsThatPokemonRepository: WhoIsThatPokemonRepository by lazy {
         WhoIsThatPokemonRepository()
+    }
+
+    val favouritesRepository: FavouritesRepository by lazy {
+        FavouritesRepository(application.applicationContext)
     }
 }

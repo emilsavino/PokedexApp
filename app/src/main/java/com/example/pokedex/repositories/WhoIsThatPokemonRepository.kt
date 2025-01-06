@@ -1,12 +1,9 @@
-package com.example.pokedex.repositorys
+package com.example.pokedex.repositories
 
-import com.example.pokedex.data.MockPokemonDataStore
 import com.example.pokedex.data.PokemonDataStore
-import com.example.pokedex.shared.Ability
 import com.example.pokedex.shared.AbilityObject
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Sprites
-import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.TypeObject
 import com.example.pokedex.shared.WhoIsThatPokemon
 import kotlinx.coroutines.flow.MutableSharedFlow

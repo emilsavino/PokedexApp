@@ -13,3 +13,11 @@ data class Type(
 data class Sprites(
     val front_default: String
 )
+
+data class AbilityObject(
+    val ability: Ability
+)
+
+data class TypeObject(
+    val type: Type
+)

@@ -27,7 +27,8 @@ class MainActivity : ComponentActivity() {
         DependencyContainer.init(application)
         CoroutineScope(Dispatchers.IO).launch {
             val charmander = PokemonDataStore().fetchPokemon("charmander")
-            print(charmander)
+            println("dean")
+            println(charmander)
         }
         setContent {
             PokedexTheme {

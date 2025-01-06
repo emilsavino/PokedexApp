@@ -7,9 +7,11 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.pokedex.data.MockPokemonDataStore
 import com.example.pokedex.data.PokemonDataStore
 import com.example.pokedex.shared.Ability
+import com.example.pokedex.shared.AbilityObject
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Sprites
 import com.example.pokedex.shared.Type
+import com.example.pokedex.shared.TypeObject
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +72,7 @@ class PokemonRepository(private val context: Context) {
     }
 
     fun getPokemonByName(name: String): Pokemon {
-        val pokemon = Pokemon("", Sprites(""), emptyList<Ability>(), emptyList<Type>())
+        val pokemon = Pokemon("", Sprites(""), emptyList<AbilityObject>(), emptyList<TypeObject>())
         return pokemon
     }
 

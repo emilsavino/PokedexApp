@@ -16,7 +16,7 @@ class PokemonRepository {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    private var allPokemonsList = PokemonList(emptyList<Result>())
+    private var pokemonList = PokemonList(emptyList<Result>())
 
     private val mutablePokemonsFlow = MutableSharedFlow<PokemonList>()
     val pokemonsFlow: Flow<PokemonList> = mutablePokemonsFlow.asSharedFlow()
@@ -28,8 +28,8 @@ class PokemonRepository {
     val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
 
     suspend fun fetchPokemons(limit: Int, offset: Int) {
-        allPokemonsList = dataStore.fetchPokemons(limit,offset)
-        mutablePokemonsFlow.emit(allPokemonsList)
+        pokemonList = dataStore.fetchPokemons(limit,offset)
+        mutablePokemonsFlow.emit(pokemonList)
     }
 
     suspend fun fetchTeams() {
@@ -37,7 +37,7 @@ class PokemonRepository {
     }
 
     suspend fun searchPokemonByName(name: String) {
-        var filteredList = allPokemonsList.results.filter { it.name.contains(name,ignoreCase = true) }
+        var filteredList = pokemonList.results.filter { it.name.contains(name,ignoreCase = true) }
         mutableSearchFlow.emit(filteredList)
     }
 

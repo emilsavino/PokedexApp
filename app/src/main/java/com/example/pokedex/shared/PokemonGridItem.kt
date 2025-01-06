@@ -25,7 +25,7 @@ fun PokemonGridItem(navController: NavController, pokemon: Pokemon) {
             .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
     ) {
         AsyncImage(
-            model = pokemon.sprites,
+            model = pokemon.sprites.front_default,
             contentDescription = "Picture of a Pokemon",
             modifier = Modifier.fillMaxSize()
         )

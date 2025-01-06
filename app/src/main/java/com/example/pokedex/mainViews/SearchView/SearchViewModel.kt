@@ -25,13 +25,7 @@ class SearchViewModel: ViewModel() {
                 _pokemonList.value = newPokemonList
             }
         }
-        fetchPokemonList()
-    }
-
-    fun fetchPokemonList() {
-        viewModelScope.launch {
-            pokemonRepository.fetchPokemons(50,0)
-        }
+        searchPokemonList()
     }
 
     fun searchPokemonList() {

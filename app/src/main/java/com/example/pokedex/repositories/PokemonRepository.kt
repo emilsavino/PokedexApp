@@ -1,12 +1,17 @@
 package com.example.pokedex.repositories
 
+import androidx.lifecycle.ViewModel
 import com.example.pokedex.data.PokemonDataStore
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 class PokemonRepository {
     private var dataStore = PokemonDataStore()
@@ -16,8 +21,9 @@ class PokemonRepository {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    private var pokemonList = PokemonList(emptyList<Result>())
+    private var allPokemonList = PokemonList(emptyList())
 
+    private var pokemonList = PokemonList(emptyList<Result>())
     private val mutablePokemonsFlow = MutableSharedFlow<PokemonList>()
     val pokemonsFlow: Flow<PokemonList> = mutablePokemonsFlow.asSharedFlow()
 
@@ -26,6 +32,17 @@ class PokemonRepository {
 
     private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
     val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            fetchAllPokemons()
+        }
+    }
+
+    suspend fun fetchAllPokemons()
+    {
+        allPokemonList = dataStore.fetchPokemons(10000,0)
+    }
 
     suspend fun fetchPokemons(limit: Int, offset: Int) {
         pokemonList = dataStore.fetchPokemons(limit,offset)
@@ -37,7 +54,7 @@ class PokemonRepository {
     }
 
     suspend fun searchPokemonByName(name: String) {
-        var filteredList = pokemonList.results.filter { it.name.contains(name,ignoreCase = true) }
+        var filteredList = allPokemonList.results.filter { it.name.contains(name,ignoreCase = true) }
         mutableSearchFlow.emit(filteredList)
     }
 

@@ -16,8 +16,6 @@ import kotlinx.coroutines.launch
 class PokemonRepository {
     private var dataStore = PokemonDataStore()
 
-    private val pokemonTeams = mutableListOf<List<Pokemon>>()
-
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
@@ -47,10 +45,6 @@ class PokemonRepository {
     suspend fun fetchPokemons(limit: Int, offset: Int) {
         pokemonList = dataStore.fetchPokemons(limit,offset)
         mutablePokemonsFlow.emit(pokemonList)
-    }
-
-    suspend fun fetchTeams() {
-        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     suspend fun searchPokemonByName(name: String, offset: Int) {

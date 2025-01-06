@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.pokedex.data.PokemonDataStore
 import com.example.pokedex.shared.Pokemon
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +18,7 @@ private val Context.dataStore by preferencesDataStore(name = "team_preferences")
 
 class TeamsRepository(private val context: Context) {
 
-    private val teams = mutableListOf<List<Pokemon>>()
+    private val pokemonTeams = mutableListOf<List<Pokemon>>()
     private val TEAMS_KEY = stringPreferencesKey("teams")
     private val gson = Gson()
 
@@ -34,39 +33,39 @@ class TeamsRepository(private val context: Context) {
 
     suspend fun initializeCache() {
         val savedPokemons = fetchTeamsFromDataStore()
-        teams.clear()
-        teams.addAll(savedPokemons)
+        pokemonTeams.clear()
+        pokemonTeams.addAll(savedPokemons)
     }
 
-    suspend fun fetchSavedTeams() {
-        mutableTeamsFlow.emit(teams)
+    suspend fun fetchTeams() {
+        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     suspend fun addTeam(newTeam: List<Pokemon>){
-        teams.add(newTeam)
+        pokemonTeams.add(newTeam)
         updateDataStore()
     }
 
     suspend fun removeTeam(index: Int) {
-        if (index in teams.indices){
-            teams.removeAt(index)
+        if (index in pokemonTeams.indices){
+            pokemonTeams.removeAt(index)
             updateDataStore()
         }
     }
 
     suspend fun updateTeam(index: Int, updatedTeam: List<Pokemon>){
-        if(index in teams.indices){
-            teams[index] = updatedTeam
+        if(index in pokemonTeams.indices){
+            pokemonTeams[index] = updatedTeam
             updateDataStore()
         }
     }
 
     fun getTeam(index: Int): List<Pokemon>?{
-        return if (index in teams.indices) teams[index] else null
+        return if (index in pokemonTeams.indices) pokemonTeams[index] else null
     }
 
     private suspend fun updateDataStore() {
-        val teamsJson = gson.toJson(teams)
+        val teamsJson = gson.toJson(pokemonTeams)
         context.dataStore.edit { preferences ->
             preferences[TEAMS_KEY] = teamsJson
         }

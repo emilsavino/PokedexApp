@@ -43,12 +43,24 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     }
 
     suspend fun savePokemon(pokemon: Pokemon) {
-        if (favouritesRepository.pokemonIsFavourite(pokemon)) {
-            favouritesRepository.removeFromFavourites(pokemon)
-        } else {
-            favouritesRepository.makeFavourite(pokemon)
-        }
+        val currentFav = favouritesRepository.pokemonIsFavourite(pokemon)
+
+        val newFav = !currentFav
+        _isFavorited.value = newFav
         onFavouriteButton(pokemon)
+
+        try {
+            if (currentFav) {
+                favouritesRepository.removeFromFavourites(pokemon)
+            } else {
+                favouritesRepository.makeFavourite(pokemon)
+            }
+        } catch (_: Exception) {
+            _isFavorited.value = currentFav
+            onFavouriteButton(pokemon)
+        }
+
+
     }
 
     private fun onFavouriteButton(pokemon: Pokemon)  {

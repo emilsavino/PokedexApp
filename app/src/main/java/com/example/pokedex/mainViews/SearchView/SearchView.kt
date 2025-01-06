@@ -127,7 +127,7 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         ) {
             AsyncImage(
-                model = pokemon.imageURL,
+                model = pokemon.sprites,
                 contentDescription = "${pokemon.name} Image",
                 modifier = Modifier
                     .size(100.dp)

@@ -49,7 +49,7 @@ fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavContro
 
         AsyncImage(
             modifier = modifier.height(250.dp),
-            model = whoIsThatPokemon.pokemon.imageURL,
+            model = whoIsThatPokemon.pokemon.sprites,
             contentDescription = "Blacked out image of pokemon"
         )
 

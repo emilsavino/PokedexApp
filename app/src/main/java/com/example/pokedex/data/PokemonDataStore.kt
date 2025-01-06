@@ -8,14 +8,15 @@ class PokemonDataStore {
     private val api = RetrofitInstance.apiService
 
     suspend fun fetchPokemons(): List<Pokemon> {
-        return withContext(Dispatchers.IO) {
+        /*return withContext(Dispatchers.IO) {
             api.getPokemons()
-        }
+        }*/
+        return emptyList()
     }
 
     suspend fun fetchPokemon(name: String): Pokemon {
-        return withContext(Dispatchers.IO) {
-            api.getPokemon(name)
-        }
+        val pokemon = api.getPokemon(name)
+        pokemon.name = name
+        return pokemon
     }
 }

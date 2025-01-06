@@ -5,8 +5,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.shared.Ability
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.Sprites
+import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.WhoIsThatPokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +20,7 @@ import kotlinx.coroutines.launch
 class WhoIsThatPokemonViewModel: ViewModel() {
     private val whoIsThatPokemonRepository = DependencyContainer.whoIsThatPokemonRepository
 
-    private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemon>(WhoIsThatPokemon(Pokemon("",""),
+    private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemon>(WhoIsThatPokemon(Pokemon("", Sprites(""), emptyList<Ability>(), emptyList<Type>()),
         listOf(Option(name = "", Color.Black))
     ))
     val whoIsThatPokemonStateFlow: StateFlow<WhoIsThatPokemon> = _whoThepokemonMutableStateFlow.asStateFlow()

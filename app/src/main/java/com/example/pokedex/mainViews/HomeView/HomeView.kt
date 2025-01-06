@@ -76,7 +76,7 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.imageURL),
+                painter = rememberAsyncImagePainter(model = pokemon.sprites),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize()
@@ -182,7 +182,7 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.imageURL),
+                painter = rememberAsyncImagePainter(model = pokemon.sprites),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize(1f)

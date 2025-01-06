@@ -5,7 +5,11 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.pokedex.data.MockPokemonDataStore
+import com.example.pokedex.data.PokemonDataStore
+import com.example.pokedex.shared.Ability
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.Sprites
+import com.example.pokedex.shared.Type
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,8 +22,9 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "pokemon_preferences")
 
 class PokemonRepository(private val context: Context) {
-    private var dataStore = MockPokemonDataStore()
+    private var dataStore = PokemonDataStore()
 
+    private val pokemonTeams = mutableListOf<List<Pokemon>>()
     private val favouritePokemons = mutableListOf<Pokemon>()
     private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
     private val gson = Gson()
@@ -53,7 +58,7 @@ class PokemonRepository(private val context: Context) {
     }
 
     suspend fun fetchTeams() {
-        mutableTeamsFlow.emit(dataStore.fetchTeams())
+        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     suspend fun fetchSaved() {
@@ -61,11 +66,12 @@ class PokemonRepository(private val context: Context) {
     }
 
     suspend fun searchPokemonByName(name: String) {
-        mutablePokemonsFlow.emit(dataStore.searchPokemonByName(name))
+        mutablePokemonsFlow.emit(emptyList())
     }
 
     fun getPokemonByName(name: String): Pokemon {
-        return dataStore.fetchPokemonByName(name)!!
+        val pokemon = Pokemon("", Sprites(""), emptyList<Ability>(), emptyList<Type>())
+        return pokemon
     }
 
     suspend fun savePokemon(pokemon: Pokemon) {

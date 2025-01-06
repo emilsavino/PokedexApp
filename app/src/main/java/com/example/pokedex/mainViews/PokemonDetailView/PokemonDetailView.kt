@@ -31,7 +31,7 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
             modifier = Modifier.size(500.dp)
         ) {
             AsyncImage(
-                model = pokemon.imageURL,
+                model = pokemon.sprites,
                 contentDescription = "Picture of a Pokemon",
                 modifier = Modifier.fillMaxSize()
             )

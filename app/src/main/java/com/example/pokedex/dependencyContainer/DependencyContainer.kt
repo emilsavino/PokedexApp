@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.pokedex.repositories.PokemonRepository
 import com.example.pokedex.repositories.WhoIsThatPokemonRepository
 import com.example.pokedex.repositories.FavouritesRepository
+import com.example.pokedex.repositories.TeamsRepository
 
 object DependencyContainer {
     private lateinit var application: Application
@@ -23,4 +24,9 @@ object DependencyContainer {
     val favouritesRepository: FavouritesRepository by lazy {
         FavouritesRepository(application.applicationContext)
     }
+
+    val teamsRepository: TeamsRepository by lazy {
+        TeamsRepository(application.applicationContext)
+    }
+
 }

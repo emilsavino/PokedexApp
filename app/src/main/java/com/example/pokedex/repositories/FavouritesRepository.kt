@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "pokemon_preferences")
 
 class FavouritesRepository(private val context: Context) {
-    private var dataStore = PokemonDataStore()
     private val favouritePokemons = mutableListOf<Pokemon>()
     private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
     private val gson = Gson()

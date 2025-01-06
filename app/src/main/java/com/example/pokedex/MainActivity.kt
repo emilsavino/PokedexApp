@@ -25,11 +25,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DependencyContainer.init(application)
-        CoroutineScope(Dispatchers.IO).launch {
-            val charmander = PokemonDataStore().fetchPokemons(50,0)
-            println("dean")
-            println(charmander)
-        }
         setContent {
             PokedexTheme {
                 enableEdgeToEdge()

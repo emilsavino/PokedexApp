@@ -80,9 +80,8 @@ class PokemonRepository(private val context: Context) {
         mutableSearchFlow.emit(filteredList)
     }
 
-    fun getPokemonByName(name: String): Pokemon {
-        val pokemon = Pokemon("", Sprites(""), emptyList<AbilityObject>(), emptyList<TypeObject>())
-        return pokemon
+    suspend fun getPokemonByName(name: String) {
+        mutablePokemonFlow.emit(dataStore.fetchPokemon(name))
     }
 
     suspend fun savePokemon(pokemon: Pokemon) {

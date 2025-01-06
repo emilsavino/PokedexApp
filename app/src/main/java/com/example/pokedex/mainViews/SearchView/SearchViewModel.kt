@@ -30,7 +30,7 @@ class SearchViewModel: ViewModel() {
 
     fun fetchPokemonList() {
         viewModelScope.launch {
-            pokemonRepository.fetchPokemons(10,0)
+            pokemonRepository.fetchPokemons(50,0)
         }
     }
 

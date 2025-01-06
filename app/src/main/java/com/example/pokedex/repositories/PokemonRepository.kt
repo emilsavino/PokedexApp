@@ -53,9 +53,31 @@ class PokemonRepository {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun searchPokemonByName(name: String) {
-        var filteredList = allPokemonList.results.filter { it.name.contains(name,ignoreCase = true) }
-        mutableSearchFlow.emit(filteredList)
+    suspend fun searchPokemonByName(name: String, offset: Int) {
+        var foundElements : Int = 0
+        val elementsToFind = 20
+        var localOffset = offset
+        val mutableFilteredList = mutableListOf<Result>()
+
+        for (result in allPokemonList.results)
+        {
+            if (localOffset > 0)
+            {
+                localOffset--
+                continue
+            }
+            if (result.name.contains(name, ignoreCase = true))
+            {
+                mutableFilteredList.add(result)
+
+                foundElements++
+            }
+            if (foundElements == elementsToFind)
+            {
+                break
+            }
+        }
+        mutableSearchFlow.emit(mutableFilteredList)
     }
 
     suspend fun getPokemonByName(name: String) {

@@ -30,7 +30,7 @@ class SearchViewModel: ViewModel() {
 
     fun searchPokemonList() {
         viewModelScope.launch {
-            pokemonRepository.searchPokemonByName(searchText.value)
+            pokemonRepository.searchPokemonByName(searchText.value,19)
         }
     }
 }

@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         DependencyContainer.init(application)
         CoroutineScope(Dispatchers.IO).launch {
-            val charmander = PokemonDataStore().fetchPokemons()
+            val charmander = PokemonDataStore().fetchPokemons(50,0)
             println("dean")
             println(charmander)
         }

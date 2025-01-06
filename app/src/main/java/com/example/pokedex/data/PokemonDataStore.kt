@@ -8,9 +8,9 @@ import kotlinx.coroutines.Dispatchers
 class PokemonDataStore {
     private val api = RetrofitInstance.apiService
 
-    suspend fun fetchPokemons(): PokemonList {
+    suspend fun fetchPokemons(limit: Int, offset: Int): PokemonList {
         return withContext(Dispatchers.IO) {
-            api.getPokemons(5,0)
+            api.getPokemons(limit,offset)
         }
     }
 

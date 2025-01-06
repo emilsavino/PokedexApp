@@ -16,7 +16,7 @@ class HomeViewModel : ViewModel() {
     val pokemonList: StateFlow<List<Pokemon>> = _pokemonList
 
     init {
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             pokemonRepository.pokemonsFlow
                 .collect { pokemons ->
                     _pokemonList.update {
@@ -24,11 +24,11 @@ class HomeViewModel : ViewModel() {
                     }
                 }
         }
-        fetchPokemons()
+        fetchPokemons()*/
     }
 
 
     private fun fetchPokemons() = viewModelScope.launch {
-        pokemonRepository.fetchPokemons()
+        //pokemonRepository.fetchPokemons()
     }
 }

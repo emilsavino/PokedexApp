@@ -9,6 +9,8 @@ import com.example.pokedex.data.PokemonDataStore
 import com.example.pokedex.shared.Ability
 import com.example.pokedex.shared.AbilityObject
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonList
+import com.example.pokedex.shared.Result
 import com.example.pokedex.shared.Sprites
 import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.TypeObject
@@ -34,8 +36,13 @@ class PokemonRepository(private val context: Context) {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    private val mutablePokemonsFlow = MutableSharedFlow<List<Pokemon>>()
-    val pokemonsFlow: Flow<List<Pokemon>> = mutablePokemonsFlow.asSharedFlow()
+    private var allPokemonsList = PokemonList(emptyList<Result>())
+
+    private val mutablePokemonsFlow = MutableSharedFlow<PokemonList>()
+    val pokemonsFlow: Flow<PokemonList> = mutablePokemonsFlow.asSharedFlow()
+
+    private val mutableSearchFlow = MutableSharedFlow<List<Result>>()
+    val searchFlow: Flow<List<Result>> = mutableSearchFlow.asSharedFlow()
 
     private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
     val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
@@ -55,8 +62,9 @@ class PokemonRepository(private val context: Context) {
         favouritePokemons.addAll(savedPokemons)
     }
 
-    suspend fun fetchPokemons() {
-        mutablePokemonsFlow.emit(emptyList())
+    suspend fun fetchPokemons(limit: Int, offset: Int) {
+        allPokemonsList = dataStore.fetchPokemons(limit,offset)
+        mutablePokemonsFlow.emit(allPokemonsList)
     }
 
     suspend fun fetchTeams() {
@@ -68,7 +76,8 @@ class PokemonRepository(private val context: Context) {
     }
 
     suspend fun searchPokemonByName(name: String) {
-        mutablePokemonsFlow.emit(emptyList())
+        var filteredList = allPokemonsList.results.filter { it.name.contains(name,ignoreCase = true) }
+        mutableSearchFlow.emit(filteredList)
     }
 
     fun getPokemonByName(name: String): Pokemon {

@@ -98,6 +98,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
                     .padding(8.dp)
             ) {
                 Icon(
+                    //Todo: Move this statement into the viewmodel in some way
                     imageVector = if (viewModel.isFavorited.value) {
                         Icons.Filled.Favorite
                     } else {

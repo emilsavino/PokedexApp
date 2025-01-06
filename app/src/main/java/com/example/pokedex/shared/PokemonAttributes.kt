@@ -21,3 +21,12 @@ data class AbilityObject(
 data class TypeObject(
     val type: Type
 )
+
+data class PokemonList (
+    val results: List<Result>
+)
+
+data class Result (
+    val name: String,
+    val url: String
+)

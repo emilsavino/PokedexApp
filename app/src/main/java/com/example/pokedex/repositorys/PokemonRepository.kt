@@ -56,7 +56,7 @@ class PokemonRepository(private val context: Context) {
     }
 
     suspend fun fetchPokemons() {
-        mutablePokemonsFlow.emit(dataStore.fetchPokemons())
+        mutablePokemonsFlow.emit(emptyList())
     }
 
     suspend fun fetchTeams() {

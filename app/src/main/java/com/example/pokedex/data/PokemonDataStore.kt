@@ -15,8 +15,8 @@ class PokemonDataStore {
     }
 
     suspend fun fetchPokemon(name: String): Pokemon {
-        val pokemon = api.getPokemon(name)
-        pokemon.name = name
+        val pokemon = api.getPokemon(name.lowercase())
+        pokemon.name = name.replaceFirstChar { it.uppercase() }
         return pokemon
     }
 }

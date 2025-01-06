@@ -135,7 +135,7 @@ fun SearchListItem(pokemon: Result, navController: NavController) {
                     .padding(end = 2.dp)
             )*/
             Text(
-                text = pokemon.name,
+                text = pokemon.name.replaceFirstChar { it.uppercase() },
                 color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold

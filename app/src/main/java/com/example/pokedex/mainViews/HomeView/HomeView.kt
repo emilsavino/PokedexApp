@@ -17,12 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
@@ -34,26 +32,34 @@ private val Padding = 8.dp
 @Composable
 fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel = viewModel<HomeViewModel>()
-    val pokemonList = viewModel.pokemonList.collectAsState().value
+    val pokemonOfTheDay = viewModel.pokemonOfTheDay.collectAsState().value
 
+    when (pokemonOfTheDay) {
+        is HomeUIState.Empty -> {
+            Text(text = "No Pokémon found")
+        }
+        is HomeUIState.Loading -> {
+            Text(text = "Loading Pokémon")
+        }
+        is HomeUIState.Data -> {
+            MakeHomeView(navController, pokemonOfTheDay.pokemonOfTheDay)
+        }
+    }
+
+
+}
+
+@Composable
+fun MakeHomeView(navController: NavController, pokemon: Pokemon) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFDD99)),
     ) {
-        if (pokemonList.isNotEmpty()) {
-            PokemonOfDayView(pokemon = pokemonList[1], navController = navController)
-        }
+        PokemonOfDayView(pokemon = pokemon, navController = navController)
         GamesRow(navController = navController)
-        RecentlyViewedPokemons(recentPokemons = pokemonList, navController = navController)
+        RecentlyViewedPokemons(recentPokemons = emptyList(), navController = navController)
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeViewPreview() {
-    val navController = rememberNavController()
-    HomeView(navController = navController)
 }
 
 @Composable
@@ -76,7 +82,7 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.imageURL),
+                painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize()
@@ -182,7 +188,7 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.imageURL),
+                painter = rememberAsyncImagePainter(model = pokemon.sprites),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize(1f)

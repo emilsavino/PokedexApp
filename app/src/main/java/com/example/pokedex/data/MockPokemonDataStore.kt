@@ -6,7 +6,7 @@ import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.WhoIsThatPokemon
 
 class MockPokemonDataStore {
-    private val pokemons = listOf(
+    /*private val pokemons = listOf(
         Pokemon("Pikachu", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"),
         Pokemon("Charmander", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"),
         Pokemon("Squirtle", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png"),
@@ -98,5 +98,5 @@ class MockPokemonDataStore {
 
     suspend fun searchPokemonByName(name: String): List<Pokemon> {
         return pokemons.filter { it.name.contains(name, ignoreCase = true) }
-    }
+    }*/
 }

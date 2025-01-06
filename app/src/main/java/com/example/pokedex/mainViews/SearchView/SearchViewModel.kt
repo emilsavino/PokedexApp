@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,27 +16,21 @@ class SearchViewModel: ViewModel() {
 
     var searchText = mutableStateOf("")
 
-    private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
-    val pokemonList: StateFlow<List<Pokemon>> = _pokemonList.asStateFlow()
+    private val _pokemonList = MutableStateFlow<List<Result>>(emptyList())
+    val pokemonList: StateFlow<List<Result>> = _pokemonList.asStateFlow()
 
     init {
         viewModelScope.launch {
-            pokemonRepository.pokemonsFlow.collect { newPokemonList ->
+            pokemonRepository.searchFlow.collect { newPokemonList ->
                 _pokemonList.value = newPokemonList
             }
         }
-        fetchPokemonList()
-    }
-
-    fun fetchPokemonList() {
-        viewModelScope.launch {
-            pokemonRepository.fetchPokemons()
-        }
+        searchPokemonList()
     }
 
     fun searchPokemonList() {
         viewModelScope.launch {
-            pokemonRepository.searchPokemonByName(searchText.value)
+            pokemonRepository.searchPokemonByName(searchText.value,0)
         }
     }
 }

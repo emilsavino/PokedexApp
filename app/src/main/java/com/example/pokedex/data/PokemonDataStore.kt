@@ -1,21 +1,22 @@
 package com.example.pokedex.data
 
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonList
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
 
 class PokemonDataStore {
     private val api = RetrofitInstance.apiService
 
-    suspend fun fetchPokemons(): List<Pokemon> {
+    suspend fun fetchPokemons(limit: Int, offset: Int): PokemonList {
         return withContext(Dispatchers.IO) {
-            api.getPokemons()
+            api.getPokemons(limit,offset)
         }
     }
 
     suspend fun fetchPokemon(name: String): Pokemon {
-        return withContext(Dispatchers.IO) {
-            api.getPokemon(name)
-        }
+        val pokemon = api.getPokemon(name)
+        pokemon.name = name
+        return pokemon
     }
 }

@@ -6,29 +6,38 @@ import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
 
-    private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
-    val pokemonList: StateFlow<List<Pokemon>> = _pokemonList
+    private val _pokemonOfTheDay = MutableStateFlow<HomeUIState>(HomeUIState.Empty)
+    val pokemonOfTheDay: StateFlow<HomeUIState> = _pokemonOfTheDay.asStateFlow()
 
     init {
         viewModelScope.launch {
-            pokemonRepository.pokemonsFlow
-                .collect { pokemons ->
-                    _pokemonList.update {
-                        pokemons
+            pokemonRepository.pokemonFlow
+                .collect { pokemon ->
+                    _pokemonOfTheDay.update {
+                        HomeUIState.Data(pokemon)
                     }
                 }
         }
-        fetchPokemons()
+        getPokemonOfTheDay()
     }
 
-
-    private fun fetchPokemons() = viewModelScope.launch {
-        pokemonRepository.fetchPokemons()
+    private fun getPokemonOfTheDay() = viewModelScope.launch {
+        _pokemonOfTheDay.update {
+            HomeUIState.Loading
+        }
+        pokemonRepository.getPokemonByName("pikachu")
     }
+}
+
+sealed class HomeUIState {
+    data class Data(val pokemonOfTheDay: Pokemon) : HomeUIState()
+    object Loading : HomeUIState()
+    object Empty : HomeUIState()
 }

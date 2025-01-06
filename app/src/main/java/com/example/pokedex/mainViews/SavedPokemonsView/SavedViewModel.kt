@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SavedViewModel : ViewModel() {
-    private val pokemonRepository = DependencyContainer.pokemonRepository
+    private val favouritesRepository = DependencyContainer.favouritesRepository
     private val mutableStateFlow = MutableStateFlow<List<Pokemon>>(emptyList())
     val savedState: StateFlow<List<Pokemon>> = mutableStateFlow
 
     init {
         viewModelScope.launch {
-            pokemonRepository.savedPokemonsFlow
+            favouritesRepository.savedPokemonsFlow
                 .collect { saved ->
                     mutableStateFlow.update {
                         saved
@@ -27,7 +27,7 @@ class SavedViewModel : ViewModel() {
     }
 
     private fun fetchSaved() = viewModelScope.launch {
-        pokemonRepository.fetchSaved()
+        favouritesRepository.fetchSaved()
     }
 
 }

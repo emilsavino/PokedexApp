@@ -23,7 +23,7 @@ class PokemonRepository {
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
     val filterOptions = mutableListOf<String>("fire","grass","ASAP-Rocky")
-    val sortOptions = mutableListOf<String>("Name","Primary")
+    val sortOptions = mutableListOf<String>("NameASC","NameDSC")
 
     private var allPokemonResultList = PokemonList(emptyList())
     private var allPokemonList = listOf<Pokemon>()
@@ -98,7 +98,7 @@ class PokemonRepository {
     {
         var foundElements = 0
         val elementsToFind = 20
-        val mutableFilteredList = mutableListOf<Pokemon>()
+        var mutableFilteredList = mutableListOf<Pokemon>()
         var index = offset
 
         while (index < allPokemonResultList.results.size && foundElements < elementsToFind)
@@ -142,6 +142,15 @@ class PokemonRepository {
                 foundElements++
             }
             index++
+        }
+        if (sortOption === "NameASC")
+        {
+            mutableFilteredList = mutableFilteredList.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
+        }
+        else if (sortOption === "NameDSC")
+        {
+            mutableFilteredList = mutableFilteredList.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
+            mutableFilteredList.reverse()
         }
         mutableSearchFlow.emit(mutableFilteredList)
     }

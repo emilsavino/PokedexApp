@@ -178,29 +178,22 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
     Column (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Padding),
-        horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(
             text = "Recently viewed Pokémon",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(Padding)
+            modifier = Modifier.padding(Padding),
         )
         Column (
-            verticalArrangement = Arrangement.spacedBy(Padding),
-            modifier = Modifier.padding(Padding)
         ) {
             for (pokemons in recentPokemons.chunked(2)) {
                 Row (
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(Padding),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Spacer(Modifier.padding(10.dp))
                     for(pokemon in pokemons) {
                         RecentlyViewedPokemonItem(pokemon, navController)
                     }
-                    Spacer(Modifier.padding(10.dp))
                 }
             }
         }
@@ -211,7 +204,9 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
 fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
     Box(
         modifier = Modifier
-            .size(BoxSize)
+            .width(190.dp)
+            .height(160.dp)
+            .padding(6.dp)
             .background(Color.Gray.copy(0.6f), RoundedCornerShape(Padding))
             .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         contentAlignment = Alignment.Center
@@ -221,7 +216,6 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
                 .fillMaxSize()
                 .padding(Padding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
                 painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default),

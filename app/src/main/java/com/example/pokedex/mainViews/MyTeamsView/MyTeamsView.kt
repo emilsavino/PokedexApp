@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 import com.example.pokedex.shared.Team

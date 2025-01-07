@@ -5,12 +5,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -43,6 +49,12 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
 @Composable
 fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
     val coroutineScope = rememberCoroutineScope()
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedTeam by remember { mutableStateOf("") }
+    var showTeamCreationDialog by remember { mutableStateOf(false) }
+    var newTeamName by remember { mutableStateOf("") }
+    val teams = viewModel.teams.collectAsState().value
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -78,9 +90,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         }
 
         Button(
-            onClick = {
-                // TODO: Add functionality for Add to Team button
-            },
+            onClick = { showDialog = true },
             modifier = Modifier
                 .align(CenterHorizontally)
                 .padding(10.dp)
@@ -96,6 +106,81 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         ) {
             Text(text = "Go back")
         }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Select Team") },
+            text = {
+                Column {
+                    for (team in teams) {
+                        TextButton(onClick = { selectedTeam = team.name }) {
+                            Text(text = team.name)
+                        }
+                    }
+                    TextButton(onClick = {
+                        showDialog = false
+                        showTeamCreationDialog = true
+                    }) {
+                        Text(text = "Create New Team")
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                        coroutineScope.launch {
+                            if (selectedTeam.isNotEmpty()) {
+                                viewModel.addToTeam(pokemon, selectedTeam)
+                            }
+                        }
+                    }
+                ) {
+                    Text(text = "Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
+    }
+
+    if (showTeamCreationDialog) {
+        AlertDialog(
+            onDismissRequest = { showTeamCreationDialog = false },
+            title = { Text(text = "Create New Team") },
+            text = {
+                Column {
+                    Text("Enter Team Name")
+                    androidx.compose.material3.OutlinedTextField(
+                        value = newTeamName,
+                        onValueChange = { newTeamName = it },
+                        label = { Text("Team Name") }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showTeamCreationDialog = false
+                        coroutineScope.launch {
+                            viewModel.createNewTeam(pokemon, newTeamName)
+                        }
+                    }
+                ) {
+                    Text(text = "Create")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTeamCreationDialog = false }) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
     }
 }
 

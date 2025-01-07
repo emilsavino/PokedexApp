@@ -6,22 +6,32 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.dependencyContainer.DependencyContainer.favouritesRepository
+import com.example.pokedex.dependencyContainer.DependencyContainer.pokemonRepository
+import com.example.pokedex.dependencyContainer.DependencyContainer.teamsRepository
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.Team
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
     private val favouritesRepository = DependencyContainer.favouritesRepository
+    private val teamsRepository = DependencyContainer.teamsRepository
+
 
     var favouriteButtonText by mutableStateOf("")
     var teamButtonText by mutableStateOf("Add to Team")
 
     private val _pokemon: MutableStateFlow<PokemonDetailUIState> = MutableStateFlow(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()
+
+    private val _teams: MutableStateFlow<List<Team>> = MutableStateFlow(emptyList())
+    val teams: StateFlow<List<Team>> = _teams.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -32,6 +42,13 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
                 }
             }
         }
+
+        viewModelScope.launch {
+            teamsRepository.teamsFlow.collect { newTeams ->
+                _teams.value = newTeams
+            }
+        }
+
         getPokemonByName()
     }
 
@@ -58,6 +75,22 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
             "Add to Favourites"
         }
     }
+
+    suspend fun addToTeam(pokemon: Pokemon, teamName: String) {
+        val teams = teamsRepository.teamsFlow.first()
+        val team = teams.find { it.name == teamName }
+        if (team != null) {
+            val updatedTeam = team.copy(pokemons = team.pokemons + pokemon)
+            teamsRepository.updateTeam(teams.indexOf(team), updatedTeam)
+        }
+    }
+
+    suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
+        val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
+        teamsRepository.addTeam(newTeam.pokemons, newTeam.name)
+    }
+
+
 }
 
 sealed class PokemonDetailUIState {

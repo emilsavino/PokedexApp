@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -78,21 +82,37 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Button(
-            onClick = {  },
-            colors = buttonColors(containerColor = Color(0xfff2f2f2))
+
+        MakeFilterOrSortButton("Filter")
+
+        Spacer(modifier = Modifier.padding(10.dp))
+
+        MakeFilterOrSortButton("Sort")
+    }
+}
+
+//Dog water method, but it works
+@Composable
+fun MakeFilterOrSortButton(name: String) {
+    Button(
+        onClick = {  },
+        colors = buttonColors(containerColor = Color(0xfff2f2f2))
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = "Filter",
-                color = Color.Black
+            Icon(
+                imageVector = if (name.contains("Filter"))
+                    Icons.Filled.List else Icons.Filled.MoreVert,
+                contentDescription = name,
+                tint = Color.Black
             )
-        }
-        Button(
-            onClick = {  },
-            colors = buttonColors(containerColor = Color(0xfff2f2f2))
-        ) {
+
+            Spacer(modifier = Modifier.padding(4.dp))
+
             Text(
-                text = "Sort",
+                text = name,
                 color = Color.Black
             )
         }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.Team
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,7 +37,7 @@ class MyTeamsViewModel: ViewModel() {
 }
 
 sealed class TeamsUIState {
-    data class Data(val teams: List<List<Pokemon>>): TeamsUIState()
+    data class Data(val teams: List<Team>): TeamsUIState()
     object Loading: TeamsUIState()
     object Empty: TeamsUIState()
 }

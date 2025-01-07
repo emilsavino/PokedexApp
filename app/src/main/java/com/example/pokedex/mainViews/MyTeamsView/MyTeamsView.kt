@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
+import com.example.pokedex.shared.Team
 
 @Composable
 fun MyTeamsView(navController: NavController) {
@@ -74,19 +75,19 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
 }
 
 @Composable
-private fun MakeTeamsGrid(navController: NavController, teams: List<List<Pokemon>>) {
+private fun MakeTeamsGrid(navController: NavController, teams: List<Team>) {
     var teamNumber = 1
     for (team in teams) {
         Text(
             modifier = Modifier.padding(10.dp),
-            text = "Team $teamNumber",
+            text = "Team $teamNumber: ${team.name}",
             fontSize = 20.sp
         )
         teamNumber++
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            for (pokemons in team.chunked(3)) {
+            for (pokemons in team.pokemons.chunked(3)) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {

@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MyTeamsViewModel: ViewModel() {
-    private val pokemonRepository = DependencyContainer.pokemonRepository
+    private val teamsRepository = DependencyContainer.teamsRepository
 
     private val mutableTeamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Empty)
     val teamsState: MutableStateFlow<TeamsUIState> = mutableTeamsState
 
     init {
         viewModelScope.launch {
-            pokemonRepository.teamsFlow
+            teamsRepository.teamsFlow
                 .collect { teams ->
                     mutableTeamsState.update {
                         TeamsUIState.Data(teams)
@@ -31,7 +31,7 @@ class MyTeamsViewModel: ViewModel() {
         mutableTeamsState.update {
             TeamsUIState.Loading
         }
-        pokemonRepository.fetchTeams()
+        teamsRepository.fetchTeams()
     }
 }
 

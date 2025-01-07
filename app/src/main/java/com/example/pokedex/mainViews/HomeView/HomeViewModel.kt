@@ -3,6 +3,7 @@ package com.example.pokedex.mainViews.HomeView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.repositories.PokemonOfTheDayRepository
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,13 +13,14 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
+    private val pokemonOfTheDayRepository = DependencyContainer.pokemonOfTheDayRepository
 
     private val _pokemonOfTheDay = MutableStateFlow<HomeUIState>(HomeUIState.Empty)
     val pokemonOfTheDay: StateFlow<HomeUIState> = _pokemonOfTheDay.asStateFlow()
 
     init {
         viewModelScope.launch {
-            pokemonRepository.pokemonFlow
+            pokemonOfTheDayRepository.pokemonOfTheDayFlow
                 .collect { pokemon ->
                     _pokemonOfTheDay.update {
                         HomeUIState.Data(pokemon)
@@ -32,7 +34,7 @@ class HomeViewModel : ViewModel() {
         _pokemonOfTheDay.update {
             HomeUIState.Loading
         }
-        pokemonRepository.getPokemonByName("pikachu")
+        pokemonOfTheDayRepository.getPokemonOfTheDayByName("pikachu")
     }
 }
 

@@ -7,6 +7,7 @@ import com.example.pokedex.shared.Sprites
 import com.example.pokedex.shared.TypeObject
 import com.example.pokedex.shared.WhoIsThatPokemon
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 class WhoIsThatPokemonRepository {
     val dataStore = PokemonDataStore()

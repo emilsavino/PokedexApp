@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch
 
@@ -50,7 +51,6 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
 
 @Composable
 fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
-    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -58,151 +58,166 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
             .background(Color(0xFFFFDD99))
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .padding(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.Black
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-
-            Text(
-                text = pokemon.name.replaceFirstChar { it.uppercase() },
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .weight(1f)
-            )
-
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        viewModel.savePokemon(pokemon)
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent
-                ),
-                modifier = Modifier
-                    .padding(8.dp)
-            ) {
-                Icon(
-                    //Todo: Move this statement into the viewmodel in some way
-                    imageVector = if (viewModel.isFavorited.value) {
-                        Icons.Filled.Favorite
-                    } else {
-                        Icons.Outlined.FavoriteBorder
-                    },
-                    contentDescription = if (viewModel.isFavorited.value) {
-                        "Remove from favourites"
-                    } else {
-                        "Add to favourites"
-                    },
-                    tint = Color.Black
-                )
-            }
-        }
+        CreateTopRow(navController, pokemon, viewModel)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            AsyncImage(
-                model = pokemon.sprites.front_default,
-                contentDescription = "Picture of a Pokémon",
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        CreatePokemonBox(pokemon)
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        CreateDescBox()
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CreateTypeWeaknessBox()
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CreateAbilitiesBox()
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CreateEvoBox()
+
+    }
+}
+
+@Composable
+fun CreateEvoBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Evolutions",
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CreateAbilitiesBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Abilities",
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CreateTypeWeaknessBox() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .weight(1f)
+                .padding(end = 8.dp)
                 .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Text(
-                text = "Description",
+                text = "Type",
                 fontWeight = FontWeight.Bold
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp)
-                    .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Type",
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 8.dp)
-                    .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Weakness",
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .weight(1f)
+                .padding(start = 8.dp)
                 .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Text(
-                text = "Abilities",
+                text = "Weakness",
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
 
-        Spacer(modifier = Modifier.height(8.dp))
+@Composable
+fun CreateDescBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Description",
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
 
-        Box(
+@Composable
+fun CreatePokemonBox(pokemon: Pokemon) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            model = pokemon.sprites.front_default,
+            contentDescription = "Picture of a Pokémon",
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
+@Composable
+fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
+    val coroutineScope = rememberCoroutineScope()
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BackButton(navController)
+
+        Text(
+            text = pokemon.name.replaceFirstChar { it.uppercase() },
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
+                .weight(1f)
+        )
+
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    viewModel.savePokemon(pokemon)
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent
+            ),
+            modifier = Modifier
+                .padding(8.dp)
         ) {
-            Text(
-                text = "Evolutions",
-                fontWeight = FontWeight.Bold
+            Icon(
+                //Todo: Move this statement into the viewmodel in some way
+                imageVector = if (viewModel.isFavorited)
+                    Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+
+                contentDescription = if (viewModel.isFavorited) "Remove" else "Add",
+
+                tint = if (viewModel.isFavorited) Color.Red else Color.Black
             )
         }
     }

@@ -17,8 +17,7 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
     private val favouritesRepository = DependencyContainer.favouritesRepository
 
-    private val _isFavorited = MutableStateFlow(false)
-    val isFavorited: StateFlow<Boolean> = _isFavorited.asStateFlow()
+    var isFavorited by mutableStateOf(false)
 
     private val _pokemon: MutableStateFlow<PokemonDetailUIState> = MutableStateFlow(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()
@@ -43,28 +42,16 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     }
 
     suspend fun savePokemon(pokemon: Pokemon) {
-        val currentFav = favouritesRepository.pokemonIsFavourite(pokemon)
-
-        val newFav = !currentFav
-        _isFavorited.value = newFav
-        onFavouriteButton(pokemon)
-
-        try {
-            if (currentFav) {
-                favouritesRepository.removeFromFavourites(pokemon)
-            } else {
-                favouritesRepository.makeFavourite(pokemon)
-            }
-        } catch (_: Exception) {
-            _isFavorited.value = currentFav
-            onFavouriteButton(pokemon)
+        if (favouritesRepository.pokemonIsFavourite(pokemon)) {
+            favouritesRepository.removeFromFavourites(pokemon)
+        } else {
+            favouritesRepository.makeFavourite(pokemon)
         }
-
-
+        onFavouriteButton(pokemon)
     }
 
     private fun onFavouriteButton(pokemon: Pokemon)  {
-        _isFavorited.value = favouritesRepository.pokemonIsFavourite(pokemon)
+        isFavorited = favouritesRepository.pokemonIsFavourite(pokemon)
     }
 }
 

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
@@ -13,11 +15,17 @@ import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,9 +78,11 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
         ) },
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Transparent),
+            .background(Color.Transparent)
+            .shadow(0.dp)
+            .clip(RoundedCornerShape(24.dp)),
         shape = RoundedCornerShape(24.dp),
-        maxLines = 1,
+        singleLine = true,
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -93,7 +103,7 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
 
 //Dog water method, but it works
 @Composable
-fun MakeFilterOrSortButton(name: String) {
+private fun MakeFilterOrSortButton(name: String) {
     Button(
         onClick = {  },
         colors = buttonColors(containerColor = Color(0xfff2f2f2))
@@ -155,13 +165,18 @@ fun SearchListItem(pokemon: Result, navController: NavController) {
                     .padding(end = 2.dp)
             )*/
             Text(
-                text = pokemon.name.replaceFirstChar { it.uppercase() },
+                text = FormatPokemonName(pokemon.name),
                 color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
         }
     }
+}
+
+private fun FormatPokemonName(name: String): String {
+    return name.split("-")
+        .joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
 }
 
 @Preview(showBackground = true)

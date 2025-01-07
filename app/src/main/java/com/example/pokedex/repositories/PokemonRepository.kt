@@ -19,6 +19,8 @@ class PokemonRepository {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
+    val filterOptions = mutableListOf<String>("Fire","Ground","ASAP-Rocky")
+
     private var allPokemonResultList = PokemonList(emptyList())
     private var allPokemonList = listOf<Pokemon>()
     private var pokemonList = PokemonList(emptyList<Result>())

@@ -7,6 +7,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -31,6 +34,9 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
 
     val pokemons by viewModel.pokemonList.collectAsState()
 
+
+
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -53,6 +59,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
 
 @Composable
 fun MakeSearchTools(viewModel: SearchViewModel) {
+    var filterExpanded = remember { mutableStateOf(false) }
     TextField(
         value = viewModel.searchText.value,
         onValueChange = {
@@ -78,14 +85,31 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val selectedColor = Color(0xFF0000FF)
+        val unselectedColor = Color(0x00FF00FF)
+        val textColor = Color.Black
         Button(
-            onClick = {  },
+            onClick = { filterExpanded.value = true},
             colors = buttonColors(containerColor = Color(0xfff2f2f2))
         ) {
             Text(
                 text = "Filter",
                 color = Color.Black
             )
+            DropdownMenu(
+                expanded = filterExpanded.value,
+                onDismissRequest = { filterExpanded.value = false }
+            ) {
+                val selectedOptions = viewModel.selectedOptionsFlow.collectAsState()
+                for (option in viewModel.getAllFilterOptions())
+                {
+                    DropdownMenuItem(
+                        text = { Text(option, color = textColor) },
+                        modifier = Modifier.background(color = if (selectedOptions.value.contains(option)) selectedColor else unselectedColor),
+                        onClick = { viewModel.selectOption(option) }
+                    )
+                }
+            }
         }
         Button(
             onClick = {  },

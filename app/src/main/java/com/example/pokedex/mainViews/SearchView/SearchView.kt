@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
@@ -23,9 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
-import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Result
 
 @Composable
@@ -60,6 +57,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
 @Composable
 fun MakeSearchTools(viewModel: SearchViewModel) {
     var filterExpanded = remember { mutableStateOf(false) }
+    var sortExpanded = remember { mutableStateOf(false) }
     TextField(
         value = viewModel.searchText.value,
         onValueChange = {
@@ -85,7 +83,7 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val selectedColor = Color(0xFF0000FF)
+        val selectedColor = Color(0x636363FF)
         val unselectedColor = Color(0x00FF00FF)
         val textColor = Color.Black
         Button(
@@ -100,25 +98,42 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
                 expanded = filterExpanded.value,
                 onDismissRequest = { filterExpanded.value = false }
             ) {
-                val selectedOptions = viewModel.selectedOptionsFlow.collectAsState()
+                val selectedOptions = viewModel.selectedFilterOptionsListFlow.collectAsState()
                 for (option in viewModel.getAllFilterOptions())
                 {
                     DropdownMenuItem(
                         text = { Text(option, color = textColor) },
                         modifier = Modifier.background(color = if (selectedOptions.value.contains(option)) selectedColor else unselectedColor),
-                        onClick = { viewModel.selectOption(option) }
+                        onClick = { viewModel.selectFilterOption(option) }
                     )
                 }
             }
         }
         Button(
-            onClick = {  },
+            onClick = { sortExpanded.value = true },
             colors = buttonColors(containerColor = Color(0xfff2f2f2))
         ) {
             Text(
                 text = "Sort",
                 color = Color.Black
             )
+            DropdownMenu(
+                expanded = sortExpanded.value,
+                onDismissRequest = { sortExpanded.value = false }
+            ) {
+                val selectedOption = viewModel.selectedSortOptionFlow.collectAsState()
+                for (option in viewModel.getAllSortOptions())
+                {
+                    DropdownMenuItem(
+                        text = { Text(option, color = textColor) },
+                        modifier = Modifier.background(color = if (selectedOption.value == option) selectedColor else unselectedColor),
+                        onClick = {
+                            sortExpanded.value = false
+                            viewModel.selectSortOption(option)
+                        }
+                    )
+                }
+            }
         }
     }
 }

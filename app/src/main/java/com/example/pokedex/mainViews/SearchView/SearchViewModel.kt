@@ -1,8 +1,6 @@
 package com.example.pokedex.mainViews.SearchView
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
-import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
@@ -14,8 +12,12 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
-    private val selectedOptionsList = MutableStateFlow<List<String>>(mutableListOf())
-    val selectedOptionsFlow: StateFlow<List<String>> = selectedOptionsList.asStateFlow()
+    private val selectedFilterOptionsListMutableFlow = MutableStateFlow<List<String>>(mutableListOf())
+    val selectedFilterOptionsListFlow: StateFlow<List<String>> = selectedFilterOptionsListMutableFlow.asStateFlow()
+
+    private val selectedSortOptionMutableFlow = MutableStateFlow<String>("")
+    val selectedSortOptionFlow: StateFlow<String> = selectedSortOptionMutableFlow.asStateFlow()
+
     var searchText = mutableStateOf("")
 
     private val _pokemonList = MutableStateFlow<List<Result>>(emptyList())
@@ -36,17 +38,17 @@ class SearchViewModel: ViewModel() {
         }
     }
 
-    fun selectOption(option : String)
+    fun selectFilterOption(option : String)
     {
-        if (selectedOptionsList.value.contains(option))
+        if (selectedFilterOptionsListMutableFlow.value.contains(option))
         {
-            selectedOptionsList.value = selectedOptionsList.value.toMutableList().apply {
+            selectedFilterOptionsListMutableFlow.value = selectedFilterOptionsListMutableFlow.value.toMutableList().apply {
                 remove(option)
             }
         }
         else
         {
-            selectedOptionsList.value = selectedOptionsList.value.toMutableList().apply {
+            selectedFilterOptionsListMutableFlow.value = selectedFilterOptionsListMutableFlow.value.toMutableList().apply {
                 add(option)
             }
         }
@@ -55,5 +57,15 @@ class SearchViewModel: ViewModel() {
     fun getAllFilterOptions() : List<String>
     {
         return pokemonRepository.filterOptions
+    }
+
+    fun getAllSortOptions() : List<String>
+    {
+        return pokemonRepository.sortOptions
+    }
+
+    fun selectSortOption(option : String)
+    {
+        selectedSortOptionMutableFlow.value = option
     }
 }

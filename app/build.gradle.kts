@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
 android {
@@ -93,5 +94,8 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     //implementation(libs.accompanist.flowlayout)
+
+    //Firebase authentication
+    implementation(libs.firebase.analytics)
 
 }

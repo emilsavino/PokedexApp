@@ -42,20 +42,12 @@ class RecentlyViewedRepository(private val context: Context) {
 
     suspend fun addToRecents(pokemon: Pokemon) {
         if (!recentlyViewedPokemons.contains(pokemon)) {
+            if (recentlyViewedPokemons.size >= 10) {
+                recentlyViewedPokemons.removeAt(0)
+            }
             recentlyViewedPokemons.add(pokemon)
             updateDataStore()
         }
-    }
-
-    suspend fun removeFromRecents(pokemon: Pokemon) {
-        if (recentlyViewedPokemons.contains(pokemon)) {
-            recentlyViewedPokemons.remove(pokemon)
-            updateDataStore()
-        }
-    }
-
-    fun pokemonIsRecent(pokemon: Pokemon): Boolean {
-        return recentlyViewedPokemons.contains(pokemon)
     }
 
     private suspend fun updateDataStore() {

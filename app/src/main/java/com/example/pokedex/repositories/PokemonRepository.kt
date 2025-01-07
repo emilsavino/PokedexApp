@@ -22,7 +22,7 @@ class PokemonRepository {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    val filterOptions = mutableListOf<String>("Fire","Ground","ASAP-Rocky")
+    val filterOptions = mutableListOf<String>("fire","grass","ASAP-Rocky")
     val sortOptions = mutableListOf<String>("Name","Primary")
 
     private var allPokemonResultList = PokemonList(emptyList())
@@ -55,10 +55,9 @@ class PokemonRepository {
     {
         for (result in allPokemonResultList.results)
         {
-            CoroutineScope(Dispatchers.IO).async {
-                pokemonMap[result.name.capitalize(Locale("DK"))] = dataStore.fetchPokemon(result.name)
-            }
+            pokemonMap[result.name.capitalize(Locale("DK"))] = dataStore.fetchPokemon(result.name)
         }
+        val dean = 0
     }
 
     suspend fun fetchPokemons(limit: Int, offset: Int) {
@@ -135,6 +134,7 @@ class PokemonRepository {
 
                 if (!typeRelevant)
                 {
+                    index++
                     continue;
                 }
 

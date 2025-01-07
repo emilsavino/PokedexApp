@@ -59,7 +59,7 @@ class PokemonRepository {
     }
 
     suspend fun searchPokemonByName(name: String, offset: Int) {
-        var foundElements : Int = 0
+        var foundElements = 0
         val elementsToFind = 20
         val mutableFilteredList = mutableListOf<Result>()
         var index = offset

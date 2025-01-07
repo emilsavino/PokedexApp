@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.navigation.Screen
+import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Result
 
 @Composable
@@ -139,7 +140,7 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
 }
 
 @Composable
-fun MakeSearchList(pokemons: List<Result>, navController: NavController) {
+fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -151,7 +152,7 @@ fun MakeSearchList(pokemons: List<Result>, navController: NavController) {
 }
 
 @Composable
-fun SearchListItem(pokemon: Result, navController: NavController) {
+fun SearchListItem(pokemon: Pokemon, navController: NavController) {
     Button(
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         modifier = Modifier

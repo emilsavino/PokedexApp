@@ -1,13 +1,14 @@
 package com.example.pokedex.repositories
 
-import androidx.lifecycle.ViewModel
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import com.example.pokedex.data.PokemonDataStore
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -21,14 +22,19 @@ class PokemonRepository {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    private var allPokemonList = PokemonList(emptyList())
+    val filterOptions = mutableListOf<String>("fire","grass","ASAP-Rocky")
+    val sortOptions = mutableListOf<String>("Name","Primary")
 
+    private var allPokemonResultList = PokemonList(emptyList())
+    private var allPokemonList = listOf<Pokemon>()
     private var pokemonList = PokemonList(emptyList<Result>())
     private val mutablePokemonsFlow = MutableSharedFlow<PokemonList>()
     val pokemonsFlow: Flow<PokemonList> = mutablePokemonsFlow.asSharedFlow()
 
-    private val mutableSearchFlow = MutableSharedFlow<List<Result>>()
-    val searchFlow: Flow<List<Result>> = mutableSearchFlow.asSharedFlow()
+    val pokemonMap : HashMap<String, Pokemon> = HashMap()
+
+    private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
+    val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()
 
     private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
     val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
@@ -39,9 +45,19 @@ class PokemonRepository {
         }
     }
 
-    suspend fun fetchAllPokemons()
+    private suspend fun fetchAllPokemons()
     {
-        allPokemonList = dataStore.fetchPokemons(10000,0)
+        allPokemonResultList = dataStore.fetchPokemons(10000,0)
+        fillUpHashMapOfPokemons()
+    }
+
+    private suspend fun fillUpHashMapOfPokemons()
+    {
+        for (result in allPokemonResultList.results)
+        {
+            pokemonMap[result.name.capitalize(Locale("DK"))] = dataStore.fetchPokemon(result.name)
+        }
+        val dean = 0
     }
 
     suspend fun fetchPokemons(limit: Int, offset: Int) {
@@ -54,33 +70,88 @@ class PokemonRepository {
     }
 
     suspend fun searchPokemonByName(name: String, offset: Int) {
-        var foundElements : Int = 0
+        var foundElements = 0
         val elementsToFind = 20
-        var localOffset = offset
-        val mutableFilteredList = mutableListOf<Result>()
+        val mutableFilteredList = mutableListOf<Pokemon>()
+        var index = offset
 
-        for (result in allPokemonList.results)
+        while (index < allPokemonResultList.results.size && foundElements < elementsToFind)
         {
-            if (localOffset > 0)
-            {
-                localOffset--
-                continue
-            }
+            val result = allPokemonResultList.results.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
-                mutableFilteredList.add(result)
+                var pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
+                while (pokemon == null)
+                {
+                    pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
 
+                }
+                mutableFilteredList.add(pokemon)
                 foundElements++
             }
-            if (foundElements == elementsToFind)
+            index++
+        }
+        mutableSearchFlow.emit(mutableFilteredList)
+    }
+
+    suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String)
+    {
+        var foundElements = 0
+        val elementsToFind = 20
+        val mutableFilteredList = mutableListOf<Pokemon>()
+        var index = offset
+
+        while (index < allPokemonResultList.results.size && foundElements < elementsToFind)
+        {
+            val result = allPokemonResultList.results.get(index)
+            if (result.name.contains(name, ignoreCase = true))
             {
-                break
+                var pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
+                while (pokemon == null)
+                {
+                    pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
+                }
+                var typeRelevant = false
+                for (type in filterOptions)
+                {
+                    for (innerType in pokemon.types)
+                    {
+                        if (type == innerType.type.name)
+                        {
+                            typeRelevant = true
+                            break
+                        }
+                        if (typeRelevant)
+                        {
+                            break
+                        }
+                    }
+                }
+                if (filterOptions.isEmpty())
+                {
+                    typeRelevant = true
+                }
+
+                if (!typeRelevant)
+                {
+                    index++
+                    continue;
+                }
+
+                mutableFilteredList.add(pokemon)
+                foundElements++
             }
+            index++
         }
         mutableSearchFlow.emit(mutableFilteredList)
     }
 
     suspend fun getPokemonByName(name: String) {
-        mutablePokemonFlow.emit(dataStore.fetchPokemon(name))
+        var pokemon = pokemonMap.get(name)
+        while (pokemon == null)
+        {
+            pokemon = pokemonMap.get(name)
+        }
+        mutablePokemonFlow.emit(pokemon)
     }
 }

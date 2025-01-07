@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -20,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Result
@@ -30,6 +31,9 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel = viewModel<SearchViewModel>()
 
     val pokemons by viewModel.pokemonList.collectAsState()
+
+
+
 
     Box(
         modifier = modifier
@@ -53,6 +57,8 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
 
 @Composable
 fun MakeSearchTools(viewModel: SearchViewModel) {
+    var filterExpanded = remember { mutableStateOf(false) }
+    var sortExpanded = remember { mutableStateOf(false) }
     TextField(
         value = viewModel.searchText.value,
         onValueChange = {
@@ -78,29 +84,63 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val selectedColor = Color(0x636363FF)
+        val unselectedColor = Color(0x00FF00FF)
+        val textColor = Color.Black
         Button(
-            onClick = {  },
+            onClick = { filterExpanded.value = true},
             colors = buttonColors(containerColor = Color(0xfff2f2f2))
         ) {
             Text(
                 text = "Filter",
                 color = Color.Black
             )
+            DropdownMenu(
+                expanded = filterExpanded.value,
+                onDismissRequest = { filterExpanded.value = false }
+            ) {
+                val selectedOptions = viewModel.selectedFilterOptionsListFlow.collectAsState()
+                for (option in viewModel.getAllFilterOptions())
+                {
+                    DropdownMenuItem(
+                        text = { Text(option, color = textColor) },
+                        modifier = Modifier.background(color = if (selectedOptions.value.contains(option)) selectedColor else unselectedColor),
+                        onClick = { viewModel.selectFilterOption(option) }
+                    )
+                }
+            }
         }
         Button(
-            onClick = {  },
+            onClick = { sortExpanded.value = true },
             colors = buttonColors(containerColor = Color(0xfff2f2f2))
         ) {
             Text(
                 text = "Sort",
                 color = Color.Black
             )
+            DropdownMenu(
+                expanded = sortExpanded.value,
+                onDismissRequest = { sortExpanded.value = false }
+            ) {
+                val selectedOption = viewModel.selectedSortOptionFlow.collectAsState()
+                for (option in viewModel.getAllSortOptions())
+                {
+                    DropdownMenuItem(
+                        text = { Text(option, color = textColor) },
+                        modifier = Modifier.background(color = if (selectedOption.value == option) selectedColor else unselectedColor),
+                        onClick = {
+                            sortExpanded.value = false
+                            viewModel.selectSortOption(option)
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-fun MakeSearchList(pokemons: List<Result>, navController: NavController) {
+fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -112,7 +152,7 @@ fun MakeSearchList(pokemons: List<Result>, navController: NavController) {
 }
 
 @Composable
-fun SearchListItem(pokemon: Result, navController: NavController) {
+fun SearchListItem(pokemon: Pokemon, navController: NavController) {
     Button(
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         modifier = Modifier

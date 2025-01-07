@@ -6,9 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.dependencyContainer.DependencyContainer.favouritesRepository
-import com.example.pokedex.dependencyContainer.DependencyContainer.pokemonRepository
-import com.example.pokedex.dependencyContainer.DependencyContainer.teamsRepository
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,10 +21,11 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
     private val favouritesRepository = DependencyContainer.favouritesRepository
     private val teamsRepository = DependencyContainer.teamsRepository
-
+    private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
 
     var favouriteButtonText by mutableStateOf("")
     var teamButtonText by mutableStateOf("Add to Team")
+    var isFavorited by mutableStateOf(false)
 
     private val _pokemon: MutableStateFlow<PokemonDetailUIState> = MutableStateFlow(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()
@@ -35,10 +33,10 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val _teams: MutableStateFlow<List<Team>> = MutableStateFlow(emptyList())
     val teams: StateFlow<List<Team>> = teamsRepository.teamsFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-
     init {
         viewModelScope.launch {
             pokemonRepository.pokemonFlow.collect { newPokemon ->
+                recentlyViewedRepository.addToRecents(newPokemon) // Track recently viewed Pokémon
                 _pokemon.update {
                     onFavouriteButton(newPokemon)
                     PokemonDetailUIState.Data(newPokemon)
@@ -65,14 +63,17 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     suspend fun savePokemon(pokemon: Pokemon) {
         if (favouritesRepository.pokemonIsFavourite(pokemon)) {
             favouritesRepository.removeFromFavourites(pokemon)
+            isFavorited = false
         } else {
             favouritesRepository.makeFavourite(pokemon)
+            isFavorited = true
         }
         onFavouriteButton(pokemon)
     }
 
-    private fun onFavouriteButton(pokemon: Pokemon)  {
-        favouriteButtonText = if (favouritesRepository.pokemonIsFavourite(pokemon)) {
+    private fun onFavouriteButton(pokemon: Pokemon) {
+        isFavorited = favouritesRepository.pokemonIsFavourite(pokemon)
+        favouriteButtonText = if (isFavorited) {
             "Remove from Favourites"
         } else {
             "Add to Favourites"
@@ -95,12 +96,10 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
         val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
         teamsRepository.addTeam(newTeam)
     }
-
-
 }
 
 sealed class PokemonDetailUIState {
-    data class Data(val pokemon: Pokemon): PokemonDetailUIState()
-    object Loading: PokemonDetailUIState()
-    object Empty: PokemonDetailUIState()
+    data class Data(val pokemon: Pokemon) : PokemonDetailUIState()
+    object Loading : PokemonDetailUIState()
+    object Empty : PokemonDetailUIState()
 }

@@ -13,11 +13,16 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
+    private val selectedFilterOptionsListMutableFlow = MutableStateFlow<List<String>>(mutableListOf())
+    val selectedFilterOptionsListFlow: StateFlow<List<String>> = selectedFilterOptionsListMutableFlow.asStateFlow()
+
+    private val selectedSortOptionMutableFlow = MutableStateFlow<String>("")
+    val selectedSortOptionFlow: StateFlow<String> = selectedSortOptionMutableFlow.asStateFlow()
 
     var searchText = mutableStateOf("")
 
-    private val _pokemonList = MutableStateFlow<List<Result>>(emptyList())
-    val pokemonList: StateFlow<List<Result>> = _pokemonList.asStateFlow()
+    private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
+    val pokemonList: StateFlow<List<Pokemon>> = _pokemonList.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -30,7 +35,40 @@ class SearchViewModel: ViewModel() {
 
     fun searchPokemonList() {
         viewModelScope.launch {
-            pokemonRepository.searchPokemonByName(searchText.value,0)
+            pokemonRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsListFlow.value, selectedSortOptionFlow.value)
         }
+    }
+
+    fun selectFilterOption(option : String)
+    {
+        if (selectedFilterOptionsListMutableFlow.value.contains(option))
+        {
+            selectedFilterOptionsListMutableFlow.value = selectedFilterOptionsListMutableFlow.value.toMutableList().apply {
+                remove(option)
+            }
+        }
+        else
+        {
+            selectedFilterOptionsListMutableFlow.value = selectedFilterOptionsListMutableFlow.value.toMutableList().apply {
+                add(option)
+            }
+        }
+        searchPokemonList()
+    }
+
+    fun getAllFilterOptions() : List<String>
+    {
+        return pokemonRepository.filterOptions
+    }
+
+    fun getAllSortOptions() : List<String>
+    {
+        return pokemonRepository.sortOptions
+    }
+
+    fun selectSortOption(option : String)
+    {
+        selectedSortOptionMutableFlow.value = option
+        searchPokemonList()
     }
 }

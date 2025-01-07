@@ -29,6 +29,23 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import com.example.pokedex.shared.BackButton
+import com.example.pokedex.shared.Team
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Icon
+
 
 @Composable
 fun PokemonDetailView(pokemonName: String, navController: NavController) {
@@ -59,24 +76,176 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFFDD99))
+            .padding(16.dp)
     ) {
-        Box(
-            modifier = Modifier.size(500.dp)
-        ) {
-            AsyncImage(
-                model = pokemon.sprites.front_default,
-                contentDescription = "Picture of a Pokemon",
-                modifier = Modifier.fillMaxSize()
+        CreateTopRow(navController, pokemon, viewModel, showDialog = { showDialog = true })
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        CreatePokemonBox(pokemon)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        CreateDescBox()
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CreateTypeWeaknessBox()
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CreateAbilitiesBox()
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CreateEvoBox()
+
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage!!,
+                color = Color.Red,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+                    .padding(8.dp)
             )
         }
+    }
+
+    if (showDialog) {
+        TeamSelectionDialog(
+            teams = teams,
+            onTeamSelected = { teamName ->
+                showDialog = false
+                coroutineScope.launch {
+                    try {
+                        if (teamName.isNotEmpty()) {
+                            viewModel.addToTeam(pokemon, teamName)
+                            errorMessage = null
+                        }
+                    } catch (e: IllegalStateException) {
+                        errorMessage = e.message
+                    }
+                }
+            },
+            onCreateNewTeam = { showDialog = false; showTeamCreationDialog = true },
+            onDismiss = { showDialog = false }
+        )
+    }
+
+    if (showTeamCreationDialog) {
+        TeamCreationDialog(
+            newTeamName = newTeamName,
+            onTeamNameChange = { newTeamName = it },
+            onCreateTeam = {
+                showTeamCreationDialog = false
+                coroutineScope.launch {
+                    if (newTeamName.isNotBlank()) {
+                        viewModel.createNewTeam(pokemon, newTeamName)
+                        newTeamName = ""
+                    }
+                }
+            },
+            onDismiss = { showTeamCreationDialog = false }
+        )
+    }
+}
+
+@Composable
+fun TeamSelectionDialog(
+    teams: List<Team>,
+    onTeamSelected: (String) -> Unit,
+    onCreateNewTeam: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Select Team") },
+        text = {
+            Column {
+                if (teams.isEmpty()) {
+                    Text(text = "No teams available")
+                } else {
+                    for (team in teams) {
+                        TextButton(onClick = { onTeamSelected(team.name) }) {
+                            Text(text = team.name)
+                        }
+                    }
+                }
+                TextButton(onClick = onCreateNewTeam) {
+                    Text(text = "Create New Team")
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { /* Confirm handled in team selection */ }) {
+                Text(text = "Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun TeamCreationDialog(
+    newTeamName: String,
+    onTeamNameChange: (String) -> Unit,
+    onCreateTeam: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Create New Team") },
+        text = {
+            Column {
+                Text("Enter Team Name")
+                OutlinedTextField(
+                    value = newTeamName,
+                    onValueChange = onTeamNameChange,
+                    label = { Text("Team Name") }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onCreateTeam) {
+                Text(text = "Create")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun CreateTopRow(
+    navController: NavController,
+    pokemon: Pokemon,
+    viewModel: PokemonDetailViewModel,
+    showDialog: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BackButton(navController)
 
         Text(
-            modifier = Modifier
-                .padding(10.dp)
-                .align(CenterHorizontally),
-            text = pokemon.name,
-            fontSize = 20.sp,
+            text = pokemon.name.replaceFirstChar { it.uppercase() },
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f)
         )
 
         Button(
@@ -85,180 +254,118 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
                     viewModel.savePokemon(pokemon)
                 }
             },
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .padding(10.dp)
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            modifier = Modifier.padding(8.dp)
         ) {
-            Text(text = viewModel.favouriteButtonText)
-        }
-
-        Button(
-            onClick = { showDialog = true },
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .padding(10.dp)
-        ) {
-            Text(text = viewModel.teamButtonText)
-        }
-
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .padding(10.dp)
-        ) {
-            Text(text = "Go back")
-        }
-
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage!!,
-                color = androidx.compose.ui.graphics.Color.Red,
-                modifier = Modifier
-                    .align(CenterHorizontally)
-                    .padding(8.dp)
+            Icon(
+                imageVector = if (viewModel.isFavorited) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = if (viewModel.isFavorited) "Remove" else "Add",
+                tint = if (viewModel.isFavorited) Color.Red else Color.Black
             )
         }
+
+        Button(onClick = showDialog, modifier = Modifier.padding(8.dp)) {
+            Text(text = viewModel.teamButtonText)
+        }
     }
+}
 
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text(text = "Select Team") },
-            text = {
-                Column {
-                    if (teams.isEmpty()) {
-                        Text(text = "No teams available")
-                    } else {
-                        for (team in teams) {
-                            TextButton(onClick = { selectedTeam = team.name }) {
-                                Text(text = team.name)
-                            }
-                        }
-                    }
-                    TextButton(onClick = {
-                        showDialog = false
-                        showTeamCreationDialog = true
-                    }) {
-                        Text(text = "Create New Team")
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                        coroutineScope.launch {
-                            try {
-                                if (selectedTeam.isNotEmpty()) {
-                                    viewModel.addToTeam(pokemon, selectedTeam)
-                                    errorMessage = null
-                                }
-                            } catch (e: IllegalStateException) {
-                                errorMessage = e.message
-                            }
-                        }
-                    }
-                ) {
-                    Text(text = "Confirm")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text(text = "Cancel")
-                }
-            }
-        )
-    }
-
-    if (showTeamCreationDialog) {
-        AlertDialog(
-            onDismissRequest = { showTeamCreationDialog = false },
-            title = { Text(text = "Create New Team") },
-            text = {
-                Column {
-                    Text("Enter Team Name")
-                    androidx.compose.material3.OutlinedTextField(
-                        value = newTeamName,
-                        onValueChange = { newTeamName = it },
-                        label = { Text("Team Name") }
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showTeamCreationDialog = false
-                        coroutineScope.launch {
-                            if (newTeamName.isNotBlank()) {
-                                viewModel.createNewTeam(pokemon, newTeamName)
-                                newTeamName = ""
-                            }
-                        }
-                    }
-                ) {
-                    Text(text = "Create")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showTeamCreationDialog = false }) {
-                    Text(text = "Cancel")
-                }
-            }
-        )
-    }
-
-    if (errorMessage != null) {
-        Text(
-            text = errorMessage!!,
-            color = androidx.compose.ui.graphics.Color.Red,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally)
-                .padding(8.dp)
-        )
-    }
-
-
-
-    if (showTeamCreationDialog) {
-        AlertDialog(
-            onDismissRequest = { showTeamCreationDialog = false },
-            title = { Text(text = "Create New Team") },
-            text = {
-                Column {
-                    Text("Enter Team Name")
-                    androidx.compose.material3.OutlinedTextField(
-                        value = newTeamName,
-                        onValueChange = { newTeamName = it },
-                        label = { Text("Team Name") }
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showTeamCreationDialog = false
-                        coroutineScope.launch {
-                            if (newTeamName.isNotBlank()) {
-                                viewModel.createNewTeam(pokemon, newTeamName)
-                                newTeamName = ""
-                            }
-                        }
-                    }
-                ) {
-                    Text(text = "Create")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showTeamCreationDialog = false }) {
-                    Text(text = "Cancel")
-                }
-            }
+@Composable
+fun CreatePokemonBox(pokemon: Pokemon) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            model = pokemon.sprites.front_default,
+            contentDescription = "Picture of a Pokémon",
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
 
+@Composable
+fun CreateDescBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Description",
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CreateTypeWeaknessBox() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp)
+                .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Type",
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp)
+                .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Weakness",
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun CreateAbilitiesBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Abilities",
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CreateEvoBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Evolutions",
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
 
 @Composable
 fun EmptyState() {
@@ -279,4 +386,3 @@ fun LoadingState() {
         )
     }
 }
-

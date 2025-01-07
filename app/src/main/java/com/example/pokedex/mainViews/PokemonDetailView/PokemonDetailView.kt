@@ -114,9 +114,13 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
             title = { Text(text = "Select Team") },
             text = {
                 Column {
-                    for (team in teams) {
-                        TextButton(onClick = { selectedTeam = team.name }) {
-                            Text(text = team.name)
+                    if (teams.isEmpty()) {
+                        Text(text = "No teams available")
+                    } else {
+                        for (team in teams) {
+                            TextButton(onClick = { selectedTeam = team.name }) {
+                                Text(text = team.name)
+                            }
                         }
                     }
                     TextButton(onClick = {
@@ -134,6 +138,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
                         coroutineScope.launch {
                             if (selectedTeam.isNotEmpty()) {
                                 viewModel.addToTeam(pokemon, selectedTeam)
+                                selectedTeam = ""
                             }
                         }
                     }
@@ -148,6 +153,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
             }
         )
     }
+
 
     if (showTeamCreationDialog) {
         AlertDialog(
@@ -168,7 +174,10 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
                     onClick = {
                         showTeamCreationDialog = false
                         coroutineScope.launch {
-                            viewModel.createNewTeam(pokemon, newTeamName)
+                            if (newTeamName.isNotBlank()) {
+                                viewModel.createNewTeam(pokemon, newTeamName)
+                                newTeamName = ""
+                            }
                         }
                     }
                 ) {
@@ -183,6 +192,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         )
     }
 }
+
 
 @Composable
 fun EmptyState() {

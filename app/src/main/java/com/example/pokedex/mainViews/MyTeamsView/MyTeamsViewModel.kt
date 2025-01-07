@@ -6,38 +6,35 @@ import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MyTeamsViewModel: ViewModel() {
+class MyTeamsViewModel : ViewModel() {
     private val teamsRepository = DependencyContainer.teamsRepository
 
-    private val mutableTeamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Empty)
-    val teamsState: MutableStateFlow<TeamsUIState> = mutableTeamsState
+    private val _teamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Loading)
+    val teamsState: StateFlow<TeamsUIState> = _teamsState
 
     init {
-        viewModelScope.launch {
-            teamsRepository.teamsFlow
-                .collect { teams ->
-                    mutableTeamsState.update {
-                        TeamsUIState.Data(teams)
-                    }
-                }
-        }
         fetchTeams()
     }
 
-
-    private fun fetchTeams() = viewModelScope.launch {
-        mutableTeamsState.update {
-            TeamsUIState.Loading
+    private fun fetchTeams() {
+        viewModelScope.launch {
+            teamsRepository.teamsFlow.collect { teams ->
+                if (teams.isEmpty()) {
+                    _teamsState.value = TeamsUIState.Empty
+                } else {
+                    _teamsState.value = TeamsUIState.Data(teams)
+                }
+            }
         }
-        teamsRepository.fetchTeams()
     }
 }
 
 sealed class TeamsUIState {
-    data class Data(val teams: List<Team>): TeamsUIState()
-    object Loading: TeamsUIState()
-    object Empty: TeamsUIState()
+    object Loading : TeamsUIState()
+    object Empty : TeamsUIState()
+    data class Data(val teams: List<Team>) : TeamsUIState()
 }

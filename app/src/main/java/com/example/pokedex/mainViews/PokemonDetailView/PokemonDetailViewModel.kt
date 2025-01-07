@@ -12,9 +12,11 @@ import com.example.pokedex.dependencyContainer.DependencyContainer.teamsReposito
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -31,7 +33,8 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()
 
     private val _teams: MutableStateFlow<List<Team>> = MutableStateFlow(emptyList())
-    val teams: StateFlow<List<Team>> = _teams.asStateFlow()
+    val teams: StateFlow<List<Team>> = teamsRepository.teamsFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
 
     init {
         viewModelScope.launch {
@@ -87,7 +90,7 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
 
     suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
         val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
-        teamsRepository.addTeam(newTeam.pokemons, newTeam.name)
+        teamsRepository.addTeam(newTeam)
     }
 
 

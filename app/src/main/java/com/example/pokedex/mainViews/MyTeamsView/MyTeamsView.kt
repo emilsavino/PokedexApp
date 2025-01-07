@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 import com.example.pokedex.shared.Team
@@ -54,9 +53,9 @@ private fun MakeHeader() {
 
 @Composable
 private fun MakeContent(navController: NavController, viewModel: MyTeamsViewModel) {
-    val teams = viewModel.teamsState.collectAsState().value
+    val teamsState = viewModel.teamsState.collectAsState().value
 
-    when (teams) {
+    when (teamsState) {
         is TeamsUIState.Empty -> {
             Text(
                 text = "No teams found",
@@ -70,7 +69,7 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
             )
         }
         is TeamsUIState.Data -> {
-            MakeTeamsGrid(navController, teams.teams)
+            MakeTeamsGrid(navController, teamsState.teams)
         }
     }
 }
@@ -78,6 +77,7 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
 @Composable
 private fun MakeTeamsGrid(navController: NavController, teams: List<Team>) {
     var teamNumber = 1
+    Text(text = "Number of teams: ${teams.size}")
     for (team in teams) {
         Text(
             modifier = Modifier.padding(10.dp),

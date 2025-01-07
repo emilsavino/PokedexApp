@@ -11,6 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -19,13 +21,12 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "team_preferences")
 
 class TeamsRepository(private val context: Context) {
-
     private val pokemonTeams = mutableListOf<Team>()
     private val TEAMS_KEY = stringPreferencesKey("teams")
     private val gson = Gson()
 
-    private val mutableTeamsFlow = MutableSharedFlow<List<Team>>()
-    val teamsFlow: Flow<List<Team>> = mutableTeamsFlow.asSharedFlow()
+    private val mutableTeamsFlow = MutableStateFlow<List<Team>>(emptyList())
+    val teamsFlow: StateFlow<List<Team>> = mutableTeamsFlow
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -37,16 +38,17 @@ class TeamsRepository(private val context: Context) {
         val savedTeams = fetchTeamsFromDataStore()
         pokemonTeams.clear()
         pokemonTeams.addAll(savedTeams)
+        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     suspend fun fetchTeams() {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun addTeam(newTeam: List<Pokemon>, teamName: String){
-        val team = Team(name = teamName, pokemons = newTeam)
-        pokemonTeams.add(team)
+    suspend fun addTeam(newTeam: Team) {
+        pokemonTeams.add(newTeam)
         updateDataStore()
+        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     suspend fun removeTeam(index: Int) {

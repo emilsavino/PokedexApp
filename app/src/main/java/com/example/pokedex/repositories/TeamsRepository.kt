@@ -51,11 +51,10 @@ class TeamsRepository(private val context: Context) {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun removeTeam(index: Int) {
-        if (index in pokemonTeams.indices){
-            pokemonTeams.removeAt(index)
-            updateDataStore()
-        }
+    suspend fun deleteTeam(teamName: String) {
+        pokemonTeams.removeAll { it.name == teamName }
+        updateDataStore()
+        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     suspend fun updateTeam(index: Int, updatedTeam: Team){

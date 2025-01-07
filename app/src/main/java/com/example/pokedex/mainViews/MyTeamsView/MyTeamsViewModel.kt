@@ -31,6 +31,12 @@ class MyTeamsViewModel : ViewModel() {
             }
         }
     }
+
+    fun deleteTeam(teamName: String) {
+        viewModelScope.launch {
+            teamsRepository.deleteTeam(teamName)
+        }
+    }
 }
 
 sealed class TeamsUIState {

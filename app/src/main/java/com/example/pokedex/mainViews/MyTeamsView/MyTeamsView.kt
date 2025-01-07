@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 import com.example.pokedex.shared.Team
+import androidx.compose.material3.Button
 
 @Composable
 fun MyTeamsView(navController: NavController) {
@@ -69,24 +70,38 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
             )
         }
         is TeamsUIState.Data -> {
-            MakeTeamsGrid(navController, teamsState.teams)
+            MakeTeamsGrid(navController, teamsState.teams, viewModel)
         }
     }
 }
 
 @Composable
-private fun MakeTeamsGrid(navController: NavController, teams: List<Team>) {
+private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewModel: MyTeamsViewModel) {
     var teamNumber = 1
-    Text(text = "Number of teams: ${teams.size}")
     for (team in teams) {
-        Text(
-            modifier = Modifier.padding(10.dp),
-            text = "Team $teamNumber: ${team.name}",
-            fontSize = 20.sp
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Text(
+                text = "Team $teamNumber: ${team.name}",
+                fontSize = 20.sp,
+                modifier = Modifier.weight(1f)
+            )
+
+            Button(
+                onClick = { viewModel.deleteTeam(team.name) },
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text(text = "Delete")
+            }
+        }
+
         teamNumber++
+
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.padding(start = 16.dp)
         ) {
             for (pokemons in team.pokemons.chunked(3)) {
                 Row(

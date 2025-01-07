@@ -71,6 +71,13 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
             viewModel.searchText.value = it
             viewModel.searchPokemonList()
         },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done,
+            autoCorrectEnabled = false
+        ),
+        keyboardActions = KeyboardActions.Default,
+
 
         placeholder = { Text(
             "Search...",

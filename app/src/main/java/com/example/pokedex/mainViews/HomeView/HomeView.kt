@@ -165,7 +165,7 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
             modifier = Modifier.padding(Padding),
         )
         Column {
-            for (pokemons in recentPokemons.chunked(2)) {
+            for (pokemons in recentPokemons.asReversed().chunked(2)) {
                 Row (
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center

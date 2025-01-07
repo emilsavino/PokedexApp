@@ -17,7 +17,7 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
     private val favouritesRepository = DependencyContainer.favouritesRepository
 
-    var favouriteButtonText by mutableStateOf("")
+    var isFavorited by mutableStateOf(false)
 
     private val _pokemon: MutableStateFlow<PokemonDetailUIState> = MutableStateFlow(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()
@@ -51,11 +51,7 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     }
 
     private fun onFavouriteButton(pokemon: Pokemon)  {
-        favouriteButtonText = if (favouritesRepository.pokemonIsFavourite(pokemon)) {
-            "Remove from Favourites"
-        } else {
-            "Add to Favourites"
-        }
+        isFavorited = favouritesRepository.pokemonIsFavourite(pokemon)
     }
 }
 

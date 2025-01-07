@@ -191,7 +191,7 @@ fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: Poke
         BackButton(navController)
 
         Text(
-            text = pokemon.name.replaceFirstChar { it.uppercase() },
+            text = FormatPokemonName(pokemon.name),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -220,6 +220,11 @@ fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: Poke
             )
         }
     }
+}
+
+private fun FormatPokemonName(name: String): String {
+    return name.split("-")
+        .joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
 }
 
 @Composable

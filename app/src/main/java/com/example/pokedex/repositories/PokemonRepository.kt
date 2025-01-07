@@ -56,26 +56,18 @@ class PokemonRepository {
     suspend fun searchPokemonByName(name: String, offset: Int) {
         var foundElements : Int = 0
         val elementsToFind = 20
-        var localOffset = offset
         val mutableFilteredList = mutableListOf<Result>()
+        var index = offset
 
-        for (result in allPokemonList.results)
+        while (index < allPokemonList.results.size && foundElements < elementsToFind)
         {
-            if (localOffset > 0)
-            {
-                localOffset--
-                continue
-            }
+            val result = allPokemonList.results.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
                 mutableFilteredList.add(result)
-
                 foundElements++
             }
-            if (foundElements == elementsToFind)
-            {
-                break
-            }
+            index++
         }
         mutableSearchFlow.emit(mutableFilteredList)
     }

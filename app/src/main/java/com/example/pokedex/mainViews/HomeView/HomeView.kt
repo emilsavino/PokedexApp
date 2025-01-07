@@ -3,10 +3,15 @@ package com.example.pokedex.mainViews.HomeView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,7 +47,12 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
             Text(text = "No Pokémon found")
         }
         is HomeUIState.Loading -> {
-            Text(text = "Loading Pokémon")
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
         }
         is HomeUIState.Data -> {
             MakeHomeView(navController, pokemonOfTheDay.pokemonOfTheDay, viewModel)
@@ -57,7 +68,8 @@ fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: Home
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99)),
+            .background(Color(0xFFFFDD99))
+            .verticalScroll(rememberScrollState()),
     ) {
         PokemonOfDayView(pokemon = pokemon, navController = navController)
         GamesRow(navController = navController)
@@ -163,23 +175,33 @@ fun GameBox(text: String, color: Color, onClick: () -> Unit) {
 
 @Composable
 fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(Padding),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
         Text(
             text = "Recently viewed Pokémon",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(Padding)
         )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(Padding),
-            contentPadding = PaddingValues(Padding),
-            horizontalArrangement = Arrangement.spacedBy(Padding),
-            verticalArrangement = Arrangement.spacedBy(Padding)
+        Column (
+            verticalArrangement = Arrangement.spacedBy(Padding),
+            modifier = Modifier.padding(Padding)
         ) {
-            items(recentPokemons.size) { index ->
-                RecentlyViewedPokemonItem(pokemon = recentPokemons[recentPokemons.size - 1 - index], navController = navController)
+            for (pokemons in recentPokemons.chunked(2)) {
+                Row (
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(Padding),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Spacer(Modifier.padding(10.dp))
+                    for(pokemon in pokemons) {
+                        RecentlyViewedPokemonItem(pokemon, navController)
+                    }
+                    Spacer(Modifier.padding(10.dp))
+                }
             }
         }
     }
@@ -190,7 +212,7 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
     Box(
         modifier = Modifier
             .size(BoxSize)
-            .background(Color(0xFFB2DFDB), RoundedCornerShape(Padding))
+            .background(Color.Gray.copy(0.6f), RoundedCornerShape(Padding))
             .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         contentAlignment = Alignment.Center
     ) {

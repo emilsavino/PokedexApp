@@ -179,7 +179,7 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
             verticalArrangement = Arrangement.spacedBy(Padding)
         ) {
             items(recentPokemons.size) { index ->
-                RecentlyViewedPokemonItem(pokemon = recentPokemons[index], navController = navController)
+                RecentlyViewedPokemonItem(pokemon = recentPokemons[recentPokemons.size - 1 - index], navController = navController)
             }
         }
     }

@@ -83,6 +83,9 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
         val teams = teamsRepository.teamsFlow.first()
         val team = teams.find { it.name == teamName }
         if (team != null) {
+            if (team.pokemons.size >= 6) {
+                throw IllegalStateException("A team cannot have more than 6 Pokémon.")
+            }
             val updatedTeam = team.copy(pokemons = team.pokemons + pokemon)
             teamsRepository.updateTeam(teams.indexOf(team), updatedTeam)
         }

@@ -3,8 +3,10 @@ package com.example.pokedex.mainViews.PokemonDetailView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -54,6 +56,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
     var showTeamCreationDialog by remember { mutableStateOf(false) }
     var newTeamName by remember { mutableStateOf("") }
     val teams = viewModel.teams.collectAsState().value
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -106,6 +109,16 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         ) {
             Text(text = "Go back")
         }
+
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage!!,
+                color = androidx.compose.ui.graphics.Color.Red,
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(8.dp)
+            )
+        }
     }
 
     if (showDialog) {
@@ -136,9 +149,13 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
                     onClick = {
                         showDialog = false
                         coroutineScope.launch {
-                            if (selectedTeam.isNotEmpty()) {
-                                viewModel.addToTeam(pokemon, selectedTeam)
-                                selectedTeam = ""
+                            try {
+                                if (selectedTeam.isNotEmpty()) {
+                                    viewModel.addToTeam(pokemon, selectedTeam)
+                                    errorMessage = null
+                                }
+                            } catch (e: IllegalStateException) {
+                                errorMessage = e.message
                             }
                         }
                     }
@@ -153,6 +170,55 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
             }
         )
     }
+
+    if (showTeamCreationDialog) {
+        AlertDialog(
+            onDismissRequest = { showTeamCreationDialog = false },
+            title = { Text(text = "Create New Team") },
+            text = {
+                Column {
+                    Text("Enter Team Name")
+                    androidx.compose.material3.OutlinedTextField(
+                        value = newTeamName,
+                        onValueChange = { newTeamName = it },
+                        label = { Text("Team Name") }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showTeamCreationDialog = false
+                        coroutineScope.launch {
+                            if (newTeamName.isNotBlank()) {
+                                viewModel.createNewTeam(pokemon, newTeamName)
+                                newTeamName = ""
+                            }
+                        }
+                    }
+                ) {
+                    Text(text = "Create")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTeamCreationDialog = false }) {
+                    Text(text = "Cancel")
+                }
+            }
+        )
+    }
+
+    if (errorMessage != null) {
+        Text(
+            text = errorMessage!!,
+            color = androidx.compose.ui.graphics.Color.Red,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .padding(8.dp)
+        )
+    }
+
 
 
     if (showTeamCreationDialog) {

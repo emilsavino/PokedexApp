@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.R
 
 private val Padding = 8.dp
 
@@ -38,19 +41,32 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
             Text(text = "No Pokémon found")
         }
         is HomeUIState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
+            MakeHomeLoadingScreen()
         }
         is HomeUIState.Data -> {
             MakeHomeView(navController, pokemonOfTheDay.pokemonOfTheDay, viewModel)
         }
     }
+}
 
-
+@Composable
+fun MakeHomeLoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.loading_screen),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        CircularProgressIndicator(
+            color = Color.Blue,
+            strokeWidth = 4.dp
+        )
+    }
 }
 
 @Composable

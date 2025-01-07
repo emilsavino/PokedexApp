@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
 
     // Compose preview support (optional)
     debugImplementation(libs.androidx.compose.ui.tooling)
@@ -97,5 +99,6 @@ dependencies {
 
     //Firebase authentication
     implementation(libs.firebase.analytics)
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
 }

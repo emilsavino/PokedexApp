@@ -18,6 +18,7 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val favouritesRepository = DependencyContainer.favouritesRepository
 
     var favouriteButtonText by mutableStateOf("")
+    var teamButtonText by mutableStateOf("Add to Team")
 
     private val _pokemon: MutableStateFlow<PokemonDetailUIState> = MutableStateFlow(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()

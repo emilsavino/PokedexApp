@@ -78,6 +78,17 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         }
 
         Button(
+            onClick = {
+                // TODO: Add functionality for Add to Team button
+            },
+            modifier = Modifier
+                .align(CenterHorizontally)
+                .padding(10.dp)
+        ) {
+            Text(text = viewModel.teamButtonText)
+        }
+
+        Button(
             onClick = { navController.popBackStack() },
             modifier = Modifier
                 .align(CenterHorizontally)

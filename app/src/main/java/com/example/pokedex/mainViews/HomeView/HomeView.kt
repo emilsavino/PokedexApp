@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +44,7 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
             Text(text = "Loading Pokémon")
         }
         is HomeUIState.Data -> {
-            MakeHomeView(navController, pokemonOfTheDay.pokemonOfTheDay)
+            MakeHomeView(navController, pokemonOfTheDay.pokemonOfTheDay, viewModel)
         }
     }
 
@@ -50,7 +52,8 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
 }
 
 @Composable
-fun MakeHomeView(navController: NavController, pokemon: Pokemon) {
+fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: HomeViewModel) {
+    val recentPokemons = viewModel.recentlyViewedPokemons.collectAsState().value
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +61,18 @@ fun MakeHomeView(navController: NavController, pokemon: Pokemon) {
     ) {
         PokemonOfDayView(pokemon = pokemon, navController = navController)
         GamesRow(navController = navController)
-        RecentlyViewedPokemons(recentPokemons = emptyList(), navController = navController)
+
+        when (recentPokemons) {
+            is RecentsUIState.Empty -> {
+                Text(text = "No recently viewed Pokémon")
+            }
+            is RecentsUIState.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+            }
+            is RecentsUIState.Data -> {
+                RecentlyViewedPokemons(recentPokemons = recentPokemons.pokemons, navController = navController)
+            }
+        }
     }
 }
 
@@ -188,7 +202,7 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.sprites),
+                painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize(1f)

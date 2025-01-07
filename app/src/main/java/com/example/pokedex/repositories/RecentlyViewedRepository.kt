@@ -40,7 +40,7 @@ class RecentlyViewedRepository(private val context: Context) {
         mutableRecentlyViewedPokemonsFlow.emit(recentlyViewedPokemons)
     }
 
-    suspend fun addToRecentsFavourite(pokemon: Pokemon) {
+    suspend fun addToRecents(pokemon: Pokemon) {
         if (!recentlyViewedPokemons.contains(pokemon)) {
             recentlyViewedPokemons.add(pokemon)
             updateDataStore()

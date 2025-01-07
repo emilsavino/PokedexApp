@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
     private val favouritesRepository = DependencyContainer.favouritesRepository
+    private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
 
     var favouriteButtonText by mutableStateOf("")
 
@@ -25,6 +26,7 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     init {
         viewModelScope.launch {
             pokemonRepository.pokemonFlow.collect { newPokemon ->
+                recentlyViewedRepository.addToRecents(newPokemon)
                 _pokemon.update {
                     onFavouriteButton(newPokemon)
                     PokemonDetailUIState.Data(newPokemon)

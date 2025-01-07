@@ -76,12 +76,18 @@ class PokemonRepository {
         val mutableFilteredList = mutableListOf<Pokemon>()
         var index = offset
 
-        while (index < allPokemonList.size && foundElements < elementsToFind)
+        while (index < allPokemonResultList.results.size && foundElements < elementsToFind)
         {
-            val result = allPokemonList.get(index)
+            val result = allPokemonResultList.results.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
-                mutableFilteredList.add(result)
+                var pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
+                while (pokemon == null)
+                {
+                    pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
+
+                }
+                mutableFilteredList.add(pokemon)
                 foundElements++
             }
             index++
@@ -96,12 +102,43 @@ class PokemonRepository {
         val mutableFilteredList = mutableListOf<Pokemon>()
         var index = offset
 
-        while (index < allPokemonList.size && foundElements < elementsToFind)
+        while (index < allPokemonResultList.results.size && foundElements < elementsToFind)
         {
-            val result = allPokemonList.get(index)
+            val result = allPokemonResultList.results.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
-                mutableFilteredList.add(result)
+                var pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
+                while (pokemon == null)
+                {
+                    pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
+                }
+                var typeRelevant = false
+                for (type in filterOptions)
+                {
+                    for (innerType in pokemon.types)
+                    {
+                        if (type == innerType.type.name)
+                        {
+                            typeRelevant = true
+                            break
+                        }
+                        if (typeRelevant)
+                        {
+                            break
+                        }
+                    }
+                }
+                if (filterOptions.isEmpty())
+                {
+                    typeRelevant = true
+                }
+
+                if (!typeRelevant)
+                {
+                    continue;
+                }
+
+                mutableFilteredList.add(pokemon)
                 foundElements++
             }
             index++

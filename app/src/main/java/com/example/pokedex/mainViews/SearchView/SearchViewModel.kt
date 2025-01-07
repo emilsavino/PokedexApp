@@ -35,7 +35,7 @@ class SearchViewModel: ViewModel() {
 
     fun searchPokemonList() {
         viewModelScope.launch {
-            pokemonRepository.searchPokemonByName(searchText.value,0)
+            pokemonRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsListFlow.value, selectedSortOptionFlow.value)
         }
     }
 
@@ -53,6 +53,7 @@ class SearchViewModel: ViewModel() {
                 add(option)
             }
         }
+        searchPokemonList()
     }
 
     fun getAllFilterOptions() : List<String>

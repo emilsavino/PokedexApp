@@ -43,8 +43,8 @@ class PokemonRepository {
         val localAllPokemonList = mutableListOf<Pokemon>()
         for (result in allPokemonResultList.results)
         {
-            dataStore.fetchPokemon(result.name)
-            localAllPokemonList.add(dataStore.fetchPokemon(result.name))
+            val pokemon = dataStore.fetchPokemon(result.name)
+            localAllPokemonList.add(pokemon)
         }
         allPokemonList = localAllPokemonList
     }

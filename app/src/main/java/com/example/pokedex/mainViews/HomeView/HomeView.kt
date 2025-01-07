@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -134,11 +135,11 @@ fun PokemonDetailsRow(pokemon: Pokemon) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "Name: ", fontSize = 16.sp)
+        Text(text = "Name: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Text(text = pokemon.name, fontSize = 16.sp)
         Spacer(modifier = Modifier.width(Padding))
-        Text(text = "Type: ", fontSize = 16.sp)
-        Text(text = "Fire", fontSize = 16.sp) // TODO: Update to display the correct type
+        Text(text = "Type: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(text = "Lightning", fontSize = 16.sp) // TODO: Update to display the correct type
     }
 }
 
@@ -147,7 +148,8 @@ fun GamesRow(navController: NavController) {
     Text(
         text = "Pokémon Games",
         style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(Padding)
+        modifier = Modifier.padding(Padding),
+        fontWeight = FontWeight.Bold
     )
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -157,15 +159,73 @@ fun GamesRow(navController: NavController) {
             color = MaterialTheme.colorScheme.primary,
             onClick = { navController.navigate(Screen.WhoIsThatPokemon.route) }
         ) {
-            Text(text = "Who's that Pokémon?", fontSize = 14.sp)
+            MakeWhosThatPokemonBox()
         }
 
         HomePageBox(
             color = MaterialTheme.colorScheme.secondary,
             onClick = { navController.navigate(Screen.PokemonTrivia.route) }
         ) {
-            Text(text = "Pokémon Trivia", fontSize = 14.sp)
+            MakePokemonTriviaBox()
         }
+    }
+}
+
+@Composable
+fun MakeWhosThatPokemonBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(Padding))
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.whos_that_pokemon),
+            contentDescription = "Who's that Pokémon?",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Text(
+            text = "Who's that Pokémon?",
+            fontSize = 14.sp,
+            color = Color.White,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+                .background(
+                    color = Color.Black.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(4.dp)
+        )
+    }
+}
+
+@Composable
+fun MakePokemonTriviaBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(Padding))
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.pokemon_trivia),
+            contentDescription = "Pokémon Trivia",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Text(
+            text = "Pokémon Trivia",
+            fontSize = 14.sp,
+            color = Color.White,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+                .background(
+                    color = Color.Black.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(4.dp)
+        )
     }
 }
 
@@ -176,9 +236,10 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
             .fillMaxWidth()
     ) {
         Text(
-            text = "Recently viewed Pokémon",
+            text = "Recently Viewed Pokémon",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(Padding),
+            fontWeight = FontWeight.Bold
         )
         Column {
             for (pokemons in recentPokemons.asReversed().chunked(2)) {
@@ -218,13 +279,17 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
                 contentScale = ContentScale.Fit
             )
             Text(
-                text = pokemon.name,
+                text = FormatPokemonName(pokemon.name),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center
             )
         }
     }
+}
+private fun FormatPokemonName(name: String): String {
+    return name.split("-")
+        .joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
 }
 
 @Composable

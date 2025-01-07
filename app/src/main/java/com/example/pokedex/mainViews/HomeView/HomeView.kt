@@ -3,12 +3,7 @@ package com.example.pokedex.mainViews.HomeView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -16,7 +11,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,8 +26,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 
-private val BoxSize = 150.dp
-private val BoxHeight = 120.dp
 private val Padding = 8.dp
 
 @Composable
@@ -144,32 +135,21 @@ fun GamesRow(navController: NavController) {
     )
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.Center
     ) {
-        GameBox(
-            text = "Who's that Pokémon?",
+        HomePageBox(
             color = MaterialTheme.colorScheme.primary,
             onClick = { navController.navigate(Screen.WhoIsThatPokemon.route) }
-        )
-        GameBox(
-            text = "Pokémon Trivia",
+        ) {
+            Text(text = "Who's that Pokémon?", fontSize = 14.sp)
+        }
+
+        HomePageBox(
             color = MaterialTheme.colorScheme.secondary,
             onClick = { navController.navigate(Screen.PokemonTrivia.route) }
-        )
-    }
-}
-
-@Composable
-fun GameBox(text: String, color: Color, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .width(BoxSize)
-            .height(BoxHeight)
-            .background(color, RoundedCornerShape(Padding))
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = text, fontSize = 14.sp)
+        ) {
+            Text(text = "Pokémon Trivia", fontSize = 14.sp)
+        }
     }
 }
 
@@ -178,14 +158,13 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
     Column (
         modifier = Modifier
             .fillMaxWidth()
-    ){
+    ) {
         Text(
             text = "Recently viewed Pokémon",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(Padding),
         )
-        Column (
-        ) {
+        Column {
             for (pokemons in recentPokemons.chunked(2)) {
                 Row (
                     modifier = Modifier.fillMaxWidth(),
@@ -202,14 +181,9 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
 
 @Composable
 fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
-    Box(
-        modifier = Modifier
-            .width(190.dp)
-            .height(160.dp)
-            .padding(6.dp)
-            .background(Color.Gray.copy(0.6f), RoundedCornerShape(Padding))
-            .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
-        contentAlignment = Alignment.Center
+    HomePageBox(
+        color = Color.Gray.copy(0.6f),
+        onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
     ) {
         Column(
             modifier = Modifier
@@ -235,4 +209,20 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
             )
         }
     }
+}
+
+@Composable
+fun HomePageBox(color: Color, onClick: () -> Unit, content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .width(190.dp)
+            .height(160.dp)
+            .padding(6.dp)
+            .background(color, RoundedCornerShape(Padding))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
+    }
+
 }

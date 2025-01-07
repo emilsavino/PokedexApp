@@ -1,13 +1,11 @@
 package com.example.pokedex.repositories
 
-import androidx.lifecycle.ViewModel
 import com.example.pokedex.data.PokemonDataStore
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -21,8 +19,8 @@ class PokemonRepository {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    private var allPokemonList = PokemonList(emptyList())
-
+    private var allPokemonResultList = PokemonList(emptyList())
+    private var allPokemonList = listOf<Pokemon>()
     private var pokemonList = PokemonList(emptyList<Result>())
     private val mutablePokemonsFlow = MutableSharedFlow<PokemonList>()
     val pokemonsFlow: Flow<PokemonList> = mutablePokemonsFlow.asSharedFlow()
@@ -39,9 +37,16 @@ class PokemonRepository {
         }
     }
 
-    suspend fun fetchAllPokemons()
+    private suspend fun fetchAllPokemons()
     {
-        allPokemonList = dataStore.fetchPokemons(10000,0)
+        allPokemonResultList = dataStore.fetchPokemons(10000,0)
+        val localAllPokemonList = mutableListOf<Pokemon>()
+        for (result in allPokemonResultList.results)
+        {
+            dataStore.fetchPokemon(result.name)
+            localAllPokemonList.add(dataStore.fetchPokemon(result.name))
+        }
+        allPokemonList = localAllPokemonList
     }
 
     suspend fun fetchPokemons(limit: Int, offset: Int) {
@@ -59,9 +64,9 @@ class PokemonRepository {
         val mutableFilteredList = mutableListOf<Result>()
         var index = offset
 
-        while (index < allPokemonList.results.size && foundElements < elementsToFind)
+        while (index < allPokemonResultList.results.size && foundElements < elementsToFind)
         {
-            val result = allPokemonList.results.get(index)
+            val result = allPokemonResultList.results.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
                 mutableFilteredList.add(result)

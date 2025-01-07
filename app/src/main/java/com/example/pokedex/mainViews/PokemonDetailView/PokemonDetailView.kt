@@ -211,7 +211,6 @@ fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: Poke
                 .padding(8.dp)
         ) {
             Icon(
-                //Todo: Move this statement into the viewmodel in some way
                 imageVector = if (viewModel.isFavorited)
                     Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
 

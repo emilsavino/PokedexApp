@@ -2,7 +2,7 @@ package com.example.pokedex.repositories
 
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
-import com.example.pokedex.data.PokemonDataStore
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class PokemonRepository {
-    private var dataStore = PokemonDataStore()
+    private var dataStore = DependencyContainer.pokemonDataStore
 
     private val pokemonTeams = mutableListOf<List<Pokemon>>()
 

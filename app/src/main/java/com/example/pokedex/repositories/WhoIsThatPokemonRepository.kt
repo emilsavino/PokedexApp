@@ -1,7 +1,7 @@
 package com.example.pokedex.repositories
 
 import androidx.compose.ui.graphics.Color
-import com.example.pokedex.data.PokemonDataStore
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.AbilityObject
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.Pokemon
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 class WhoIsThatPokemonRepository {
-    val dataStore = PokemonDataStore()
+    val dataStore = DependencyContainer.pokemonDataStore
 
     private val whoIsThatPokemonMutableSharedFlow = MutableSharedFlow<WhoIsThatPokemon>()
     val whoIsThatPokemonSharedFlow = whoIsThatPokemonMutableSharedFlow

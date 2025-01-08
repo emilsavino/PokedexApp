@@ -8,7 +8,6 @@ data class Pokemon(
 )
 
 
-fun String.FormatPokemonName (): String {
-    return this.split("-")
-        .joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
+fun String.formatPokemonName (): String {
+    return this.split("-").joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
 }

@@ -33,7 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.navigation.Screen
-import com.example.pokedex.shared.FormatPokemonName
+import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
 
 @Composable
@@ -244,7 +244,7 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController) {
                     .padding(end = 2.dp)
             )*/
             Text(
-                text = pokemon.name.FormatPokemonName(),
+                text = pokemon.name.formatPokemonName(),
                 color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold

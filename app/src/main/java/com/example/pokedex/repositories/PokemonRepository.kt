@@ -91,11 +91,7 @@ class PokemonRepository {
     }
 
     suspend fun getPokemonByName(name: String) {
-        var pokemon = dataStore.pokemonMap.get(name)
-        while (pokemon == null)
-        {
-            pokemon = dataStore.pokemonMap.get(name)
-        }
+        var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
         mutablePokemonFlow.emit(pokemon)
     }
 }

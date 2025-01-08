@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Local
 
 class PokemonDataStore {
     private val api = RetrofitInstance.apiService
@@ -30,7 +29,20 @@ class PokemonDataStore {
 
     fun getAllPokemonResults() : List<Result>
     {
+        while (allPokemonResultList.results.isEmpty()) {}
         return allPokemonResultList.results
+    }
+
+    suspend fun getPokemonFromMapFallBackAPIPlaygroundClassFeature(name: String) : Pokemon
+    {
+        var pokemon = pokemonMap[name]
+
+        if (pokemon != null) {
+            return pokemon
+        }
+
+        pokemonMap[name] = api.getPokemon(name)
+        return pokemonMap[name]!!
     }
 
     private suspend fun fetchAllPokemons()

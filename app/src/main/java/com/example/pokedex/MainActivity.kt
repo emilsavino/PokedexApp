@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.mainViews.ProfileView.signIn.SignInViewModel
 import com.example.pokedex.navigation.Navigation
 import com.example.pokedex.navigation.TabBar
 import com.example.pokedex.ui.theme.PokedexTheme
@@ -35,7 +36,7 @@ fun MainContent() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            TabBar(navController = navController)
+            TabBar(navController = navController, signInViewModel = SignInViewModel())
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {

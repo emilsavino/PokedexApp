@@ -35,7 +35,7 @@ class PokemonDataStore {
             return pokemon
         }
 
-        pokemonMap[name] = api.getPokemon(name)
+        pokemonMap[name] = api.getPokemon(name.lowercase())
         return pokemonMap[name]!!
     }
 

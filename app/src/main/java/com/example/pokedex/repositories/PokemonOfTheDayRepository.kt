@@ -10,8 +10,8 @@ class PokemonOfTheDayRepository {
 
     private val dataStore = DependencyContainer.pokemonDataStore
 
-    private val mutablePokemonOfTheDayFlow = MutableSharedFlow<Pokemon>()
-    val pokemonOfTheDayFlow: Flow<Pokemon> = mutablePokemonOfTheDayFlow.asSharedFlow()
+    private val mutablePokemonOfTheDayFlow = MutableSharedFlow<Pokemon?>()
+    val pokemonOfTheDayFlow: Flow<Pokemon?> = mutablePokemonOfTheDayFlow.asSharedFlow()
 
 
     suspend fun getPokemonOfTheDayByName(name: String) {

@@ -34,8 +34,14 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             pokemonOfTheDayRepository.pokemonOfTheDayFlow
                 .collect { pokemon ->
-                    _pokemonOfTheDay.update {
-                        HomeUIState.Data(pokemon)
+                    if (pokemon == null) {
+                        getPokemonOfTheDay()
+                    }
+                    else
+                    {
+                        _pokemonOfTheDay.update {
+                            HomeUIState.Data(pokemon)
+                        }
                     }
                 }
         }
@@ -48,7 +54,7 @@ class HomeViewModel : ViewModel() {
         _pokemonOfTheDay.update {
             HomeUIState.Loading
         }
-        pokemonOfTheDayRepository.getPokemonOfTheDayByName("pikachu")
+        pokemonOfTheDayRepository.getPokemonOfTheDayByName("Pikachu")
     }
 
     fun getRecentlyViewedPokemons() = viewModelScope.launch {

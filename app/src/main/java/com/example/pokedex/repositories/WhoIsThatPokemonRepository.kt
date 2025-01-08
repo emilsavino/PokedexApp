@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 class WhoIsThatPokemonRepository {
     val dataStore = DependencyContainer.pokemonDataStore
 
-    private val whoIsThatPokemonMutableSharedFlow = MutableSharedFlow<WhoIsThatPokemon>()
+    private val whoIsThatPokemonMutableSharedFlow = MutableSharedFlow<WhoIsThatPokemon?>()
     val whoIsThatPokemonSharedFlow = whoIsThatPokemonMutableSharedFlow
 
 
@@ -27,7 +27,15 @@ class WhoIsThatPokemonRepository {
             Option("Bulbasaur", Color.Red),
             Option("Pikachu", Color.Red)
         )
-        val whoIsThatBro = WhoIsThatPokemon(pokemon, options)
-        whoIsThatPokemonSharedFlow.emit(whoIsThatBro)
+        if (pokemon == null)
+        {
+            whoIsThatPokemonMutableSharedFlow.emit(null)
+        }
+        else
+        {
+            val whoIsThatBro = WhoIsThatPokemon(pokemon, options)
+            whoIsThatPokemonSharedFlow.emit(whoIsThatBro)
+        }
+
     }
 }

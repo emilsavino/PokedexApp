@@ -37,7 +37,7 @@ class GoogleAuthenticationManager(val context: Context) {
         CoroutineScope(Dispatchers.IO).launch { isSignedIn = fetchSignedIn() }
     }
 
-    fun createNonce(): String {
+    private fun createNonce(): String {
         val rawNonce = UUID.randomUUID().toString()
         val bytes = rawNonce.toByteArray()
         val md = MessageDigest.getInstance("SHA-256")

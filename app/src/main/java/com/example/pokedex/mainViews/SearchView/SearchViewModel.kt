@@ -8,6 +8,7 @@ import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
@@ -17,19 +18,25 @@ class SearchViewModel: ViewModel() {
     var selectedSortOption = mutableStateOf("")
     var searchText = mutableStateOf("")
 
-    private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
-    val pokemonList: StateFlow<List<Pokemon>> = _pokemonList.asStateFlow()
+    private val _pokemonList: MutableStateFlow<SearchUIState> = MutableStateFlow(SearchUIState.Empty)
+    val pokemonList: StateFlow<SearchUIState> = _pokemonList.asStateFlow()
 
     init {
         viewModelScope.launch {
             pokemonRepository.searchFlow.collect { newPokemonList ->
-                _pokemonList.value = newPokemonList
+                _pokemonList.update {
+                    SearchUIState.Data(newPokemonList)
+                }
             }
         }
         searchPokemonList()
     }
 
     fun searchPokemonList() {
+        _pokemonList.update {
+            SearchUIState.Loading
+
+        }
         viewModelScope.launch {
             pokemonRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value)
         }

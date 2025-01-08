@@ -68,7 +68,14 @@ class SearchViewModel: ViewModel() {
 
     fun selectSortOption(option : String)
     {
-        selectedSortOptionMutableFlow.value = option
+        if (selectedSortOptionMutableFlow.value == option)
+        {
+            selectedSortOptionMutableFlow.value = ""
+        }
+        else
+        {
+            selectedSortOptionMutableFlow.value = option
+        }
         searchPokemonList()
     }
 }

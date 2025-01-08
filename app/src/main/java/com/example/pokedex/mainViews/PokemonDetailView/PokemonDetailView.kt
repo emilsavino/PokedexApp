@@ -68,12 +68,11 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
 @Composable
 fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedTeam by remember { mutableStateOf("") }
-    var showTeamCreationDialog by remember { mutableStateOf(false) }
-    var newTeamName by remember { mutableStateOf("") }
-    val teams = viewModel.teams.collectAsState().value
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val showDialog by viewModel.showDialog.collectAsState()
+    val selectedTeam by viewModel.selectedTeam.collectAsState()
+    val newTeamName by viewModel.newTeamName.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val teams by viewModel.teams.collectAsState()
 
     Column(
         modifier = Modifier
@@ -81,7 +80,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
             .background(Color(0xFFFFDD99))
             .padding(16.dp)
     ) {
-        CreateTopRow(navController, pokemon, viewModel, showDialog = { showDialog = true })
+        CreateTopRow(navController, pokemon, viewModel) { viewModel.setShowDialog(true) }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -119,37 +118,31 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         TeamSelectionDialog(
             teams = teams,
             onTeamSelected = { teamName ->
-                showDialog = false
+                viewModel.setSelectedTeam(teamName)
+                viewModel.setShowDialog(false)
                 coroutineScope.launch {
-                    try {
-                        if (teamName.isNotEmpty()) {
-                            viewModel.addToTeam(pokemon, teamName)
-                            errorMessage = null
-                        }
-                    } catch (e: IllegalStateException) {
-                        errorMessage = e.message
-                    }
+                    viewModel.confirmAddToTeam(pokemon)
                 }
             },
-            onCreateNewTeam = { showDialog = false; showTeamCreationDialog = true },
-            onDismiss = { showDialog = false }
+            onCreateNewTeam = {
+                viewModel.setShowDialog(false)
+                viewModel.setNewTeamName("")
+            },
+            onDismiss = { viewModel.setShowDialog(false) }
         )
     }
 
-    if (showTeamCreationDialog) {
+    if (newTeamName.isNotEmpty()) {
         TeamCreationDialog(
             newTeamName = newTeamName,
-            onTeamNameChange = { newTeamName = it },
+            onTeamNameChange = { viewModel.setNewTeamName(it) },
             onCreateTeam = {
-                showTeamCreationDialog = false
                 coroutineScope.launch {
-                    if (newTeamName.isNotBlank()) {
-                        viewModel.createNewTeam(pokemon, newTeamName)
-                        newTeamName = ""
-                    }
+                    viewModel.createTeamWithPokemon(pokemon)
                 }
+                viewModel.setNewTeamName("")
             },
-            onDismiss = { showTeamCreationDialog = false }
+            onDismiss = { viewModel.setNewTeamName("") }
         )
     }
 }
@@ -169,7 +162,7 @@ fun TeamSelectionDialog(
                 if (teams.isEmpty()) {
                     Text(text = "No teams available")
                 } else {
-                    for (team in teams) {
+                    teams.forEach { team ->
                         TextButton(onClick = { onTeamSelected(team.name) }) {
                             Text(text = team.name)
                         }
@@ -180,11 +173,7 @@ fun TeamSelectionDialog(
                 }
             }
         },
-        confirmButton = {
-            TextButton(onClick = { /* Confirm handled in team selection */ }) {
-                Text(text = "Confirm")
-            }
-        },
+        confirmButton = {},
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(text = "Cancel")

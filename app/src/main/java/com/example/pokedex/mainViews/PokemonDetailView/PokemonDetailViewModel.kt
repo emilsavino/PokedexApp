@@ -33,6 +33,18 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val _teams: MutableStateFlow<List<Team>> = MutableStateFlow(emptyList())
     val teams: StateFlow<List<Team>> = teamsRepository.teamsFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
+
+    private val _selectedTeam = MutableStateFlow("")
+    val selectedTeam: StateFlow<String> = _selectedTeam.asStateFlow()
+
+    private val _newTeamName = MutableStateFlow("")
+    val newTeamName: StateFlow<String> = _newTeamName.asStateFlow()
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
     init {
         viewModelScope.launch {
             pokemonRepository.pokemonFlow.collect { newPokemon ->
@@ -51,6 +63,22 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
         }
 
         getPokemonByName()
+    }
+
+    fun setShowDialog(value: Boolean) {
+        _showDialog.value = value
+    }
+
+    fun setSelectedTeam(teamName: String) {
+        _selectedTeam.value = teamName
+    }
+
+    fun setNewTeamName(teamName: String) {
+        _newTeamName.value = teamName
+    }
+
+    fun setErrorMessage(message: String?) {
+        _errorMessage.value = message
     }
 
     private fun getPokemonByName() = viewModelScope.launch {
@@ -89,6 +117,25 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
             }
             val updatedTeam = team.copy(pokemons = team.pokemons + pokemon)
             teamsRepository.updateTeam(teams.indexOf(team), updatedTeam)
+        }
+    }
+
+    suspend fun confirmAddToTeam(pokemon: Pokemon) {
+        if (_selectedTeam.value.isNotEmpty()) {
+            try {
+                addToTeam(pokemon, _selectedTeam.value)
+                _errorMessage.value = null
+            } catch (e: IllegalStateException) {
+                _errorMessage.value = e.message
+            }
+        }
+    }
+
+    suspend fun createTeamWithPokemon(pokemon: Pokemon) {
+        if (_newTeamName.value.isNotBlank()) {
+            val newTeam = Team(name = _newTeamName.value, pokemons = listOf(pokemon))
+            teamsRepository.addTeam(newTeam)
+            _newTeamName.value = ""
         }
     }
 

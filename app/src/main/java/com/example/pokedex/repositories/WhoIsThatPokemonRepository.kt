@@ -20,7 +20,7 @@ class WhoIsThatPokemonRepository {
 
     suspend fun getWhoIsThatPokemon()
     {
-        val pokemon = dataStore.fetchPokemon("charmander")
+        val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature("pikachu")
         val options = listOf(
             Option("Charmander", Color.Green),
             Option("Squirtle", Color.Red),

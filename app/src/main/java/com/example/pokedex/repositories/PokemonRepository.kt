@@ -41,11 +41,7 @@ class PokemonRepository {
             val result = dataStore.getAllPokemonResults().get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
-                var pokemon = dataStore.pokemonMap.get(result.name.capitalize(Locale("DK")))
-                while (pokemon == null)
-                {
-                    pokemon = dataStore.pokemonMap.get(result.name.capitalize(Locale("DK")))
-                }
+                var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(result.name)
                 var typeRelevant = false
                 for (type in filterOptions)
                 {

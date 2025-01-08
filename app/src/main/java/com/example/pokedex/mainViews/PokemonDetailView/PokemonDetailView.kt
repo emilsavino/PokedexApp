@@ -45,6 +45,7 @@ import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.Team
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Icon
+import kotlinx.coroutines.CoroutineScope
 
 
 @Composable
@@ -60,15 +61,14 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
             LoadingState()
         }
         is PokemonDetailUIState.Data -> {
-            PokemonDetail(navController, pokemon.pokemon, viewModel)
+            PokemonDetailContent(navController, pokemon.pokemon, viewModel)
         }
     }
 }
 
 @Composable
-fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
+fun PokemonDetailContent(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    val teams by viewModel.teams.collectAsState()
 
     Column(
         modifier = Modifier
@@ -99,20 +99,23 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         CreateEvoBox()
 
         if (viewModel.errorMessage != null) {
-            Text(
-                text = viewModel.errorMessage!!,
-                color = Color.Red,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-                    .padding(8.dp)
-            )
+            ErrorMessage(viewModel.errorMessage!!)
         }
     }
 
+    TeamSelectionAndCreationDialogs(navController, pokemon, viewModel, coroutineScope)
+}
+
+@Composable
+fun TeamSelectionAndCreationDialogs(
+    navController: NavController,
+    pokemon: Pokemon,
+    viewModel: PokemonDetailViewModel,
+    coroutineScope: CoroutineScope
+) {
     if (viewModel.showDialog) {
         TeamSelectionDialog(
-            teams = teams,
+            teams = viewModel.teams.collectAsState().value,
             onTeamSelected = { teamName ->
                 viewModel.selectedTeam = teamName
                 viewModel.showDialog = false
@@ -136,6 +139,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
                 coroutineScope.launch {
                     val creationSuccessful = viewModel.createTeam(pokemon)
                     if (creationSuccessful) {
+                        viewModel.showTeamCreationDialog = false
                     }
                 }
             },
@@ -143,6 +147,40 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
                 viewModel.onCancelTeamCreation()
             }
         )
+    }
+}
+
+@Composable
+fun ErrorMessage(errorMessage: String) {
+    Text(
+        text = errorMessage,
+        color = Color.Red,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .padding(8.dp)
+    )
+}
+
+@Composable
+fun TeamSelectionContent(
+    teams: List<Team>,
+    onTeamSelected: (String) -> Unit,
+    onCreateNewTeam: () -> Unit
+) {
+    Column {
+        if (teams.isEmpty()) {
+            Text(text = "No teams available")
+        } else {
+            teams.forEach { team ->
+                TextButton(onClick = { onTeamSelected(team.name) }) {
+                    Text(text = team.name)
+                }
+            }
+        }
+        TextButton(onClick = onCreateNewTeam) {
+            Text(text = "Create New Team")
+        }
     }
 }
 
@@ -157,20 +195,11 @@ fun TeamSelectionDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = "Select Team") },
         text = {
-            Column {
-                if (teams.isEmpty()) {
-                    Text(text = "No teams available")
-                } else {
-                    teams.forEach { team ->
-                        TextButton(onClick = { onTeamSelected(team.name) }) {
-                            Text(text = team.name)
-                        }
-                    }
-                }
-                TextButton(onClick = onCreateNewTeam) {
-                    Text(text = "Create New Team")
-                }
-            }
+            TeamSelectionContent(
+                teams = teams,
+                onTeamSelected = onTeamSelected,
+                onCreateNewTeam = onCreateNewTeam
+            )
         },
         confirmButton = {},
         dismissButton = {
@@ -179,6 +208,22 @@ fun TeamSelectionDialog(
             }
         }
     )
+}
+
+
+@Composable
+fun TeamCreationContent(
+    newTeamName: String,
+    onTeamNameChange: (String) -> Unit
+) {
+    Column {
+        Text("Enter Team Name")
+        OutlinedTextField(
+            value = newTeamName,
+            onValueChange = onTeamNameChange,
+            label = { Text("Team Name") }
+        )
+    }
 }
 
 @Composable
@@ -192,14 +237,10 @@ fun TeamCreationDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = "Create New Team") },
         text = {
-            Column {
-                Text("Enter Team Name")
-                OutlinedTextField(
-                    value = newTeamName,
-                    onValueChange = onTeamNameChange,
-                    label = { Text("Team Name") }
-                )
-            }
+            TeamCreationContent(
+                newTeamName = newTeamName,
+                onTeamNameChange = onTeamNameChange
+            )
         },
         confirmButton = {
             TextButton(onClick = onCreateTeam) {
@@ -213,6 +254,7 @@ fun TeamCreationDialog(
         }
     )
 }
+
 
 @Composable
 fun CreateTopRow(

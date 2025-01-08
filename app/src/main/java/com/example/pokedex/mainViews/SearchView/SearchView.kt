@@ -12,7 +12,8 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.material3.Icon
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -32,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.FormatPokemonName
 import com.example.pokedex.shared.Pokemon
@@ -66,6 +66,8 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
 
 @Composable
 fun MakeSearchTools(viewModel: SearchViewModel) {
+    var filterExpanded = remember { mutableStateOf(false) }
+    var sortExpanded = remember { mutableStateOf(false) }
     TextField(
         value = viewModel.searchText.value,
         onValueChange = {
@@ -100,45 +102,63 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        MakeFilterOrSortButton("Filter")
-
-        Spacer(modifier = Modifier.padding(10.dp))
-
-        MakeFilterOrSortButton("Sort")
-    }
-}
-
-//Dog water method, but it works
-@Composable
-private fun MakeFilterOrSortButton(name: String) {
-    Button(
-        onClick = {  },
-        colors = buttonColors(containerColor = Color(0xfff2f2f2))
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
+        val selectedColor = Color(0x636363FF)
+        val unselectedColor = Color(0x00FF00FF)
+        val textColor = Color.Black
+        Button(
+            onClick = { filterExpanded.value = true},
+            colors = buttonColors(containerColor = Color(0xfff2f2f2))
         ) {
-            Icon(
-                imageVector = if (name.contains("Filter"))
-                    Icons.Filled.List else Icons.Filled.MoreVert,
-                contentDescription = name,
-                tint = Color.Black
-            )
-
-            Spacer(modifier = Modifier.padding(4.dp))
-
             Text(
-                text = name,
+                text = "Filter",
                 color = Color.Black
             )
+            DropdownMenu(
+                expanded = filterExpanded.value,
+                onDismissRequest = { filterExpanded.value = false }
+            ) {
+                val selectedOptions = viewModel.selectedFilterOptionsListFlow.collectAsState()
+                for (option in viewModel.getAllFilterOptions())
+                {
+                    DropdownMenuItem(
+                        text = { Text(option, color = textColor) },
+                        modifier = Modifier.background(color = if (selectedOptions.value.contains(option)) selectedColor else unselectedColor),
+                        onClick = { viewModel.selectFilterOption(option) }
+                    )
+                }
+            }
+        }
+        Button(
+            onClick = { sortExpanded.value = true },
+            colors = buttonColors(containerColor = Color(0xfff2f2f2))
+        ) {
+            Text(
+                text = "Sort",
+                color = Color.Black
+            )
+            DropdownMenu(
+                expanded = sortExpanded.value,
+                onDismissRequest = { sortExpanded.value = false }
+            ) {
+                val selectedOption = viewModel.selectedSortOptionFlow.collectAsState()
+                for (option in viewModel.getAllSortOptions())
+                {
+                    DropdownMenuItem(
+                        text = { Text(option, color = textColor) },
+                        modifier = Modifier.background(color = if (selectedOption.value == option) selectedColor else unselectedColor),
+                        onClick = {
+                            sortExpanded.value = false
+                            viewModel.selectSortOption(option)
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-fun MakeSearchList(pokemons: List<Result>, navController: NavController) {
+fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -150,7 +170,7 @@ fun MakeSearchList(pokemons: List<Result>, navController: NavController) {
 }
 
 @Composable
-fun SearchListItem(pokemon: Result, navController: NavController) {
+fun SearchListItem(pokemon: Pokemon, navController: NavController) {
     Button(
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         modifier = Modifier

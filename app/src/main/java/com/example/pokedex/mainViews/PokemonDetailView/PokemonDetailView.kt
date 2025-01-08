@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.pokedex.shared.BackButton
+import com.example.pokedex.shared.FormatPokemonName
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch
 
@@ -191,7 +192,7 @@ fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: Poke
         BackButton(navController)
 
         Text(
-            text = FormatPokemonName(pokemon.name),
+            text = pokemon.name.FormatPokemonName(),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -220,11 +221,6 @@ fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: Poke
             )
         }
     }
-}
-
-private fun FormatPokemonName(name: String): String {
-    return name.split("-")
-        .joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
 }
 
 @Composable

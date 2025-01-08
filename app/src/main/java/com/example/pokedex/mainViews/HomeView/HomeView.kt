@@ -29,6 +29,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.R
+import com.example.pokedex.shared.FormatPokemonName
 
 private val Padding = 8.dp
 
@@ -279,17 +280,13 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
                 contentScale = ContentScale.Fit
             )
             Text(
-                text = FormatPokemonName(pokemon.name),
+                text = pokemon.name.FormatPokemonName(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center
             )
         }
     }
-}
-private fun FormatPokemonName(name: String): String {
-    return name.split("-")
-        .joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
 }
 
 @Composable

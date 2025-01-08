@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
+import com.example.pokedex.shared.FormatPokemonName
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Result
 
@@ -172,18 +173,13 @@ fun SearchListItem(pokemon: Result, navController: NavController) {
                     .padding(end = 2.dp)
             )*/
             Text(
-                text = FormatPokemonName(pokemon.name),
+                text = pokemon.name.FormatPokemonName(),
                 color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
         }
     }
-}
-
-private fun FormatPokemonName(name: String): String {
-    return name.split("-")
-        .joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
 }
 
 @Preview(showBackground = true)

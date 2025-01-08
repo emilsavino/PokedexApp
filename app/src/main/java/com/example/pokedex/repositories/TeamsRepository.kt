@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -53,6 +54,24 @@ class TeamsRepository(private val context: Context) {
 
     suspend fun deleteTeam(teamName: String) {
         pokemonTeams.removeAll { it.name == teamName }
+        updateDataStore()
+        mutableTeamsFlow.emit(pokemonTeams)
+    }
+
+    suspend fun addToTeam(pokemon: Pokemon, teamName: String) {
+        val teamIndex = pokemonTeams.indexOfFirst { it.name == teamName }
+
+        if (teamIndex == -1) {
+            throw IllegalArgumentException("Team with name $teamName does not exist.")
+        }
+
+        val team = pokemonTeams[teamIndex]
+        if (team.pokemons.size >= 6) {
+            throw IllegalStateException("A team cannot have more than 6 Pokémon.")
+        }
+
+        val updatedTeam = team.copy(pokemons = team.pokemons + pokemon)
+        pokemonTeams[teamIndex] = updatedTeam
         updateDataStore()
         mutableTeamsFlow.emit(pokemonTeams)
     }

@@ -20,12 +20,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.R
-import com.example.pokedex.mainViews.ProfileView.signIn.SignInState
-import com.example.pokedex.mainViews.ProfileView.signIn.SignInViewModel
 
 
 @Composable
-fun TabBar(navController: NavController, signInViewModel: SignInViewModel) {
+fun TabBar(navController: NavController) {
     val viewModel = remember { TabBarViewModel() }
 
     NavigationBar {
@@ -34,15 +32,7 @@ fun TabBar(navController: NavController, signInViewModel: SignInViewModel) {
                 selected = index == viewModel.selectedTabIndex,
                 onClick = {
                     viewModel.selectedTabIndex = index
-                    if (tab.title == "Profile") {
-                        if (signInViewModel.signInState.value == SignInState.Success) {
-                            navController.navigate(tab.route)
-                        } else {
-                            navController.navigate(Screen.SignIn.route)
-                        }
-                    } else {
                         navController.navigate(tab.route)
-                    }
                 },
                 icon = {
                     if (tab.title == "Home") {
@@ -97,5 +87,5 @@ fun CreateOtherButtons(tab: Tab) {
 @Composable
 fun TabBarPreview() {
     val NavController = rememberNavController()
-    TabBar(navController = NavController, signInViewModel = SignInViewModel())
+    TabBar(navController = NavController)
 }

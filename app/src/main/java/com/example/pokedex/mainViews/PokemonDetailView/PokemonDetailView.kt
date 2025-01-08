@@ -69,6 +69,7 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
 fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
     val coroutineScope = rememberCoroutineScope()
     val showDialog by viewModel.showDialog.collectAsState()
+    val showTeamCreationDialog by viewModel.showTeamCreationDialog.collectAsState()
     val selectedTeam by viewModel.selectedTeam.collectAsState()
     val newTeamName by viewModel.newTeamName.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
@@ -126,23 +127,29 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
             },
             onCreateNewTeam = {
                 viewModel.setShowDialog(false)
-                viewModel.setNewTeamName("")
+                viewModel.setShowTeamCreationDialog(true)
             },
             onDismiss = { viewModel.setShowDialog(false) }
         )
     }
 
-    if (newTeamName.isNotEmpty()) {
+    // Show Team Creation Dialog
+    if (showTeamCreationDialog) {
         TeamCreationDialog(
             newTeamName = newTeamName,
             onTeamNameChange = { viewModel.setNewTeamName(it) },
             onCreateTeam = {
                 coroutineScope.launch {
-                    viewModel.createTeamWithPokemon(pokemon)
+                    val creationSuccessful = viewModel.onCreateTeam(pokemon)
+                    if (creationSuccessful) {
+                        viewModel.setShowTeamCreationDialog(false)
+                    }
                 }
-                viewModel.setNewTeamName("")
             },
-            onDismiss = { viewModel.setNewTeamName("") }
+            onDismiss = {
+                viewModel.setNewTeamName("")
+                viewModel.setShowTeamCreationDialog(false)
+            }
         )
     }
 }

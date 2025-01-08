@@ -45,10 +45,13 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    private val _showTeamCreationDialog = MutableStateFlow(false)
+    val showTeamCreationDialog: StateFlow<Boolean> = _showTeamCreationDialog.asStateFlow()
+
     init {
         viewModelScope.launch {
             pokemonRepository.pokemonFlow.collect { newPokemon ->
-                recentlyViewedRepository.addToRecents(newPokemon) // Track recently viewed Pokémon
+                recentlyViewedRepository.addToRecents(newPokemon)
                 _pokemon.update {
                     onFavouriteButton(newPokemon)
                     PokemonDetailUIState.Data(newPokemon)
@@ -91,7 +94,6 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     suspend fun savePokemon(pokemon: Pokemon) {
         if (favouritesRepository.pokemonIsFavourite(pokemon)) {
             favouritesRepository.removeFromFavourites(pokemon)
-            isFavorited = false
         } else {
             favouritesRepository.makeFavourite(pokemon)
             isFavorited = true
@@ -101,11 +103,6 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
 
     private fun onFavouriteButton(pokemon: Pokemon) {
         isFavorited = favouritesRepository.pokemonIsFavourite(pokemon)
-        favouriteButtonText = if (isFavorited) {
-            "Remove from Favourites"
-        } else {
-            "Add to Favourites"
-        }
     }
 
     suspend fun addToTeam(pokemon: Pokemon, teamName: String) {
@@ -142,6 +139,23 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
         val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
         teamsRepository.addTeam(newTeam)
+    }
+
+    fun setShowTeamCreationDialog(value: Boolean) {
+        _showTeamCreationDialog.value = value
+    }
+
+    suspend fun onCreateTeam(pokemon: Pokemon): Boolean {
+        if (_newTeamName.value.isNotBlank()) {
+            val newTeam = Team(name = _newTeamName.value, pokemons = listOf(pokemon))
+            teamsRepository.addTeam(newTeam)
+            setNewTeamName("")
+            setErrorMessage(null)
+            return true
+        } else {
+            setErrorMessage("Team name cannot be empty")
+            return false
+        }
     }
 }
 

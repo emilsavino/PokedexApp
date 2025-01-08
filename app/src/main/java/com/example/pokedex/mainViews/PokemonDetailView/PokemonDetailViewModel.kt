@@ -149,6 +149,19 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
             return false
         }
     }
+
+    fun onTeamSelected(pokemon: Pokemon, teamName: String) {
+        viewModelScope.launch {
+            setSelectedTeam(teamName)
+            setShowDialog(false)
+            try {
+                confirmAddToTeam(pokemon)
+                setErrorMessage(null)
+            } catch (e: IllegalStateException) {
+                setErrorMessage(e.message)
+            }
+        }
+    }
 }
 
 sealed class PokemonDetailUIState {

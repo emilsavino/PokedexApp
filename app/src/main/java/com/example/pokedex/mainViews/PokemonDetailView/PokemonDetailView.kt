@@ -119,11 +119,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         TeamSelectionDialog(
             teams = teams,
             onTeamSelected = { teamName ->
-                viewModel.setSelectedTeam(teamName)
-                viewModel.setShowDialog(false)
-                coroutineScope.launch {
-                    viewModel.confirmAddToTeam(pokemon)
-                }
+                viewModel.onTeamSelected(pokemon, teamName)
             },
             onCreateNewTeam = {
                 viewModel.setShowDialog(false)
@@ -133,7 +129,6 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         )
     }
 
-    // Show Team Creation Dialog
     if (showTeamCreationDialog) {
         TeamCreationDialog(
             newTeamName = newTeamName,

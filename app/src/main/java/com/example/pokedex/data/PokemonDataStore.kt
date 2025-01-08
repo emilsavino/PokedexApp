@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Local
 
 class PokemonDataStore {
     private val api = RetrofitInstance.apiService
@@ -24,7 +25,7 @@ class PokemonDataStore {
 
     fun fetchPokemon(name : String): Pokemon?
     {
-        return pokemonMap[name]
+        return pokemonMap[name.capitalize(Locale("DK"))]
     }
 
     fun getAllPokemonResults() : List<Result>

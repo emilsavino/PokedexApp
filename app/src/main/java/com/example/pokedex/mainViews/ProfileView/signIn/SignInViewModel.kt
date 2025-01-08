@@ -7,19 +7,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {
-    private val _userEmail = MutableStateFlow("name@dtu.dk")
-    val userEmail: StateFlow<String> = _userEmail
+    private val _signInState = MutableStateFlow<SignInState>(SignInState.Idle)
+    val signInState: StateFlow<SignInState> = _signInState
 
-    private val _userPassword = MutableStateFlow("********")
-    val userPassword: StateFlow<String> = _userPassword
+    fun updateSignInStatus(state: SignInState) {
+        viewModelScope.launch {
+            _signInState.value = state
+        }
 
-
-
-    fun signOut() {
-        // TODO: Add functionality to sign out
     }
+}
 
-    fun deleteAccount() {
-        // TODO: Add functionality to delete account
-    }
+sealed class SignInState {
+    object Idle : SignInState()
+    object Loading : SignInState()
+    object Success : SignInState()
+    data class Error(val message: String) : SignInState()
 }

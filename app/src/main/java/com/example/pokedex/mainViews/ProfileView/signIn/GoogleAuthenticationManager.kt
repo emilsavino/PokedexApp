@@ -12,16 +12,13 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 import java.util.UUID
-
-@Composable
-fun LoginScreen(modifier: Modifier = Modifier){
-
-}
 
 class GoogleAuthenticationManager(val context: Context) {
     private val auth = Firebase.auth
@@ -51,33 +48,39 @@ class GoogleAuthenticationManager(val context: Context) {
 
         try {
             val credentialManager = CredentialManager.create(context)
-            val result = credentialManager.getCredential(context = context, request = request)
+            val result = withContext(Dispatchers.IO) {
+                credentialManager.getCredential(
+                    context = context,
+                    request = request
+                )
+            }
 
             val credential = result.credential
-            if (credential is CustomCredential) {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)
-                    try {
-                        val googleIdTokenCredential =
-                            GoogleIdTokenCredential.createFrom(credential.data)
+            if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                try {
+                    val googleIdTokenCredential =
+                        GoogleIdTokenCredential.createFrom(credential.data)
 
-                        val firebaseCredential =
-                            GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+                    val firebaseCredential =
+                        GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
 
-                        auth.signInWithCredential(firebaseCredential)
-                            .addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                    trySend(AuthResponse.Success)
-                                } else {
-                                    trySend(
-                                        AuthResponse.Error(
-                                            message = it.exception?.message ?: ""
-                                        )
+                    auth.signInWithCredential(firebaseCredential)
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                trySend(AuthResponse.Success)
+                                close()
+                            } else {
+                                trySend(
+                                    AuthResponse.Error(
+                                        message = it.exception?.message ?: ""
                                     )
-                                }
+                                )
+                                close()
                             }
-                    } catch (e: Exception) {
-                        trySend(AuthResponse.Error(e.message ?: ""))
-                    }
+                        }
+                } catch (e: Exception) {
+                    trySend(AuthResponse.Error(e.message ?: ""))
+                }
             }
 
         } catch (e: Exception) {

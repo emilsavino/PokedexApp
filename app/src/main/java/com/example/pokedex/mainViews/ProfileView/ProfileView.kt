@@ -54,8 +54,7 @@ fun ProfileView(
     navController: NavController
 ){
     val viewModel = viewModel<ProfileViewModel>()
-    val email = viewModel.userEmail.collectAsState().value
-    val password = viewModel.userPassword.collectAsState().value
+    val email = viewModel.fetchUserData().toString()
 
     Box(
         modifier = modifier
@@ -82,10 +81,6 @@ fun ProfileView(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(email)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(password)
 
             Spacer(modifier = Modifier.height(16.dp))
 

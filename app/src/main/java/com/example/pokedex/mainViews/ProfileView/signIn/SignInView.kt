@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pokedex.R
-import com.example.pokedex.mainViews.ProfileView.ProfileViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -32,16 +31,26 @@ fun SignInView(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    modifier.fillMaxSize()
-    val viewModel = viewModel<ProfileViewModel>()
-
+    val viewModel = viewModel<SignInViewModel>()
+    val signInState = viewModel.signInState.collectAsState().value
     val context = LocalContext.current
-
     val authenticationManager = remember {
         GoogleAuthenticationManager(context)
     }
-
     val coroutineScope = rememberCoroutineScope()
+
+    when(signInState) {
+        is SignInState.Success -> {
+            navController.navigate("ProfileView") {
+                popUpTo("SignInView") { inclusive = true }
+            }
+        }
+        is SignInState.Error -> {
+            Text(text = signInState.message)
+        }
+        else -> Unit
+        }
+
 
     Column(
         modifier = Modifier
@@ -63,7 +72,9 @@ fun SignInView(
                 authenticationManager.signInWithGoogle()
                     .onEach { response ->
                         if (response is AuthResponse.Success) {
-                            // do something
+                            viewModel.updateSignInStatus(SignInState.Success)
+                        } else if (response is AuthResponse.Error) {
+                            viewModel.updateSignInStatus(SignInState.Error(response.message))
                         }
                     }
                     .launchIn(coroutineScope)

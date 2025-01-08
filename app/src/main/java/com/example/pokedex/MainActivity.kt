@@ -15,10 +15,12 @@ import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.navigation.Navigation
 import com.example.pokedex.navigation.TabBar
 import com.example.pokedex.ui.theme.PokedexTheme
+import com.jakewharton.threetenabp.AndroidThreeTen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
         DependencyContainer.init(application)
         setContent {
             PokedexTheme {

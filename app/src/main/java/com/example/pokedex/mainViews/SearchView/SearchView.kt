@@ -17,9 +17,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +35,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.FormatPokemonName
 import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.Result
 
 @Composable
 fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
@@ -153,12 +149,11 @@ fun MakeSortButton(viewModel: SearchViewModel,
             expanded = sortExpanded.value,
             onDismissRequest = { sortExpanded.value = false }
         ) {
-            val selectedOption = viewModel.selectedSortOptionFlow.collectAsState()
             for (option in viewModel.getAllSortOptions())
             {
                 DropdownMenuItem(
                     text = { Text(option, color = textColor) },
-                    modifier = Modifier.background(color = if (selectedOption.value == option) selectedColor else unselectedColor),
+                    modifier = Modifier.background(color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor),
                     onClick = {
                         sortExpanded.value = false
                         viewModel.selectSortOption(option)
@@ -201,12 +196,11 @@ fun MakeFilterButton(viewModel: SearchViewModel,
             expanded = filterExpanded.value,
             onDismissRequest = { filterExpanded.value = false }
         ) {
-            val selectedOptions = viewModel.selectedFilterOptionsListFlow.collectAsState()
             for (option in viewModel.getAllFilterOptions())
             {
                 DropdownMenuItem(
                     text = { Text(option, color = textColor) },
-                    modifier = Modifier.background(color = if (selectedOptions.value.contains(option)) selectedColor else unselectedColor),
+                    modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
                     onClick = { viewModel.selectFilterOption(option) }
                 )
             }

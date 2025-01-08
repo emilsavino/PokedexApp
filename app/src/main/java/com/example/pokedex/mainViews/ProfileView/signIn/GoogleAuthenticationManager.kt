@@ -49,10 +49,7 @@ class GoogleAuthenticationManager(val context: Context) {
         try {
             val credentialManager = CredentialManager.create(context)
             val result = withContext(Dispatchers.IO) {
-                credentialManager.getCredential(
-                    context = context,
-                    request = request
-                )
+                credentialManager.getCredential(context = context, request = request)
             }
 
             val credential = result.credential
@@ -61,35 +58,39 @@ class GoogleAuthenticationManager(val context: Context) {
                     val googleIdTokenCredential =
                         GoogleIdTokenCredential.createFrom(credential.data)
 
+                    // Create the Firebase credential
                     val firebaseCredential =
                         GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
 
+                    // Perform Firebase authentication
                     auth.signInWithCredential(firebaseCredential)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
                                 trySend(AuthResponse.Success)
                                 close()
                             } else {
                                 trySend(
                                     AuthResponse.Error(
-                                        message = it.exception?.message ?: ""
+                                        task.exception?.message ?: "Unknown error"
                                     )
                                 )
                                 close()
                             }
                         }
                 } catch (e: Exception) {
-                    trySend(AuthResponse.Error(e.message ?: ""))
+                    trySend(AuthResponse.Error("Error parsing Google ID token: ${e.message}"))
+                    close()
                 }
+            } else {
+                trySend(AuthResponse.Error("Received invalid credential type"))
+                close()
             }
-
         } catch (e: Exception) {
-            trySend(AuthResponse.Error(e.message ?: ""))
-
+            trySend(AuthResponse.Error("Error retrieving credential: ${e.message}"))
+            close()
         }
-        awaitClose()
-    }
 
+    }
 }
 
 interface AuthResponse {

@@ -68,11 +68,6 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
 @Composable
 fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    val showDialog by viewModel.showDialog.collectAsState()
-    val showTeamCreationDialog by viewModel.showTeamCreationDialog.collectAsState()
-    val selectedTeam by viewModel.selectedTeam.collectAsState()
-    val newTeamName by viewModel.newTeamName.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
     val teams by viewModel.teams.collectAsState()
 
     Column(
@@ -81,7 +76,7 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
             .background(Color(0xFFFFDD99))
             .padding(16.dp)
     ) {
-        CreateTopRow(navController, pokemon, viewModel) { viewModel.setShowDialog(true) }
+        CreateTopRow(navController, pokemon, viewModel) { viewModel.showDialog = true }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -103,9 +98,9 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
 
         CreateEvoBox()
 
-        if (errorMessage != null) {
+        if (viewModel.errorMessage != null) {
             Text(
-                text = errorMessage!!,
+                text = viewModel.errorMessage!!,
                 color = Color.Red,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,35 +110,37 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
         }
     }
 
-    if (showDialog) {
+    if (viewModel.showDialog) {
         TeamSelectionDialog(
             teams = teams,
             onTeamSelected = { teamName ->
-                viewModel.onTeamSelected(pokemon, teamName)
+                viewModel.selectedTeam = teamName
+                viewModel.showDialog = false
+                coroutineScope.launch {
+                    viewModel.confirmAddToTeam(pokemon)
+                }
             },
             onCreateNewTeam = {
-                viewModel.setShowDialog(false)
-                viewModel.setShowTeamCreationDialog(true)
+                viewModel.showDialog = false
+                viewModel.showTeamCreationDialog = true
             },
-            onDismiss = { viewModel.setShowDialog(false) }
+            onDismiss = { viewModel.showDialog = false }
         )
     }
 
-    if (showTeamCreationDialog) {
+    if (viewModel.showTeamCreationDialog) {
         TeamCreationDialog(
-            newTeamName = newTeamName,
-            onTeamNameChange = { viewModel.setNewTeamName(it) },
+            newTeamName = viewModel.newTeamName,
+            onTeamNameChange = { viewModel.newTeamName = it },
             onCreateTeam = {
                 coroutineScope.launch {
-                    val creationSuccessful = viewModel.onCreateTeam(pokemon)
+                    val creationSuccessful = viewModel.createTeam(pokemon)
                     if (creationSuccessful) {
-                        viewModel.setShowTeamCreationDialog(false)
                     }
                 }
             },
             onDismiss = {
-                viewModel.setNewTeamName("")
-                viewModel.setShowTeamCreationDialog(false)
+                viewModel.onCancelTeamCreation()
             }
         )
     }

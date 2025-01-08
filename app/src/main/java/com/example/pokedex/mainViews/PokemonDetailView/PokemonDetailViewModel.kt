@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.dependencyContainer.DependencyContainer.teamsRepository
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PokemonDetailViewModel(private val name: String): ViewModel() {
+class PokemonDetailViewModel(private val name: String) : ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
     private val favouritesRepository = DependencyContainer.favouritesRepository
     private val teamsRepository = DependencyContainer.teamsRepository
@@ -26,68 +27,33 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     var favouriteButtonText by mutableStateOf("")
     var teamButtonText by mutableStateOf("Add to Team")
     var isFavorited by mutableStateOf(false)
+    var showDialog by mutableStateOf(false)
+    var selectedTeam by mutableStateOf("")
+    var newTeamName by mutableStateOf("")
+    var errorMessage by mutableStateOf<String?>(null)
+    var showTeamCreationDialog by mutableStateOf(false)
 
-    private val _pokemon: MutableStateFlow<PokemonDetailUIState> = MutableStateFlow(PokemonDetailUIState.Empty)
-    val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()
+    private val _pokemon = MutableStateFlow<PokemonDetailUIState>(PokemonDetailUIState.Empty)
+    val pokemon: StateFlow<PokemonDetailUIState> = _pokemon
 
-    private val _teams: MutableStateFlow<List<Team>> = MutableStateFlow(emptyList())
-    val teams: StateFlow<List<Team>> = teamsRepository.teamsFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    private val _showDialog = MutableStateFlow(false)
-    val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
-
-    private val _selectedTeam = MutableStateFlow("")
-    val selectedTeam: StateFlow<String> = _selectedTeam.asStateFlow()
-
-    private val _newTeamName = MutableStateFlow("")
-    val newTeamName: StateFlow<String> = _newTeamName.asStateFlow()
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
-
-    private val _showTeamCreationDialog = MutableStateFlow(false)
-    val showTeamCreationDialog: StateFlow<Boolean> = _showTeamCreationDialog.asStateFlow()
+    val teams: StateFlow<List<Team>> =
+        teamsRepository.teamsFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
         viewModelScope.launch {
             pokemonRepository.pokemonFlow.collect { newPokemon ->
                 recentlyViewedRepository.addToRecents(newPokemon)
-                _pokemon.update {
-                    onFavouriteButton(newPokemon)
-                    PokemonDetailUIState.Data(newPokemon)
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            teamsRepository.teamsFlow.collect { newTeams ->
-                _teams.value = newTeams
+                _pokemon.value = PokemonDetailUIState.Data(newPokemon)
+                onFavouriteButton(newPokemon)
             }
         }
 
         getPokemonByName()
     }
 
-    fun setShowDialog(value: Boolean) {
-        _showDialog.value = value
-    }
-
-    fun setSelectedTeam(teamName: String) {
-        _selectedTeam.value = teamName
-    }
-
-    fun setNewTeamName(teamName: String) {
-        _newTeamName.value = teamName
-    }
-
-    fun setErrorMessage(message: String?) {
-        _errorMessage.value = message
-    }
 
     private fun getPokemonByName() = viewModelScope.launch {
-        _pokemon.update {
-            PokemonDetailUIState.Loading
-        }
+        _pokemon.value = PokemonDetailUIState.Loading
         pokemonRepository.getPokemonByName(name)
     }
 
@@ -96,7 +62,6 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
             favouritesRepository.removeFromFavourites(pokemon)
         } else {
             favouritesRepository.makeFavourite(pokemon)
-            isFavorited = true
         }
         onFavouriteButton(pokemon)
     }
@@ -106,70 +71,65 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     }
 
     suspend fun addToTeam(pokemon: Pokemon, teamName: String) {
-        val result = teamsRepository.addToTeam(pokemon, teamName)
-        result.fold(
-            onSuccess = {
-                setErrorMessage(null)
-            },
-            onFailure = { error ->
-                setErrorMessage(error.message)
-            }
-        )
+        try {
+            teamsRepository.addToTeam(pokemon, teamName)
+            errorMessage = null
+        } catch (error: Exception) {
+            errorMessage = error.message
+        }
     }
 
     suspend fun confirmAddToTeam(pokemon: Pokemon) {
-        if (_selectedTeam.value.isNotEmpty()) {
-            try {
-                addToTeam(pokemon, _selectedTeam.value)
-                _errorMessage.value = null
-            } catch (e: IllegalStateException) {
-                _errorMessage.value = e.message
-            }
+        if (selectedTeam.isNotEmpty()) {
+            addToTeam(pokemon, selectedTeam)
         }
     }
 
-    suspend fun createTeamWithPokemon(pokemon: Pokemon) {
-        if (_newTeamName.value.isNotBlank()) {
-            val newTeam = Team(name = _newTeamName.value, pokemons = listOf(pokemon))
-            teamsRepository.addTeam(newTeam)
-            _newTeamName.value = ""
-        }
-    }
-
-    suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
-        val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
+suspend fun createTeamWithPokemon(pokemon: Pokemon) {
+    if (newTeamName.isNotBlank()) {
+        val newTeam = Team(name = newTeamName, pokemons = listOf(pokemon))
         teamsRepository.addTeam(newTeam)
+        newTeamName = ""
+    }
+}
+
+suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
+    val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
+    teamsRepository.addTeam(newTeam)
+}
+
+    fun onCreateTeamClicked() {
+        showTeamCreationDialog = true
     }
 
-    fun setShowTeamCreationDialog(value: Boolean) {
-        _showTeamCreationDialog.value = value
+    fun onCancelTeamCreation() {
+        showTeamCreationDialog = false
+        newTeamName = ""
     }
 
-    suspend fun onCreateTeam(pokemon: Pokemon): Boolean {
-        if (_newTeamName.value.isNotBlank()) {
-            val newTeam = Team(name = _newTeamName.value, pokemons = listOf(pokemon))
+    suspend fun createTeam(pokemon: Pokemon): Boolean {
+        if (newTeamName.isNotBlank()) {
+            val newTeam = Team(name = newTeamName, pokemons = listOf(pokemon))
             teamsRepository.addTeam(newTeam)
-            setNewTeamName("")
-            setErrorMessage(null)
+            showTeamCreationDialog = false
+            newTeamName = ""
+            errorMessage = null
             return true
         } else {
-            setErrorMessage("Team name cannot be empty")
+            errorMessage = "Team name cannot be empty"
             return false
         }
     }
 
+
     fun onTeamSelected(pokemon: Pokemon, teamName: String) {
         viewModelScope.launch {
-            setSelectedTeam(teamName)
-            setShowDialog(false)
-            try {
-                confirmAddToTeam(pokemon)
-                setErrorMessage(null)
-            } catch (e: IllegalStateException) {
-                setErrorMessage(e.message)
-            }
+            selectedTeam = teamName
+            showDialog = false
+            confirmAddToTeam(pokemon)
         }
     }
+
 }
 
 sealed class PokemonDetailUIState {

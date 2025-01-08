@@ -58,11 +58,9 @@ class GoogleAuthenticationManager(val context: Context) {
                     val googleIdTokenCredential =
                         GoogleIdTokenCredential.createFrom(credential.data)
 
-                    // Create the Firebase credential
                     val firebaseCredential =
                         GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
 
-                    // Perform Firebase authentication
                     auth.signInWithCredential(firebaseCredential)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {

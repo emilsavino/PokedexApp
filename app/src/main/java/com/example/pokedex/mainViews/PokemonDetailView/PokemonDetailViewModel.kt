@@ -106,7 +106,15 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     }
 
     suspend fun addToTeam(pokemon: Pokemon, teamName: String) {
-        teamsRepository.addToTeam(pokemon, teamName)
+        val result = teamsRepository.addToTeam(pokemon, teamName)
+        result.fold(
+            onSuccess = {
+                setErrorMessage(null)
+            },
+            onFailure = { error ->
+                setErrorMessage(error.message)
+            }
+        )
     }
 
     suspend fun confirmAddToTeam(pokemon: Pokemon) {

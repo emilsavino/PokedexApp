@@ -58,22 +58,23 @@ class TeamsRepository(private val context: Context) {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun addToTeam(pokemon: Pokemon, teamName: String) {
+    suspend fun addToTeam(pokemon: Pokemon, teamName: String): Result<String> {
         val teamIndex = pokemonTeams.indexOfFirst { it.name == teamName }
 
         if (teamIndex == -1) {
-            throw IllegalArgumentException("Team with name $teamName does not exist.")
+            return Result.failure(IllegalArgumentException("Team with name $teamName does not exist."))
         }
 
         val team = pokemonTeams[teamIndex]
         if (team.pokemons.size >= 6) {
-            throw IllegalStateException("A team cannot have more than 6 Pokémon.")
+            return Result.failure(IllegalStateException("A team cannot have more than 6 Pokémon."))
         }
 
         val updatedTeam = team.copy(pokemons = team.pokemons + pokemon)
         pokemonTeams[teamIndex] = updatedTeam
         updateDataStore()
         mutableTeamsFlow.emit(pokemonTeams)
+        return Result.success("Pokémon added to the team successfully.")
     }
 
     suspend fun updateTeam(index: Int, updatedTeam: Team){

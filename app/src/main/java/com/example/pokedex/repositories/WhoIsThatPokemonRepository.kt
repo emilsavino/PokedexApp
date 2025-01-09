@@ -5,7 +5,6 @@ import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.WhoIsThatPokemon
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 
 class WhoIsThatPokemonRepository {
     val dataStore = DependencyContainer.pokemonDataStore

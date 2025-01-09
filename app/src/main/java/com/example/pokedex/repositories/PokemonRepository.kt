@@ -1,13 +1,10 @@
 package com.example.pokedex.repositories
 
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.Locale
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.TypeObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 class PokemonRepository {

@@ -12,7 +12,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,11 +64,11 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CreateDescBox(viewModel, pokemon.name)
+        CreateDescBox(viewModel)
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateTypeWeaknessBox(viewModel, pokemon.name)
+        CreateTypeWeaknessBox()
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -113,7 +112,7 @@ fun CreateAbilitiesBox() {
 }
 
 @Composable
-fun CreateTypeWeaknessBox(viewModel: PokemonDetailViewModel, pokemonName: String) {
+fun CreateTypeWeaknessBox() {
     //val types by viewModel.types.collectAsState()
     //val weaknesses by viewModel.weaknesses.collectAsState()
 
@@ -167,7 +166,7 @@ fun CreateTypeWeaknessBox(viewModel: PokemonDetailViewModel, pokemonName: String
 }
 
 @Composable
-fun CreateDescBox(viewModel: PokemonDetailViewModel, pokemonName: String) {
+fun CreateDescBox(viewModel: PokemonDetailViewModel) {
     val desc by viewModel.description.collectAsState()
 
     Box(

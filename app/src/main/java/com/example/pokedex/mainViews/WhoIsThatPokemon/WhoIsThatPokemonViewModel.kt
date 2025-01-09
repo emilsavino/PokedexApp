@@ -6,12 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Ability
-import com.example.pokedex.shared.AbilityObject
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Sprites
 import com.example.pokedex.shared.Type
-import com.example.pokedex.shared.TypeObject
 import com.example.pokedex.shared.WhoIsThatPokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

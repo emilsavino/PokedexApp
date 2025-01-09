@@ -8,9 +8,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.TypeObject
-import com.example.pokedex.shared.Weakness
-import com.example.pokedex.shared.Weaknesses
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,11 +30,11 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     private val _description = MutableStateFlow<String>("")
     val description: StateFlow<String> = _description.asStateFlow()
 
-    private val _types = MutableStateFlow<List<TypeObject>>(emptyList())
+    /*private val _types = MutableStateFlow<List<TypeObject>>(emptyList())
     val types: StateFlow<List<TypeObject>> = _types.asStateFlow()
 
     private val _weaknesses = MutableStateFlow<Weaknesses>(Weaknesses(emptyList()))
-    val weaknesses: StateFlow<Weaknesses> = _weaknesses.asStateFlow()
+    val weaknesses: StateFlow<Weaknesses> = _weaknesses.asStateFlow()*/
 
     init {
         viewModelScope.launch {
@@ -50,9 +47,10 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
             }
         }
         getPokemonByName()
-        loadPokeTypesAndWeaknesses(name)
+        //loadPokeTypesAndWeaknesses(name)
     }
 
+    /*
     fun loadPokeDesc(name: String) {
         viewModelScope.launch {
             try {
@@ -91,7 +89,7 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
         }
         pokemonRepository.getPokemonWeakness(types.value)
 
-    }
+    }*/
 
     private fun getPokemonByName() = viewModelScope.launch {
         _pokemon.update {

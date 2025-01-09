@@ -49,6 +49,11 @@ data class Chain(
     val species: Species,
 )
 
+
+//------------MISC.----------------
+data class TypeObject(
+    val type: Type
+)
 data class Species(
     val name: String
 )

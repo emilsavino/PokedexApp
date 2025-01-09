@@ -4,9 +4,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.PokemonSpecies
 import com.example.pokedex.shared.TypeObject
-import com.example.pokedex.shared.Weaknesses
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,8 +30,8 @@ class PokemonRepository {
     private val mutableTypesFlow = MutableSharedFlow<List<TypeObject>>()
     val typesFlow: Flow<List<TypeObject>> = mutableTypesFlow.asSharedFlow()
 
-    private val mutableWeaknessesFlow = MutableSharedFlow<Weaknesses>()
-    val weaknessesFlow: Flow<Weaknesses> = mutableWeaknessesFlow.asSharedFlow()
+    /*private val mutableWeaknessesFlow = MutableSharedFlow<Weaknesses>()
+    val weaknessesFlow: Flow<Weaknesses> = mutableWeaknessesFlow.asSharedFlow()*/
 
     suspend fun fetchTeams() {
         mutableTeamsFlow.emit(pokemonTeams)
@@ -99,18 +97,5 @@ class PokemonRepository {
     suspend fun getPokemonByName(name: String) {
         var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
         mutablePokemonFlow.emit(pokemon)
-    }
-
-    suspend fun getPokemonDescription(name: String): PokemonSpecies {
-        val desc = dataStore.fetchPokemonDescription(name)
-        return desc
-    }
-
-    suspend fun getPokemonTypes(name: String) {
-         mutableTypesFlow.emit(dataStore.fetchPokemonType(name))
-    }
-
-    suspend fun getPokemonWeakness(types: List<TypeObject>) {
-        mutableWeaknessesFlow.emit(dataStore.fetchPokemonWeaknesses(types))
     }
 }

@@ -4,12 +4,8 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
-import com.example.pokedex.shared.PokemonSpecies
 import com.example.pokedex.shared.Result
 import com.example.pokedex.shared.Type
-import com.example.pokedex.shared.TypeObject
-import com.example.pokedex.shared.Weakness
-import com.example.pokedex.shared.Weaknesses
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -30,34 +26,6 @@ class PokemonDataStore {
     {
         while (allPokemonResultList.results.isEmpty()) {}
         return allPokemonResultList.results
-    }
-
-    suspend fun fetchPokemonWeaknesses(types: List<TypeObject>) : Weaknesses {
-        var weaknessList = mutableListOf<Weakness>()
-
-        for (type in types) {
-
-            val response = api.getWeakness(type.type.name)
-            for (weakness in response.double_damage_from) {
-                weaknessList.add(weakness)
-            }
-        }
-        return Weaknesses(double_damage_from = weaknessList)
-    }
-
-    suspend fun fetchPokemonDescription(name: String) : PokemonSpecies {
-        return withContext(Dispatchers.IO) {
-            api.getPokemonDesc(name)
-        }
-    }
-
-    suspend fun fetchPokemonType(name: String): List<TypeObject> {
-        return withContext(Dispatchers.IO) {
-            val pokemon = api.getPokemon(name)
-            pokemon.types.map { typeEntry ->
-                TypeObject(type = Type(name = typeEntry.type.name))
-            }
-        }
     }
 
     suspend fun getPokemonFromMapFallBackAPIPlaygroundClassFeature(name: String) : Pokemon

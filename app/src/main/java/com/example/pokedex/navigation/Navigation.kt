@@ -1,5 +1,7 @@
 package com.example.pokedex.navigation
 
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -19,8 +21,14 @@ import com.example.pokedex.mainViews.pokemonTriviaView.PokemonTriviaView
 fun Navigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.SignIn.route
     ) {
+        composable(Screen.SignIn.route) {
+            Button(onClick = {navController.navigate(Screen.Home.route)}) {
+                Text("Sign In")
+            }
+        }
+
         composable(Screen.Saved.route) {
             SavedView(navController = navController)
         }

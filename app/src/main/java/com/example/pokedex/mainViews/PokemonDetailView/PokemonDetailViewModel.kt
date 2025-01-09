@@ -6,16 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.dependencyContainer.DependencyContainer.teamsRepository
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PokemonDetailViewModel(private val name: String) : ViewModel() {
@@ -24,7 +20,6 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     private val teamsRepository = DependencyContainer.teamsRepository
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
 
-    var favouriteButtonText by mutableStateOf("")
     var teamButtonText by mutableStateOf("Add to Team")
     var isFavorited by mutableStateOf(false)
     var showDialog by mutableStateOf(false)
@@ -85,18 +80,18 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         }
     }
 
-suspend fun createTeamWithPokemon(pokemon: Pokemon) {
-    if (newTeamName.isNotBlank()) {
-        val newTeam = Team(name = newTeamName, pokemons = listOf(pokemon))
-        teamsRepository.addTeam(newTeam)
-        newTeamName = ""
+    suspend fun createTeamWithPokemon(pokemon: Pokemon) {
+        if (newTeamName.isNotBlank()) {
+            val newTeam = Team(name = newTeamName, pokemons = listOf(pokemon))
+            teamsRepository.addTeam(newTeam)
+            newTeamName = ""
+        }
     }
-}
 
-suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
-    val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
-    teamsRepository.addTeam(newTeam)
-}
+    suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
+        val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
+        teamsRepository.addTeam(newTeam)
+    }
 
     fun onCreateTeamClicked() {
         showTeamCreationDialog = true

@@ -11,23 +11,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 class PokemonRepository {
     private var dataStore = DependencyContainer.pokemonDataStore
 
-    private val pokemonTeams = mutableListOf<List<Pokemon>>()
-
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    val filterOptions = mutableListOf<String>("fire","grass","ASAP-Rocky")
-    val sortOptions = mutableListOf<String>("NameASC","NameDSC")
+    val filterOptions = mutableListOf("fire","grass","ASAP-Rocky")
+    val sortOptions = mutableListOf("NameASC","NameDSC")
 
     private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
     val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()
-
-    private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
-    val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
-
-    suspend fun fetchTeams() {
-        mutableTeamsFlow.emit(pokemonTeams)
-    }
 
     suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String)
     {

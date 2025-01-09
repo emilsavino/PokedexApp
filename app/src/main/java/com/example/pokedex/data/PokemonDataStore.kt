@@ -1,7 +1,5 @@
 package com.example.pokedex.data
 
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.Locale
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
@@ -29,7 +27,7 @@ class PokemonDataStore {
 
     suspend fun getPokemonFromMapFallBackAPIPlaygroundClassFeature(name: String) : Pokemon
     {
-        var pokemon = pokemonMap[name]
+        val pokemon = pokemonMap[name]
 
         if (pokemon != null) {
             return pokemon

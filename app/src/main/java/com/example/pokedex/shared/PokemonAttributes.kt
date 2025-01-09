@@ -9,6 +9,14 @@ data class Type(
     val name: String,
 )
 
+data class Weaknesses(
+    val double_damage_from: List<Weakness>
+)
+
+data class Weakness(
+    val name: String
+)
+
 data class Sprites(
     val front_default: String
 )

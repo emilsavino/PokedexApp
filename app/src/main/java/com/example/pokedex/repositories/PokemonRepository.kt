@@ -6,8 +6,10 @@ import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonSpecies
 import com.example.pokedex.shared.TypeObject
+import com.example.pokedex.shared.Weaknesses
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 class PokemonRepository {
@@ -26,6 +28,12 @@ class PokemonRepository {
 
     private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
     val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
+
+    private val mutableTypesFlow = MutableSharedFlow<List<TypeObject>>()
+    val typesFlow: Flow<List<TypeObject>> = mutableTypesFlow.asSharedFlow()
+
+    private val mutableWeaknessesFlow = MutableSharedFlow<Weaknesses>()
+    val weaknessesFlow: Flow<Weaknesses> = mutableWeaknessesFlow.asSharedFlow()
 
     suspend fun fetchTeams() {
         mutableTeamsFlow.emit(pokemonTeams)
@@ -98,7 +106,11 @@ class PokemonRepository {
         return desc
     }
 
-    suspend fun getPokemonTypes(name: String): List<TypeObject> {
-        return dataStore.fetchPokemonType(name)
+    suspend fun getPokemonTypes(name: String) {
+         mutableTypesFlow.emit(dataStore.fetchPokemonType(name))
+    }
+
+    suspend fun getPokemonWeakness(types: List<TypeObject>) {
+        mutableWeaknessesFlow.emit(dataStore.fetchPokemonWeaknesses(types))
     }
 }

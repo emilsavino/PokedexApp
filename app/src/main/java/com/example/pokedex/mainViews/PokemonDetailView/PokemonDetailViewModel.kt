@@ -5,12 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.TypeObject
+import com.example.pokedex.shared.Weakness
+import com.example.pokedex.shared.Weaknesses
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMap
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -25,10 +31,27 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()
 
     private val _description = MutableStateFlow<String>("")
-    val description: StateFlow<String> = _description
+    val description: StateFlow<String> = _description.asStateFlow()
 
-    private val _types = MutableStateFlow<List<String>>(emptyList())
-    val types: StateFlow<List<String>> = _types
+    private val _types = MutableStateFlow<List<TypeObject>>(emptyList())
+    val types: StateFlow<List<TypeObject>> = _types.asStateFlow()
+
+    private val _weaknesses = MutableStateFlow<Weaknesses>(Weaknesses(emptyList()))
+    val weaknesses: StateFlow<Weaknesses> = _weaknesses.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            pokemonRepository.pokemonFlow.collect { newPokemon ->
+                recentlyViewedRepository.addToRecents(newPokemon)
+                _pokemon.update {
+                    onFavouriteButton(newPokemon)
+                    PokemonDetailUIState.Data(newPokemon)
+                }
+            }
+        }
+        getPokemonByName()
+        loadPokeTypesAndWeaknesses(name)
+    }
 
     fun loadPokeDesc(name: String) {
         viewModelScope.launch {
@@ -44,28 +67,30 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
         }
     }
 
-    fun loadPokemonTypes(name: String) {
-        viewModelScope.launch {
-            try {
-                val types = pokemonRepository.getPokemonTypes(name)
-                _types.value = types.map { it -> it.type.name.replaceFirstChar { it.uppercase() } }
-            } catch (e: Exception) {
-                _types.value = emptyList()
-            }
-        }
+    fun getWeaknessFromList(): String {
+        return weaknesses.value.double_damage_from.joinToString("\n")
     }
 
-    init {
-        viewModelScope.launch {
-            pokemonRepository.pokemonFlow.collect { newPokemon ->
-                recentlyViewedRepository.addToRecents(newPokemon)
-                _pokemon.update {
-                    onFavouriteButton(newPokemon)
-                    PokemonDetailUIState.Data(newPokemon)
-                }
-            }
+    private fun loadPokeTypesAndWeaknesses(name: String) = viewModelScope.launch {
+        loadPokemonTypes(name)
+        loadPokemonWeakness()
+    }
+
+
+    private suspend fun loadPokemonTypes(name: String) {
+        pokemonRepository.typesFlow.collect { newTypes ->
+            _types.update { newTypes }
         }
-        getPokemonByName()
+        pokemonRepository.getPokemonTypes(name)
+
+    }
+
+    private suspend fun loadPokemonWeakness() {
+        pokemonRepository.weaknessesFlow.collect { newWeaknesses ->
+            _weaknesses.update { newWeaknesses }
+        }
+        pokemonRepository.getPokemonWeakness(types.value)
+
     }
 
     private fun getPokemonByName() = viewModelScope.launch {

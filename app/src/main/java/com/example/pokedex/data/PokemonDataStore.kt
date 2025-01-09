@@ -8,6 +8,8 @@ import com.example.pokedex.shared.PokemonSpecies
 import com.example.pokedex.shared.Result
 import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.TypeObject
+import com.example.pokedex.shared.Weakness
+import com.example.pokedex.shared.Weaknesses
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +30,19 @@ class PokemonDataStore {
     {
         while (allPokemonResultList.results.isEmpty()) {}
         return allPokemonResultList.results
+    }
+
+    suspend fun fetchPokemonWeaknesses(types: List<TypeObject>) : Weaknesses {
+        var weaknessList = mutableListOf<Weakness>()
+
+        for (type in types) {
+
+            val response = api.getWeakness(type.type.name)
+            for (weakness in response.double_damage_from) {
+                weaknessList.add(weakness)
+            }
+        }
+        return Weaknesses(double_damage_from = weaknessList)
     }
 
     suspend fun fetchPokemonDescription(name: String) : PokemonSpecies {

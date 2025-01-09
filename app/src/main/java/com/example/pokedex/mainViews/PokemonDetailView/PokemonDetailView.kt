@@ -115,12 +115,10 @@ fun CreateAbilitiesBox() {
 @Composable
 fun CreateTypeWeaknessBox(viewModel: PokemonDetailViewModel, pokemonName: String) {
     val types by viewModel.types.collectAsState()
-
-    LaunchedEffect(pokemonName) {
-        viewModel.loadPokemonTypes(pokemonName)
-    }
+    val weaknesses by viewModel.weaknesses.collectAsState()
 
     val formattedTypes = types.joinToString("\n")
+    val formattedWeaknesses = viewModel.getWeaknessFromList()
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -135,12 +133,12 @@ fun CreateTypeWeaknessBox(viewModel: PokemonDetailViewModel, pokemonName: String
         ) {
             Column {
                 Text(
-                    text = "Type",
+                    text = "Types",
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
                 Text(
-                    text = types.toString()
+                    text = formattedTypes
                 )
             }
 
@@ -153,10 +151,17 @@ fun CreateTypeWeaknessBox(viewModel: PokemonDetailViewModel, pokemonName: String
                 .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Weakness",
-                fontWeight = FontWeight.Bold
-            )
+            Column {
+                Text(
+                    text = "Weaknesses",
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.padding(2.dp))
+                Text(
+                    text = formattedWeaknesses
+                )
+            }
+
         }
     }
 }

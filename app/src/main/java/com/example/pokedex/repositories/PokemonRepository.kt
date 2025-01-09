@@ -26,10 +26,20 @@ class PokemonRepository {
         val elementsToFind = 20
         var mutableFilteredList = mutableListOf<Pokemon>()
         var index = offset
-
-        while (index < dataStore.getAllPokemonResults().size && foundElements < elementsToFind)
+        var allPokemonResults = dataStore.getAllPokemonResults()
+        if (sortOption == "NameASC")
         {
-            val result = dataStore.getAllPokemonResults().get(index)
+            allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
+        }
+        else if (sortOption == "NameDSC")
+        {
+            allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
+            allPokemonResults = allPokemonResults.reversed()
+        }
+
+        while (index < allPokemonResults.size && foundElements < elementsToFind)
+        {
+            val result = allPokemonResults.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
                 var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(result.name)
@@ -64,15 +74,6 @@ class PokemonRepository {
                 foundElements++
             }
             index++
-        }
-        if (sortOption === "NameASC")
-        {
-            mutableFilteredList = mutableFilteredList.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
-        }
-        else if (sortOption === "NameDSC")
-        {
-            mutableFilteredList = mutableFilteredList.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
-            mutableFilteredList.reverse()
         }
         mutableSearchFlow.emit(mutableFilteredList)
     }

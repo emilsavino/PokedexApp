@@ -12,7 +12,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,11 +65,11 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CreateDescBox()
+        CreateDescBox(viewModel, pokemon.name)
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateTypeWeaknessBox()
+        CreateTypeWeaknessBox(viewModel, pokemon.name)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -111,7 +113,15 @@ fun CreateAbilitiesBox() {
 }
 
 @Composable
-fun CreateTypeWeaknessBox() {
+fun CreateTypeWeaknessBox(viewModel: PokemonDetailViewModel, pokemonName: String) {
+    val types by viewModel.types.collectAsState()
+
+    LaunchedEffect(pokemonName) {
+        viewModel.loadPokemonTypes(pokemonName)
+    }
+
+    val formattedTypes = types.joinToString("\n")
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -123,10 +133,17 @@ fun CreateTypeWeaknessBox() {
                 .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Type",
-                fontWeight = FontWeight.Bold
-            )
+            Column {
+                Text(
+                    text = "Type",
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.padding(2.dp))
+                Text(
+                    text = types.toString()
+                )
+            }
+
         }
 
         Box(
@@ -145,17 +162,30 @@ fun CreateTypeWeaknessBox() {
 }
 
 @Composable
-fun CreateDescBox() {
+fun CreateDescBox(viewModel: PokemonDetailViewModel, pokemonName: String) {
+    val desc by viewModel.description.collectAsState()
+
+    LaunchedEffect(pokemonName) {
+        viewModel.loadPokeDesc(pokemonName)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
-        Text(
-            text = "Description",
-            fontWeight = FontWeight.Bold
-        )
+        Column {
+            Text(
+                text = "Description",
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(
+                text = desc.ifEmpty { "Loading..." }
+            )
+        }
+
     }
 }
 

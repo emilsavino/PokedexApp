@@ -7,7 +7,6 @@ data class Ability(
 
 data class Type(
     val name: String,
-    val url: String
 )
 
 data class Sprites(
@@ -30,3 +29,33 @@ data class Result (
     val name: String,
     val url: String
 )
+
+data class Species(
+    val url: String
+)
+
+data class EvolutionChain (
+    val chain: Chain
+)
+
+data class Chain (
+    val species: SpeciesDetails,
+    val evolves_to: List<Chain>
+)
+
+data class SpeciesDetails (
+    val name: String
+)
+
+data class PokemonSpecies(
+    val flavor_text_entries: List<FlavorTextEntry>
+)
+
+data class FlavorTextEntry(
+    val flavor_text: String,
+    val language: Language,
+    val version: Version
+)
+
+data class Language(val name: String)
+data class Version(val name: String)

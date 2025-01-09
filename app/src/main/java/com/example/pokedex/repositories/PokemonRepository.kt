@@ -4,6 +4,8 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonSpecies
+import com.example.pokedex.shared.TypeObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -89,5 +91,14 @@ class PokemonRepository {
     suspend fun getPokemonByName(name: String) {
         var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
         mutablePokemonFlow.emit(pokemon)
+    }
+
+    suspend fun getPokemonDescription(name: String): PokemonSpecies {
+        val desc = dataStore.fetchPokemonDescription(name)
+        return desc
+    }
+
+    suspend fun getPokemonTypes(name: String): List<TypeObject> {
+        return dataStore.fetchPokemonType(name)
     }
 }

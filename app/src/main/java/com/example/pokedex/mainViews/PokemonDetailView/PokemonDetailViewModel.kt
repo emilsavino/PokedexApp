@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.TypeObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +23,37 @@ class PokemonDetailViewModel(private val name: String): ViewModel() {
 
     private val _pokemon: MutableStateFlow<PokemonDetailUIState> = MutableStateFlow(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon.asStateFlow()
+
+    private val _description = MutableStateFlow<String>("")
+    val description: StateFlow<String> = _description
+
+    private val _types = MutableStateFlow<List<String>>(emptyList())
+    val types: StateFlow<List<String>> = _types
+
+    fun loadPokeDesc(name: String) {
+        viewModelScope.launch {
+            try {
+                val species = pokemonRepository.getPokemonDescription(name)
+                val englishEntry = species.flavor_text_entries.firstOrNull(){
+                    it.language.name == "en"
+                }
+                _description.value = englishEntry?.flavor_text?.replace("\n", " ") ?: "No description available."
+            } catch (e: Exception) {
+                _description.value = "Fetch Error: No Description Exists"
+            }
+        }
+    }
+
+    fun loadPokemonTypes(name: String) {
+        viewModelScope.launch {
+            try {
+                val types = pokemonRepository.getPokemonTypes(name)
+                _types.value = types.map { it -> it.type.name.replaceFirstChar { it.uppercase() } }
+            } catch (e: Exception) {
+                _types.value = emptyList()
+            }
+        }
+    }
 
     init {
         viewModelScope.launch {

@@ -1,6 +1,7 @@
 package com.example.pokedex.dependencyContainer
 
 import android.app.Application
+import com.example.pokedex.data.PokemonDataStore
 import com.example.pokedex.repositories.PokemonRepository
 import com.example.pokedex.repositories.WhoIsThatPokemonRepository
 import com.example.pokedex.repositories.FavouritesRepository
@@ -33,6 +34,10 @@ object DependencyContainer {
 
     val recentlyViewedRepository: RecentlyViewedRepository by lazy {
         RecentlyViewedRepository(application.applicationContext)
+    }
+
+    val pokemonDataStore : PokemonDataStore by lazy {
+        PokemonDataStore()
     }
 
     val teamsRepository: TeamsRepository by lazy {

@@ -22,32 +22,33 @@ import kotlinx.coroutines.launch
 class WhoIsThatPokemonViewModel: ViewModel() {
     private val whoIsThatPokemonRepository = DependencyContainer.whoIsThatPokemonRepository
 
-    private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemon>(WhoIsThatPokemon(Pokemon("", Sprites(""), emptyList<AbilityObject>(), emptyList<TypeObject>()),
-        listOf(Option(name = "", Color.Black))
-    ))
-    val whoIsThatPokemonStateFlow: StateFlow<WhoIsThatPokemon> = _whoThepokemonMutableStateFlow.asStateFlow()
+    private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemonUIState>(WhoIsThatPokemonUIState.Empty)
+    val whoIsThatPokemonStateFlow: StateFlow<WhoIsThatPokemonUIState> = _whoThepokemonMutableStateFlow.asStateFlow()
 
     val hasAnswered = mutableStateOf(false)
 
     fun getColor(option: Option) : Color {
+        // We will hopefully remake the entire system regarding options, so i am choosing
+        // not to spend time on this rn.
         if (!hasAnswered.value) {
             return Color.Black
         }
-
-        if (option.name == whoIsThatPokemonStateFlow.value.pokemon.name) {
-            return Color.Green
-        }
-        else {
-            return Color.Red
-        }
+        return Color.Green
     }
 
     init {
         viewModelScope.launch {
             whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow
                 .collect { whoThePokemon ->
-                    _whoThepokemonMutableStateFlow.update {
-                        whoThePokemon
+                    if (whoThePokemon == null)
+                    {
+                        fetchWhoThatPokemon()
+                    }
+                    else
+                    {
+                        _whoThepokemonMutableStateFlow.update {
+                            WhoIsThatPokemonUIState.Data(whoThePokemon)
+                        }
                     }
                 }
         }
@@ -64,4 +65,11 @@ class WhoIsThatPokemonViewModel: ViewModel() {
     fun guessed(guessedName : String) {
         hasAnswered.value = true
     }
+}
+
+
+sealed class WhoIsThatPokemonUIState {
+    data class Data(val pokemon: WhoIsThatPokemon): WhoIsThatPokemonUIState()
+    object Loading: WhoIsThatPokemonUIState()
+    object Empty: WhoIsThatPokemonUIState()
 }

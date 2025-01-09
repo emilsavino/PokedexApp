@@ -6,3 +6,8 @@ data class Pokemon(
     val abilities: List<AbilityObject>,
     val types: List<TypeObject>
 )
+
+
+fun String.formatPokemonName (): String {
+    return this.split("-").joinToString (" "){ word -> word.replaceFirstChar { it.uppercase() } }
+}

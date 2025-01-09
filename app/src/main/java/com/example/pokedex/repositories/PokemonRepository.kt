@@ -10,15 +10,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import com.example.pokedex.dependencyContainer.DependencyContainer
+
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class PokemonRepository {
-    private var dataStore = PokemonDataStore()
+    val pokemonMap : HashMap<String, Pokemon> = HashMap()
 
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
+
+    private var dataStore = DependencyContainer.pokemonDataStore
+
+    private val pokemonTeams = mutableListOf<List<Pokemon>>()
 
     val filterOptions = mutableListOf<String>("fire","grass","ASAP-Rocky")
     val sortOptions = mutableListOf<String>("NameASC","NameDSC")
@@ -28,8 +34,6 @@ class PokemonRepository {
     private var pokemonList = PokemonList(emptyList<Result>())
     private val mutablePokemonsFlow = MutableSharedFlow<PokemonList>()
     val pokemonsFlow: Flow<PokemonList> = mutablePokemonsFlow.asSharedFlow()
-
-    val pokemonMap : HashMap<String, Pokemon> = HashMap()
 
     private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
     val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()
@@ -88,6 +92,10 @@ class PokemonRepository {
         mutableSearchFlow.emit(mutableFilteredList)
     }
 
+    suspend fun fetchTeams() {
+        mutableTeamsFlow.emit(pokemonTeams)
+    }
+
     suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String)
     {
         var foundElements = 0
@@ -95,16 +103,12 @@ class PokemonRepository {
         var mutableFilteredList = mutableListOf<Pokemon>()
         var index = offset
 
-        while (index < allPokemonResultList.results.size && foundElements < elementsToFind)
+        while (index < dataStore.getAllPokemonResults().size && foundElements < elementsToFind)
         {
-            val result = allPokemonResultList.results.get(index)
+            val result = dataStore.getAllPokemonResults().get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
-                var pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
-                while (pokemon == null)
-                {
-                    pokemon = pokemonMap.get(result.name.capitalize(Locale("DK")))
-                }
+                var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(result.name)
                 var typeRelevant = false
                 for (type in filterOptions)
                 {
@@ -150,11 +154,7 @@ class PokemonRepository {
     }
 
     suspend fun getPokemonByName(name: String) {
-        var pokemon = pokemonMap.get(name)
-        while (pokemon == null)
-        {
-            pokemon = pokemonMap.get(name)
-        }
+        var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
         mutablePokemonFlow.emit(pokemon)
     }
 }

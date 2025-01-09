@@ -3,7 +3,6 @@ package com.example.pokedex.mainViews.HomeView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.repositories.PokemonOfTheDayRepository
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,8 +33,14 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             pokemonOfTheDayRepository.pokemonOfTheDayFlow
                 .collect { pokemon ->
-                    _pokemonOfTheDay.update {
-                        HomeUIState.Data(pokemon)
+                    if (pokemon == null) {
+                        getPokemonOfTheDay()
+                    }
+                    else
+                    {
+                        _pokemonOfTheDay.update {
+                            HomeUIState.Data(pokemon)
+                        }
                     }
                 }
         }
@@ -48,7 +53,7 @@ class HomeViewModel : ViewModel() {
         _pokemonOfTheDay.update {
             HomeUIState.Loading
         }
-        pokemonOfTheDayRepository.getPokemonOfTheDayByName("pikachu")
+        pokemonOfTheDayRepository.getPokemonOfTheDayByName()
     }
 
     fun getRecentlyViewedPokemons() = viewModelScope.launch {

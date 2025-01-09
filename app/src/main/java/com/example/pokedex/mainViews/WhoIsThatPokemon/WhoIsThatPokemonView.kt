@@ -25,41 +25,49 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.Option
+import com.example.pokedex.shared.WhoIsThatPokemon
 
 @Composable
 fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel = viewModel<WhoIsThatPokemonViewModel>()
     val whoIsThatPokemon = viewModel.whoIsThatPokemonStateFlow.collectAsState().value
+    when (whoIsThatPokemon)
+    {
+        is WhoIsThatPokemonUIState.Data ->
+        {
+            Column(
+                modifier = modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                BackButton(
+                    navController = navController,
+                    modifier = Modifier.align(Alignment.Start)
+                )
 
-    Column(
-        modifier = modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        BackButton(
-            navController = navController,
-            modifier = Modifier.align(Alignment.Start)
-        )
-        
-        Text(text = "Who Is That Pokemon",
-            fontSize = 35.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = modifier.padding(10.dp)
-        )
+                Text(text = "Who Is That Pokemon",
+                    fontSize = 35.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = modifier.padding(10.dp)
+                )
 
-        AsyncImage(
-            modifier = modifier.height(250.dp),
-            model = whoIsThatPokemon.pokemon.sprites.front_default,
-            contentDescription = "Blacked out image of pokemon"
-        )
+                AsyncImage(
+                    modifier = modifier.height(250.dp),
+                    model = whoIsThatPokemon.pokemon.pokemon.sprites.front_default,
+                    contentDescription = "Blacked out image of pokemon"
+                )
 
-        Options(viewModel, navController)
+                Options(viewModel, navController, whoIsThatPokemon.pokemon)
+            }
+        }
+
+        WhoIsThatPokemonUIState.Empty -> TODO()
+        WhoIsThatPokemonUIState.Loading -> TODO()
     }
-
 }
+
 @Composable
-fun Options (whoIsThatPokemonViewModel: WhoIsThatPokemonViewModel, navController: NavController) {
-    val whoIsThatPokemon = whoIsThatPokemonViewModel.whoIsThatPokemonStateFlow.collectAsState().value
+fun Options (whoIsThatPokemonViewModel: WhoIsThatPokemonViewModel, navController: NavController, whoIsThatPokemon : WhoIsThatPokemon) {
 
     LazyColumn (modifier = Modifier
         .fillMaxHeight(),
@@ -90,11 +98,4 @@ fun OptionComposable(modifier : Modifier = Modifier, navController: NavControlle
 fun WhoIsThatPokemonPreview() {
     val navController = rememberNavController()
     WhoIsThatPokemonView(navController = navController)
-}
-
-@Preview (showBackground = true)
-@Composable
-fun OptionsPreview() {
-    val navController = rememberNavController()
-    Options(WhoIsThatPokemonViewModel(), navController)
 }

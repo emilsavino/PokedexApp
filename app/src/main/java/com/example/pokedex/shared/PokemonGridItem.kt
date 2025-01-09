@@ -21,7 +21,7 @@ fun PokemonGridItem(navController: NavController, pokemon: Pokemon) {
         modifier = Modifier
             .size(110.dp)
             .clip(RoundedCornerShape(15.dp))
-            .background(Color.Gray)
+            .background(Color.Gray.copy(alpha = 0.6f))
             .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
     ) {
         AsyncImage(

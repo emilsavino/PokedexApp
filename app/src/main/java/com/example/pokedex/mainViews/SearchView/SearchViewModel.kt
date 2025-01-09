@@ -5,51 +5,54 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
-    private val selectedFilterOptionsListMutableFlow = MutableStateFlow<List<String>>(mutableListOf())
-    val selectedFilterOptionsListFlow: StateFlow<List<String>> = selectedFilterOptionsListMutableFlow.asStateFlow()
 
-    private val selectedSortOptionMutableFlow = MutableStateFlow<String>("")
-    val selectedSortOptionFlow: StateFlow<String> = selectedSortOptionMutableFlow.asStateFlow()
-
+    var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
+    var selectedSortOption = mutableStateOf("")
     var searchText = mutableStateOf("")
 
-    private val _pokemonList = MutableStateFlow<List<Pokemon>>(emptyList())
-    val pokemonList: StateFlow<List<Pokemon>> = _pokemonList.asStateFlow()
+    private val _pokemonList: MutableStateFlow<SearchUIState> = MutableStateFlow(SearchUIState.Empty)
+    val pokemonList: StateFlow<SearchUIState> = _pokemonList.asStateFlow()
 
     init {
         viewModelScope.launch {
             pokemonRepository.searchFlow.collect { newPokemonList ->
-                _pokemonList.value = newPokemonList
+                _pokemonList.update {
+                    SearchUIState.Data(newPokemonList)
+                }
             }
         }
         searchPokemonList()
     }
 
     fun searchPokemonList() {
+        _pokemonList.update {
+            SearchUIState.Loading
+
+        }
         viewModelScope.launch {
-            pokemonRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsListFlow.value, selectedSortOptionFlow.value)
+            pokemonRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value)
         }
     }
 
     fun selectFilterOption(option : String)
     {
-        if (selectedFilterOptionsListMutableFlow.value.contains(option))
+        if (selectedFilterOptionsList.value.contains(option))
         {
-            selectedFilterOptionsListMutableFlow.value = selectedFilterOptionsListMutableFlow.value.toMutableList().apply {
+            selectedFilterOptionsList.value = selectedFilterOptionsList.value.toMutableList().apply {
                 remove(option)
             }
         }
         else
         {
-            selectedFilterOptionsListMutableFlow.value = selectedFilterOptionsListMutableFlow.value.toMutableList().apply {
+            selectedFilterOptionsList.value = selectedFilterOptionsList.value.toMutableList().apply {
                 add(option)
             }
         }
@@ -68,7 +71,20 @@ class SearchViewModel: ViewModel() {
 
     fun selectSortOption(option : String)
     {
-        selectedSortOptionMutableFlow.value = option
+        if (selectedSortOption.value == option)
+        {
+            selectedSortOption.value = ""
+        }
+        else
+        {
+            selectedSortOption.value = option
+        }
         searchPokemonList()
     }
+}
+
+sealed class SearchUIState {
+    data class Data(val pokemonList: List<Pokemon>) : SearchUIState()
+    object Loading : SearchUIState()
+    object Empty : SearchUIState()
 }

@@ -118,28 +118,23 @@ fun ProfileView(
     navController: NavController,
     viewModel: ProfileViewModel = viewModel()
 ) {
-    val isSignedIn by viewModel.isSignedIn.collectAsState()
-    val email by viewModel.email.collectAsState()
-    val profilePictureUrl by viewModel.profilePictureUrl.collectAsState()
-    val authError by viewModel.authError.collectAsState()
-
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(Color(0xFFFFDD99)),
         contentAlignment = Alignment.Center
     ) {
-        if (isSignedIn) {
+        if (viewModel.isSignedIn.value) {
             SignedInContent(
-                email = email,
-                profilePictureUrl = profilePictureUrl,
+                email = viewModel.email.value,
+                profilePictureUrl = viewModel.profilePictureUrl.value,
                 onSignOut = { viewModel.signOut() },
                 onDeleteAccount = { viewModel.deleteAccount() }
             )
         } else {
             SignedOutContent(
                 onSignIn = { viewModel.signInWithGoogle() },
-                authError = authError
+                authError = viewModel.authError.value
             )
         }
     }

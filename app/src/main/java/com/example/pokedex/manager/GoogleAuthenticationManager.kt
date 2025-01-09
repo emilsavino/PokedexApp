@@ -1,4 +1,4 @@
-package com.example.pokedex.mainViews.ProfileView.signIn
+package com.example.pokedex.manager
 
 import android.content.Context
 import androidx.credentials.CredentialManager

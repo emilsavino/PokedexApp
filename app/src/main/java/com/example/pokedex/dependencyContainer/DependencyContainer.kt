@@ -1,7 +1,7 @@
 package com.example.pokedex.dependencyContainer
 
 import android.app.Application
-import com.example.pokedex.mainViews.ProfileView.signIn.GoogleAuthenticationManager
+import com.example.pokedex.manager.GoogleAuthenticationManager
 import com.example.pokedex.repositories.PokemonRepository
 import com.example.pokedex.repositories.WhoIsThatPokemonRepository
 import com.example.pokedex.repositories.FavouritesRepository

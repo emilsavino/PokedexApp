@@ -1,26 +1,19 @@
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.mainViews.ProfileView.signIn.AuthResponse
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.example.pokedex.manager.AuthResponse
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
     private val googleAuthManager = DependencyContainer.googleAuthenticationManager
 
-    private val _isSignedIn = MutableStateFlow(false)
-    val isSignedIn: StateFlow<Boolean> get() = _isSignedIn
+    var isSignedIn = mutableStateOf(false)
+    var email = mutableStateOf("Guest")
+    var profilePictureUrl = mutableStateOf<String?>(null)
+    var authError = mutableStateOf<String?>(null)
 
-    private val _email = MutableStateFlow("Guest")
-    val email: StateFlow<String> get() = _email
-
-    private val _profilePictureUrl = MutableStateFlow<String?>(null)
-    val profilePictureUrl: StateFlow<String?> get() = _profilePictureUrl
-
-    private val _authError = MutableStateFlow<String?>(null)
-    val authError: StateFlow<String?> get() = _authError
 
     init {
         initializeUserState()
@@ -28,11 +21,11 @@ class ProfileViewModel : ViewModel() {
 
     private fun initializeUserState() {
         viewModelScope.launch {
-            _isSignedIn.value = googleAuthManager.fetchSignedIn()
-            if (_isSignedIn.value) {
+            isSignedIn.value = googleAuthManager.fetchSignedIn()
+            if (isSignedIn.value) {
                 val currentUser = googleAuthManager.auth.currentUser
-                _email.value = currentUser?.email ?: "Unknown User"
-                _profilePictureUrl.value = currentUser?.photoUrl?.toString()
+                email.value = currentUser?.email ?: "Unknown User"
+                profilePictureUrl.value = currentUser?.photoUrl?.toString()
             }
         }
     }
@@ -43,13 +36,13 @@ class ProfileViewModel : ViewModel() {
                 when (response) {
                     is AuthResponse.Success -> {
                         val currentUser = googleAuthManager.auth.currentUser
-                        _isSignedIn.value = true
-                        _email.value = currentUser?.email ?: "Unknown User"
-                        _profilePictureUrl.value = currentUser?.photoUrl?.toString()
-                        _authError.value = null
+                        isSignedIn.value = true
+                        email.value = currentUser?.email ?: "Unknown User"
+                        profilePictureUrl.value = currentUser?.photoUrl?.toString()
+                        authError.value = null
                     }
                     is AuthResponse.Error -> {
-                        _authError.value = response.message
+                        authError.value = response.message
                     }
                 }
             }
@@ -67,16 +60,16 @@ class ProfileViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     resetUserState()
                 } else {
-                    _authError.value = task.exception?.message ?: "Failed to delete account"
+                    authError.value = task.exception?.message ?: "Failed to delete account"
                 }
             }
         }
     }
 
     private fun resetUserState() {
-        _isSignedIn.value = false
-        _email.value = "Guest"
-        _profilePictureUrl.value = null
-        _authError.value = null
+        isSignedIn.value = false
+        email.value = "Guest"
+        profilePictureUrl.value = null
+        authError.value = null
     }
 }

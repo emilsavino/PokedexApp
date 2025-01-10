@@ -140,11 +140,13 @@ class PokemonRepository {
 
     private fun combineDamageRelations(typeInfoList: List<DamageRelations>): DamageRelationsResult {
         val combinedWeaknesses = mutableListOf<Type>()
-        val combinedDouble = mutableListOf<Type>()
-        val combinedHalf = mutableListOf<Type>()
-
         for (typeInfo in typeInfoList) {
-
+            val halfDamageFrom = typeInfo.damage_relations.half_damage_from
+            for (type in typeInfo.damage_relations.double_damage_from) {
+                if (!combinedWeaknesses.contains(type) && !halfDamageFrom.contains(type)) {
+                    combinedWeaknesses.add(type)
+                }
+            }
         }
 
         return DamageRelationsResult(

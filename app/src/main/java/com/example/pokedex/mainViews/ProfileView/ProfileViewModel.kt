@@ -9,11 +9,9 @@ import kotlinx.coroutines.launch
 class ProfileViewModel : ViewModel() {
     private val googleAuthManager = DependencyContainer.googleAuthenticationManager
 
-    var isSignedIn = mutableStateOf(false)
     var email = mutableStateOf("Guest")
     var profilePictureUrl = mutableStateOf<String?>(null)
     var authError = mutableStateOf<String?>(null)
-
 
     init {
         initializeUserState()
@@ -21,31 +19,10 @@ class ProfileViewModel : ViewModel() {
 
     private fun initializeUserState() {
         viewModelScope.launch {
-            isSignedIn.value = googleAuthManager.fetchSignedIn()
-            if (isSignedIn.value) {
-                val currentUser = googleAuthManager.auth.currentUser
-                email.value = currentUser?.email ?: "Unknown User"
-                profilePictureUrl.value = currentUser?.photoUrl?.toString()
-            }
-        }
-    }
+            val currentUser = googleAuthManager.auth.currentUser
+            email.value = currentUser?.email ?: "Unknown User"
+            profilePictureUrl.value = currentUser?.photoUrl?.toString()
 
-    fun signInWithGoogle() {
-        viewModelScope.launch {
-            googleAuthManager.signInWithGoogle().collectLatest { response ->
-                when (response) {
-                    is AuthResponse.Success -> {
-                        val currentUser = googleAuthManager.auth.currentUser
-                        isSignedIn.value = true
-                        email.value = currentUser?.email ?: "Unknown User"
-                        profilePictureUrl.value = currentUser?.photoUrl?.toString()
-                        authError.value = null
-                    }
-                    is AuthResponse.Error -> {
-                        authError.value = response.message
-                    }
-                }
-            }
         }
     }
 
@@ -67,7 +44,6 @@ class ProfileViewModel : ViewModel() {
     }
 
     private fun resetUserState() {
-        isSignedIn.value = false
         email.value = "Guest"
         profilePictureUrl.value = null
         authError.value = null

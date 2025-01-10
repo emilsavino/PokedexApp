@@ -1,7 +1,5 @@
 package com.example.pokedex.navigation
 
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -9,13 +7,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.pokedex.mainViews.HomeView.HomeView
+import com.example.pokedex.mainViews.MyTeamsView.MyTeamsView
 import com.example.pokedex.mainViews.PokemonDetailView.PokemonDetailView
 import com.example.pokedex.mainViews.ProfileView.ProfileView
-import com.example.pokedex.mainViews.MyTeamsView.MyTeamsView
 import com.example.pokedex.mainViews.SavedPokemonsView.SavedView
 import com.example.pokedex.mainViews.SearchView.SearchView
 import com.example.pokedex.mainViews.WhoIsThatPokemon.WhoIsThatPokemonView
 import com.example.pokedex.mainViews.pokemonTriviaView.PokemonTriviaView
+import com.example.pokedex.mainViews.signInView.SignInView
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -24,11 +23,8 @@ fun Navigation(navController: NavHostController) {
         startDestination = Screen.SignIn.route
     ) {
         composable(Screen.SignIn.route) {
-            Button(onClick = {navController.navigate(Screen.Home.route)}) {
-                Text("Sign In")
-            }
+            SignInView(navController = navController)
         }
-
         composable(Screen.Saved.route) {
             SavedView(navController = navController)
         }

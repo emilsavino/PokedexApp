@@ -1,7 +1,6 @@
 package com.example.pokedex.mainViews.ProfileView
 
 import ProfileViewModel
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,25 +13,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
-import com.example.pokedex.R
 
 
 @Composable
@@ -87,30 +79,6 @@ fun SignedInContent(
     }
 }
 
-@Composable
-fun SignedOutContent(
-    onSignIn: () -> Unit,
-    authError: String?
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("You are not signed in.")
-
-        Spacer(modifier = Modifier.height(16.dp))
-        ProfileButton(text = "Sign In with Google", onClick = onSignIn)
-
-        authError?.let {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = it,
-                color = Color.Red,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}
 
 @Composable
 fun ProfileView(
@@ -124,19 +92,27 @@ fun ProfileView(
             .background(Color(0xFFFFDD99)),
         contentAlignment = Alignment.Center
     ) {
-        if (viewModel.isSignedIn.value) {
-            SignedInContent(
-                email = viewModel.email.value,
-                profilePictureUrl = viewModel.profilePictureUrl.value,
-                onSignOut = { viewModel.signOut() },
-                onDeleteAccount = { viewModel.deleteAccount() }
-            )
-        } else {
-            SignedOutContent(
-                onSignIn = { viewModel.signInWithGoogle() },
-                authError = viewModel.authError.value
-            )
-        }
+        SignedInContent(
+            email = viewModel.email.value,
+            profilePictureUrl = viewModel.profilePictureUrl.value,
+            onSignOut = {
+                viewModel.signOut()
+                navController.navigate("signIn") {
+                    popUpTo("signIn") {
+                        inclusive = true
+                    }
+                }
+                        },
+            onDeleteAccount = {
+                viewModel.deleteAccount()
+                navController.navigate("signIn") {
+                    popUpTo("signIn") {
+                        inclusive = true
+                    }
+                }
+            }
+        )
+
     }
 }
 

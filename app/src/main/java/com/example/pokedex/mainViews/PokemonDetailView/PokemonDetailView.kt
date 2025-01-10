@@ -172,7 +172,7 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
                 Text(
-                    text = pokemon.types.types.toString()
+                    text = pokemon.types.types.joinToString("\n") {it.name.formatPokemonName()}
                 )
             }
 
@@ -192,7 +192,7 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
                 Text(
-                    text = pokemon.weaknesses.toString()
+                    text = pokemon.weaknesses.double_damage_from.joinToString("\n") { it.name.formatPokemonName() }
                 )
             }
 
@@ -216,7 +216,7 @@ fun CreateDescBox(pokemon: PokemonAttributes) {
             )
             Spacer(modifier = Modifier.padding(2.dp))
             Text(
-                text = pokemon.description.flavor_text
+                text = pokemon.description.flavor_text.replace("\n", " ")
             )
         }
 

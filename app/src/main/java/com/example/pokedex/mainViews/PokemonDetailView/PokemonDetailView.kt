@@ -1,8 +1,13 @@
 package com.example.pokedex.mainViews.PokemonDetailView
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,13 +28,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.pokedex.R
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
@@ -154,6 +162,27 @@ fun ErrorMessage(errorMessage: String) {
 
 @Composable
 fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
+    val typeImageMap: Map<String, Painter> = mapOf(
+        "bug" to painterResource(id = R.drawable.bug),
+        "dark" to painterResource(id = R.drawable.dark),
+        "dragon" to painterResource(id = R.drawable.dragon),
+        "electric" to painterResource(id = R.drawable.electric),
+        "fairy" to painterResource(id = R.drawable.fairy),
+        "fighting" to painterResource(id = R.drawable.fighting),
+        "fire" to painterResource(id = R.drawable.fire),
+        "flying" to painterResource(id = R.drawable.flying),
+        "ghost" to painterResource(id = R.drawable.ghost),
+        "grass" to painterResource(id = R.drawable.grass),
+        "ground" to painterResource(id = R.drawable.ground),
+        "ice" to painterResource(id = R.drawable.ice),
+        "normal" to painterResource(id = R.drawable.normal),
+        "poison" to painterResource(id = R.drawable.poison),
+        "psychic" to painterResource(id = R.drawable.psychic),
+        "rock" to painterResource(id = R.drawable.rock),
+        "steel" to painterResource(id = R.drawable.steel),
+        "water" to painterResource(id = R.drawable.water)
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -174,11 +203,26 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = pokemon.types.types.joinToString("\n") {it.name.formatPokemonName()}
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    pokemon.types.types.forEach { type ->
+                        val typeImage = typeImageMap[type.name]
+                        typeImage?.let {
+                            Image(
+                                painter = it,
+                                contentDescription = "${type.name.capitalize()} type image",
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .padding(4.dp)
+                            )
+                        }
+                    }
+                }
             }
-
         }
 
         Box(
@@ -195,11 +239,26 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = pokemon.weaknesses.double_damage_from.joinToString("\n") { it.name.formatPokemonName() }
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    pokemon.weaknesses.double_damage_from.forEach { weakness ->
+                        val weaknessImage = typeImageMap[weakness.name]
+                        weaknessImage?.let {
+                            Image(
+                                painter = it,
+                                contentDescription = "${weakness.name.capitalize()} weakness image",
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .padding(4.dp)
+                            )
+                        }
+                    }
+                }
             }
-
         }
     }
 }

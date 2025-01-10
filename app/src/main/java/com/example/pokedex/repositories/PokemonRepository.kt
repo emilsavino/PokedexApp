@@ -12,6 +12,7 @@ import com.example.pokedex.shared.FlavorTextEntry
 import com.example.pokedex.shared.Language
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonAttributes
+import com.example.pokedex.shared.Species
 import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.TypeObject
 import com.example.pokedex.shared.Types
@@ -101,13 +102,13 @@ class PokemonRepository {
         try
         {
             val pokemon: Pokemon?
-            var pokemonSpecies: FlavorTextAndEvolutionChain
+            //var pokemonSpecies: FlavorTextAndEvolutionChain
             var types: List<Type> = emptyList()
             val typesInfoList: List<DamageRelations>
             var weaknesses: DamageRelationsResult
             var abilities: List<Ability>
             var description: FlavorTextEntry
-            var evolutionChain: EvolutionChain
+            var evolutionChain: EvolutionChain = EvolutionChain(Species(""))
 
             try
             {
@@ -116,15 +117,6 @@ class PokemonRepository {
             } catch (e: Exception) {
                 println("Error fetching Pokémon details for $name: ${e.message}")
                 return
-            }
-
-            try
-            {
-                pokemonSpecies = dataStore.fetchPokemonSpecies(name)
-                println("Successfully fetched Pokémon species details for $name: $pokemonSpecies")
-            } catch (e: Exception) {
-                println("Error fetching Pokémon species for $name: ${e.message}")
-                pokemonSpecies = FlavorTextAndEvolutionChain(EvolutionChain(""), emptyList<FlavorTextEntry>())
             }
 
             try
@@ -154,6 +146,7 @@ class PokemonRepository {
 
             try
             {
+                val pokemonSpecies = dataStore.fetchPokemonSpecies(name)
                 description = pokemonSpecies?.flavor_text_entries?.firstOrNull {
                     it.language.name == "en"
                 } ?: FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
@@ -165,12 +158,20 @@ class PokemonRepository {
 
             try
             {
-                evolutionChain = pokemonSpecies?.evolution_chain?.url?.let { EvolutionChain(it) }
-                    ?: EvolutionChain("Unknown")
+                val species = dataStore.fetchPokemonSpecies(name)
+
+                val evoChainData = dataStore.fetchPokemonSpeciesFromURL(species.evolution_chain.species.url)
+
+                val evoSpeciesURLs = mutableListOf<String>()
+                //val pokemonSpeciesFromEvo = dataStore.fetchPokemonSpeciesFromURL(evoChainURL.evolution_chain.species.url)
+                //val varieties = dataStore.fetchPokemonFromVarieties(pokemonSpeciesFromEvo.url)
+
+
+                val pokemonSpeciesFromEvo = ""
+                evolutionChain = EvolutionChain(Species(pokemonSpeciesFromEvo))
                 println("Successfully processed evolution chain for $name")
             } catch (e: Exception) {
                 println("Error processing evolution chain for $name: ${e.message}")
-                evolutionChain = EvolutionChain("Unknown")
             }
 
             val pokemonAttributes = PokemonAttributes(

@@ -52,9 +52,26 @@ data class AbilityDetails(
 
 //Evolutions and its data classes
 data class EvolutionChain(
+    val species: Species,
+    val evolves_to: List<EvolutionChain> = emptyList()
+)
+
+data class Species(
     val url: String
 )
 
+data class Varieties(
+    val varieties: List<VarietiesResult>
+)
+
+data class VarietiesResult(
+    val is_default: Boolean,
+    val pokemon: VarietiesPokemon
+)
+
+data class VarietiesPokemon(
+    val url: String
+)
 //------------MISC.----------------
 data class TypeObject(
     val type: Type

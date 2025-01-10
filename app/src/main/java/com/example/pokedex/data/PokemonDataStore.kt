@@ -5,8 +5,11 @@ import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
+import com.example.pokedex.shared.Species
 import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.Types
+import com.example.pokedex.shared.Varieties
+import com.example.pokedex.shared.VarietiesPokemon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -67,6 +70,28 @@ class PokemonDataStore {
     suspend fun fetchPokemonSpecies(name: String): FlavorTextAndEvolutionChain {
         return withContext(Dispatchers.IO) {
             api.getPokemonSpecies(name)
+        }
+    }
+
+    suspend fun fetchPokemonSpeciesFromURL(url: String): Species{
+        return withContext(Dispatchers.IO) {
+            api.getPokemonSpeciesFromURL(url)
+        }
+    }
+
+    suspend fun fetchPokemonURL(url: String): VarietiesPokemon {
+        return withContext(Dispatchers.IO) {
+            api.getVarPokemonFromURL(url)
+        }
+    }
+
+    suspend fun fetchPokemonFromVarieties(varieties: Varieties, useDefault: Boolean): VarietiesPokemon {
+        val selectedVariety = varieties.varieties.firstOrNull() { it.is_default == useDefault }
+
+        return if (selectedVariety != null) {
+            fetchPokemonURL(selectedVariety.pokemon.url)
+        } else {
+            throw IllegalArgumentException("No Pokémon variety found with is_default = $useDefault")
         }
     }
 

@@ -38,7 +38,47 @@ class PokemonTriviaRepository {
                 Option("Electrode", Color.Gray)
             ),
             correctAnswer = "Raichu"
-        )
+        ),
+        PokemonTriviaModel(
+            question = "Which Pokemon has the types dragon and ground?",
+            options = listOf(
+                Option("Pawmo", Color.Gray),
+                Option("Gulpin", Color.Gray),
+                Option("Gabite", Color.Gray, isCorrect = true),
+                Option("Pheromosa", Color.Gray)
+            ),
+            correctAnswer = "Gabite"
+        ),
+        PokemonTriviaModel(
+            question = "Which Pokemon has the desc: With quick movements, it chases down its foes, attacking relentlessly with its horns until it prevails",
+            options = listOf(
+                Option("Rellor", Color.Gray),
+                Option("Scolipede", Color.Gray, isCorrect = true),
+                Option("Machamp", Color.Gray),
+                Option("Gengar", Color.Gray)
+            ),
+            correctAnswer = "Scolipede"
+        ),
+        PokemonTriviaModel(
+            question = "What Pokemon is a starter pokemon in generation 1",
+            options = listOf(
+                Option("Pikachu", Color.Gray),
+                Option("Geodude", Color.Gray),
+                Option("Squirtle", Color.Gray, isCorrect = true),
+                Option("Rattata", Color.Gray)
+            ),
+            correctAnswer = "Squirtle"
+        ),
+        PokemonTriviaModel(
+            question = "What type is the legendary pokemon Moltres",
+            options = listOf(
+                Option("Ice", Color.Gray),
+                Option("Fire", Color.Gray, isCorrect = true),
+                Option("Lightning", Color.Gray),
+                Option("Dragon", Color.Gray)
+            ),
+            correctAnswer = "Fire"
+        ),
     )
 
     fun getRandomQuestion(): PokemonTriviaModel {

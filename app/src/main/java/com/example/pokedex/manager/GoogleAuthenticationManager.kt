@@ -120,6 +120,10 @@ class GoogleAuthenticationManager(val context: Context) {
         val signedInStateJSON = preferences[SIGN_IN_STATE_KEY] ?: return false
         return Gson().fromJson(signedInStateJSON, Boolean::class.java)
     }
+
+    fun setSignedIn(signedIn: Boolean) {
+        isSignedIn = signedIn
+    }
 }
 
 interface AuthResponse {

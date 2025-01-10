@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -115,11 +116,12 @@ fun CreateEvoBox(pokemon: PokemonAttributes) {
         Column {
             Text(
                 text = "Evolutions",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
             )
             Spacer(modifier = Modifier.padding(2.dp))
             Text(
-                text = pokemon.evolution_chain.url
+                text = pokemon.evolution_chain.url //TODO: Make use of the link
             )
         }
 
@@ -137,12 +139,37 @@ fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
         Column {
             Text(
                 text = "Abilities",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+
             )
             Spacer(modifier = Modifier.padding(2.dp))
-            Text(
-                text = pokemon.abilities.joinToString(" ") { it.ability.name }
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                pokemon.abilities.forEachIndexed { index, ability ->
+                    Text(
+                        text = "Ability ${index + 1}: ",
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 16.sp
+                    )
+
+                    Text(
+                        text = ability.ability.name.capitalize().formatPokemonName(),
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 16.sp
+                    )
+
+                    if (index < pokemon.abilities.size - 1) {
+                        Text(
+                            text = "   |   ",
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
         }
 
     }
@@ -200,7 +227,8 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
             Column {
                 Text(
                     text = "Types",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
                 Row(
@@ -236,7 +264,8 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
             Column {
                 Text(
                     text = "Weaknesses",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
                 Row(
@@ -275,11 +304,13 @@ fun CreateDescBox(pokemon: PokemonAttributes) {
         Column {
             Text(
                 text = "Description",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
             )
             Spacer(modifier = Modifier.padding(2.dp))
             Text(
-                text = pokemon.description.flavor_text.replace("\n", " ")
+                text = pokemon.description.flavor_text.replace("\n", " "),
+                fontStyle = FontStyle.Italic
             )
         }
 

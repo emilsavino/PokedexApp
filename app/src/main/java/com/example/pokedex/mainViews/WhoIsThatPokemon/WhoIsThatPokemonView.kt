@@ -25,19 +25,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.Option
+import com.example.pokedex.shared.ProgressIndicator
 import com.example.pokedex.shared.WhoIsThatPokemon
 
 @Composable
 fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel = viewModel<WhoIsThatPokemonViewModel>()
     val whoIsThatPokemon = viewModel.whoIsThatPokemonStateFlow.collectAsState().value
-    when (whoIsThatPokemon)
-    {
-        is WhoIsThatPokemonUIState.Data ->
-        {
+    when (whoIsThatPokemon) {
+        is WhoIsThatPokemonUIState.Data -> {
             Column(
-                modifier = modifier
-                    .fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 BackButton(
@@ -57,38 +55,35 @@ fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavContro
                     contentDescription = "Blacked out image of pokemon"
                 )
 
-                Options(viewModel, navController, whoIsThatPokemon.pokemon)
+                Options(viewModel, whoIsThatPokemon.pokemon)
             }
         }
 
-        WhoIsThatPokemonUIState.Empty -> TODO()
-        WhoIsThatPokemonUIState.Loading -> TODO()
+        WhoIsThatPokemonUIState.Empty -> Text(text = "Empty")
+        WhoIsThatPokemonUIState.Loading -> ProgressIndicator()
     }
 }
 
 @Composable
-fun Options (whoIsThatPokemonViewModel: WhoIsThatPokemonViewModel, navController: NavController, whoIsThatPokemon : WhoIsThatPokemon) {
-
-    LazyColumn (modifier = Modifier
-        .fillMaxHeight(),
-    ) {
+fun Options (viewModel: WhoIsThatPokemonViewModel, whoIsThatPokemon : WhoIsThatPokemon) {
+    LazyColumn (modifier = Modifier.fillMaxHeight()) {
         items(whoIsThatPokemon.options) { item: Option ->
-            OptionComposable(option = item, navController = navController, whoIsThatPokemonViewModel = whoIsThatPokemonViewModel)
+            OptionComposable(option = item, viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun OptionComposable(modifier : Modifier = Modifier, navController: NavController, option : Option, whoIsThatPokemonViewModel: WhoIsThatPokemonViewModel) {
+fun OptionComposable(modifier : Modifier = Modifier, option : Option, viewModel: WhoIsThatPokemonViewModel) {
     Button(
         modifier = modifier
             .padding(5.dp)
             .height(90.dp)
             .fillMaxWidth(),
-        onClick = { whoIsThatPokemonViewModel.guessed(guessedName = option.name) }
+        onClick = { viewModel.guessed() }
     ) {
         Text(text = option.name,
-            color = whoIsThatPokemonViewModel.getColor(option),
+            color = viewModel.getColor(option),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold)
     }

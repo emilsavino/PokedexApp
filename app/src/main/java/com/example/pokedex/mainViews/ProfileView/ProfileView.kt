@@ -84,8 +84,9 @@ fun SignedInContent(
 fun ProfileView(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel()
 ) {
+    val viewModel = viewModel<ProfileViewModel>()
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -96,20 +97,10 @@ fun ProfileView(
             email = viewModel.email.value,
             profilePictureUrl = viewModel.profilePictureUrl.value,
             onSignOut = {
-                viewModel.signOut()
-                navController.navigate("signIn") {
-                    popUpTo("signIn") {
-                        inclusive = true
-                    }
-                }
-                        },
+                viewModel.signOut(navController)
+            },
             onDeleteAccount = {
-                viewModel.deleteAccount()
-                navController.navigate("signIn") {
-                    popUpTo("signIn") {
-                        inclusive = true
-                    }
-                }
+                viewModel.deleteAccount(navController)
             }
         )
 

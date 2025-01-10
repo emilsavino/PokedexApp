@@ -1,10 +1,14 @@
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.manager.AuthResponse
+import com.example.pokedex.navigation.Screen
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
+import java.lang.Thread.sleep
 
 class ProfileViewModel : ViewModel() {
     private val googleAuthManager = DependencyContainer.googleAuthenticationManager
@@ -26,15 +30,25 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun signOut() {
+    fun signOut(navController: NavController) {
         googleAuthManager.auth.signOut()
+        navController.navigate(Screen.SignIn.route) {
+            popUpTo(Screen.Profile.route) {
+                inclusive = true
+            }
+        }
         resetUserState()
     }
 
-    fun deleteAccount() {
+    fun deleteAccount(navController: NavController) {
         viewModelScope.launch {
             googleAuthManager.auth.currentUser?.delete()?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    navController.navigate(Screen.SignIn.route) {
+                        popUpTo(Screen.Profile.route) {
+                            inclusive = true
+                        }
+                    }
                     resetUserState()
                 } else {
                     authError.value = task.exception?.message ?: "Failed to delete account"

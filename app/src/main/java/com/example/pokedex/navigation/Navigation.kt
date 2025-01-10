@@ -17,10 +17,16 @@ import com.example.pokedex.mainViews.pokemonTriviaView.PokemonTriviaView
 import com.example.pokedex.mainViews.signInView.SignInView
 
 @Composable
-fun Navigation(navController: NavHostController) {
+fun Navigation(navController: NavHostController, isSignedIn: Boolean) {
+    val startDestination = if (isSignedIn) {
+        Screen.Home.route
+    } else {
+        Screen.SignIn.route
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Screen.SignIn.route
+        startDestination = startDestination
     ) {
         composable(Screen.SignIn.route) {
             SignInView(navController = navController)

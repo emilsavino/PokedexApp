@@ -53,10 +53,7 @@ fun SignInView(
         )
         OutlinedButton(
             onClick = {
-                viewModel.signInWithGoogle()
-                navController.navigate("home") {
-                    popUpTo("signIn") { inclusive = true }
-                }
+                viewModel.signInWithGoogle(navController)
             },
             modifier = Modifier.fillMaxWidth()
         ) {

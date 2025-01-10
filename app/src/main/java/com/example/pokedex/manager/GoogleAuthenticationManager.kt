@@ -4,32 +4,23 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.pokedex.R
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 import java.util.UUID
 
 class GoogleAuthenticationManager(val context: Context) {
-    private val Context.dataStore by preferencesDataStore(name = "signed_in_state")
-    private val SIGN_IN_STATE_KEY = stringPreferencesKey("signed_in")
-
-
     val auth = Firebase.auth
     private var isSignedIn = false
 
@@ -81,7 +72,6 @@ class GoogleAuthenticationManager(val context: Context) {
                                 trySend(AuthResponse.Success)
                                 launch {
                                     isSignedIn = true
-                                    saveSignedInState()
                                 }
                                 close()
                             } else {
@@ -108,21 +98,9 @@ class GoogleAuthenticationManager(val context: Context) {
         awaitClose()
     }
 
-    suspend fun saveSignedInState() {
-        val signedInStateJSON = Gson().toJson(isSignedIn)
-        context.dataStore.edit { preferences ->
-            preferences[SIGN_IN_STATE_KEY] = signedInStateJSON
-        }
-    }
-
-    suspend fun fetchSignedIn(): Boolean{
-        val preferences = context.dataStore.data.first()
-        val signedInStateJSON = preferences[SIGN_IN_STATE_KEY] ?: return false
-        return Gson().fromJson(signedInStateJSON, Boolean::class.java)
-    }
-
-    fun setSignedIn(signedIn: Boolean) {
-        isSignedIn = signedIn
+    fun fetchSignedIn(): Boolean {
+        val currentUser = auth.currentUser
+        return currentUser != null
     }
 }
 

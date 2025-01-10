@@ -3,12 +3,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.manager.AuthResponse
 import com.example.pokedex.navigation.Screen
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
-import java.lang.Thread.sleep
 
 class ProfileViewModel : ViewModel() {
     private val googleAuthManager = DependencyContainer.googleAuthenticationManager
@@ -33,8 +29,6 @@ class ProfileViewModel : ViewModel() {
     fun signOut(navController: NavController) {
         viewModelScope.launch {
             googleAuthManager.auth.signOut()
-            googleAuthManager.setSignedIn(false)
-            googleAuthManager.saveSignedInState()
             navController.navigate(Screen.SignIn.route) {
                 popUpTo(Screen.Profile.route) {
                     inclusive = true
@@ -58,8 +52,6 @@ class ProfileViewModel : ViewModel() {
                     authError.value = task.exception?.message ?: "Failed to delete account"
                 }
             }
-            googleAuthManager.setSignedIn(false)
-            googleAuthManager.saveSignedInState()
         }
     }
 

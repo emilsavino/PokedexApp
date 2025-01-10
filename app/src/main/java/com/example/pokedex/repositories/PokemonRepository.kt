@@ -6,6 +6,7 @@ import com.example.pokedex.shared.Ability
 import com.example.pokedex.shared.DamageRelations
 import com.example.pokedex.shared.DamageRelationsResult
 import com.example.pokedex.shared.EvolutionChain
+import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.FlavorTextEntry
 import com.example.pokedex.shared.Language
 import com.example.pokedex.shared.Pokemon
@@ -96,38 +97,98 @@ class PokemonRepository {
     }
 
     suspend fun getPokemonDetailsByName(name: String) {
-        val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
-        val pokemonSpecies = dataStore.fetchPokemonSpecies(name)
+        try
+        {
+            val pokemon: Pokemon?
+            var pokemonSpecies: FlavorTextAndEvolutionChain
+            var types: List<Type> = emptyList()
+            val typesInfoList: List<DamageRelations>
+            var weaknesses: DamageRelationsResult
+            var abilities: Abilities
+            var description: FlavorTextEntry
+            var evolutionChain: EvolutionChain
 
-        val types = pokemon.types.map { it.type }
-        val typesInfoList = dataStore.fetchTypeInfo(types)
+            try
+            {
+                pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
+                println("Successfully fetched Pokémon details for $name: $pokemon")
+            } catch (e: Exception) {
+                println("Error fetching Pokémon details for $name: ${e.message}")
+                return
+            }
 
-        val weaknesses = combineDamageRelations(typesInfoList)
+            try
+            {
+                pokemonSpecies = dataStore.fetchPokemonSpecies(name)
+                println("Successfully fetched Pokémon species details for $name: $pokemonSpecies")
+            } catch (e: Exception) {
+                println("Error fetching Pokémon species for $name: ${e.message}")
+                pokemonSpecies = FlavorTextAndEvolutionChain(EvolutionChain(""), emptyList<FlavorTextEntry>())
+            }
 
-        val abilities = Abilities(
-            abilities = pokemon.abilities
-                .filter { it.name != null }
-                .map { Ability(it.name ?: "Unknown Ability") }
-        )
+            try
+            {
+                types = pokemon.types.map { it.type }
+                typesInfoList = dataStore.fetchTypeInfo(types)
+                weaknesses = combineDamageRelations(typesInfoList)
+                println("Successfully fetched and combined type weaknesses for $name")
+            } catch (e: Exception) {
+                println("Error fetching type weaknesses for $name: ${e.message}")
+                weaknesses = DamageRelationsResult(
+                    double_damage_from = emptyList(),
+                    half_damage_from = emptyList()
+                )
+            }
 
-        val description = pokemonSpecies.flavor_text_entries.firstOrNull() {
-            it.language.name == "en"
-        } ?: FlavorTextEntry("This Pokemon doesnt have many sightnings", Language("en"))
+            try
+            {
+                abilities = Abilities(
+                    abilities = pokemon.abilities
+                        .filter { it.name != null }
+                        .map { Ability(it.name ?: "Unknown Ability") }
+                )
+                println("Successfully processed abilities for $name")
+            } catch (e: Exception) {
+                println("Error processing abilities for $name: ${e.message}")
+                abilities = Abilities(abilities = emptyList())
+            }
 
-        val evolutionChain = EvolutionChain(
-            url = pokemonSpecies.evolution_chain.url
-        )
+            try
+            {
+                description = pokemonSpecies?.flavor_text_entries?.firstOrNull {
+                    it.language.name == "en"
+                } ?: FlavorTextEntry("This Pokémon doesn't have many sightings", Language("en"))
+                println("Successfully processed description for $name")
+            } catch (e: Exception) {
+                println("Error processing description for $name: ${e.message}")
+                description = FlavorTextEntry("Error fetching description", Language("en"))
+            }
 
-        val pokemonAttributes = PokemonAttributes(
-            pokemon = pokemon,
-            description = description,
-            types = Types(types),
-            weaknesses = weaknesses,
-            abilities = abilities,
-            evolution_chain = evolutionChain
-        )
+            try
+            {
+                evolutionChain = pokemonSpecies?.evolution_chain?.url?.let { EvolutionChain(it) }
+                    ?: EvolutionChain("Unknown")
+                println("Successfully processed evolution chain for $name")
+            } catch (e: Exception) {
+                println("Error processing evolution chain for $name: ${e.message}")
+                evolutionChain = EvolutionChain("Unknown")
+            }
 
-        mutablePokemonAttributesFlow.emit(pokemonAttributes)
+            val pokemonAttributes = PokemonAttributes(
+                pokemon = pokemon,
+                description = description,
+                types = Types(types),
+                weaknesses = weaknesses,
+                abilities = abilities,
+                evolution_chain = evolutionChain
+            )
+
+            mutablePokemonAttributesFlow.emit(pokemonAttributes)
+            println("Successfully emitted Pokémon attributes for $name")
+        }catch (e: Exception) {
+            println("Unexpected error in getPokemonDetailsByName for $name: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
     private fun combineDamageRelations(typeInfoList: List<DamageRelations>): DamageRelationsResult {

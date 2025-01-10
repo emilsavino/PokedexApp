@@ -20,26 +20,17 @@ import kotlinx.coroutines.flow.asSharedFlow
 class PokemonRepository {
     private var dataStore = DependencyContainer.pokemonDataStore
 
-    private val pokemonTeams = mutableListOf<List<Pokemon>>()
-
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    val filterOptions = mutableListOf<String>("fire","grass","ASAP-Rocky")
-    val sortOptions = mutableListOf<String>("NameASC","NameDSC")
+    val filterOptions = mutableListOf("fire","grass","ASAP-Rocky")
+    val sortOptions = mutableListOf("NameASC","NameDSC")
 
     private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
     val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()
 
-    private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
-    val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
-
     private val mutablePokemonAttributesFlow = MutableSharedFlow<PokemonAttributes>()
     val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
-
-    suspend fun fetchTeams() {
-        mutableTeamsFlow.emit(pokemonTeams)
-    }
 
     suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String)
     {
@@ -47,10 +38,20 @@ class PokemonRepository {
         val elementsToFind = 20
         var mutableFilteredList = mutableListOf<Pokemon>()
         var index = offset
-
-        while (index < dataStore.getAllPokemonResults().size && foundElements < elementsToFind)
+        var allPokemonResults = dataStore.getAllPokemonResults()
+        if (sortOption == "NameASC")
         {
-            val result = dataStore.getAllPokemonResults().get(index)
+            allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
+        }
+        else if (sortOption == "NameDSC")
+        {
+            allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
+            allPokemonResults = allPokemonResults.reversed()
+        }
+
+        while (index < allPokemonResults.size && foundElements < elementsToFind)
+        {
+            val result = allPokemonResults.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
                 var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(result.name)
@@ -85,15 +86,6 @@ class PokemonRepository {
                 foundElements++
             }
             index++
-        }
-        if (sortOption === "NameASC")
-        {
-            mutableFilteredList = mutableFilteredList.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
-        }
-        else if (sortOption === "NameDSC")
-        {
-            mutableFilteredList = mutableFilteredList.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
-            mutableFilteredList.reverse()
         }
         mutableSearchFlow.emit(mutableFilteredList)
     }

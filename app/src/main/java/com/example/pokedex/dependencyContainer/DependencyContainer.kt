@@ -7,6 +7,7 @@ import com.example.pokedex.repositories.WhoIsThatPokemonRepository
 import com.example.pokedex.repositories.FavouritesRepository
 import com.example.pokedex.repositories.PokemonOfTheDayRepository
 import com.example.pokedex.repositories.RecentlyViewedRepository
+import com.example.pokedex.repositories.TeamsRepository
 
 object DependencyContainer {
     private lateinit var application: Application
@@ -38,4 +39,9 @@ object DependencyContainer {
     val pokemonDataStore : PokemonDataStore by lazy {
         PokemonDataStore()
     }
+
+    val teamsRepository: TeamsRepository by lazy {
+        TeamsRepository(application.applicationContext)
+    }
+
 }

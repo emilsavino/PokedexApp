@@ -19,31 +19,28 @@ class WhoIsThatPokemonViewModel: ViewModel() {
     private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemonUIState>(WhoIsThatPokemonUIState.Empty)
     val whoIsThatPokemonStateFlow: StateFlow<WhoIsThatPokemonUIState> = _whoThepokemonMutableStateFlow.asStateFlow()
 
-    val hasAnswered = mutableStateOf(false)
+    private val hasAnswered = mutableStateOf(false)
 
     fun getColor(option: Option) : Color {
-        // We will hopefully remake the entire system regarding options, so i am choosing
-        // not to spend time on this rn.
         if (!hasAnswered.value) {
             return Color.Black
         }
-        return Color.Green
+
+        if (option.isCorrect) {
+            return Color.Green
+        }
+
+        return Color.Red
     }
 
     init {
         viewModelScope.launch {
             whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow
                 .collect { whoThePokemon ->
-                    if (whoThePokemon == null)
-                    {
-                        fetchWhoThatPokemon()
+                    _whoThepokemonMutableStateFlow.update {
+                        WhoIsThatPokemonUIState.Data(whoThePokemon)
                     }
-                    else
-                    {
-                        _whoThepokemonMutableStateFlow.update {
-                            WhoIsThatPokemonUIState.Data(whoThePokemon)
-                        }
-                    }
+
                 }
         }
         fetchWhoThatPokemon()
@@ -56,7 +53,7 @@ class WhoIsThatPokemonViewModel: ViewModel() {
         }
     }
 
-    fun guessed(guessedName : String) {
+    fun guessed() {
         hasAnswered.value = true
     }
 }

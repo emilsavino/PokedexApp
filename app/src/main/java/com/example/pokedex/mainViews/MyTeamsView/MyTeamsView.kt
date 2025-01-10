@@ -22,6 +22,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
+import com.example.pokedex.shared.Team
+import androidx.compose.material3.Button
 
 @Composable
 fun MyTeamsView(navController: NavController) {
@@ -52,9 +54,9 @@ private fun MakeHeader() {
 
 @Composable
 private fun MakeContent(navController: NavController, viewModel: MyTeamsViewModel) {
-    val teams = viewModel.teamsState.collectAsState().value
+    val teamsState = viewModel.teamsState.collectAsState().value
 
-    when (teams) {
+    when (teamsState) {
         is TeamsUIState.Empty -> {
             Text(
                 text = "No teams found",
@@ -68,25 +70,40 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
             )
         }
         is TeamsUIState.Data -> {
-            MakeTeamsGrid(navController, teams.teams)
+            MakeTeamsGrid(navController, teamsState.teams, viewModel)
         }
     }
 }
 
 @Composable
-private fun MakeTeamsGrid(navController: NavController, teams: List<List<Pokemon>>) {
+private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewModel: MyTeamsViewModel) {
     var teamNumber = 1
     for (team in teams) {
-        Text(
-            modifier = Modifier.padding(10.dp),
-            text = "Team $teamNumber",
-            fontSize = 20.sp
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Text(
+                text = "Team $teamNumber: ${team.name}",
+                fontSize = 20.sp,
+                modifier = Modifier.weight(1f)
+            )
+
+            Button(
+                onClick = { viewModel.deleteTeam(team.name) },
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text(text = "Delete")
+            }
+        }
+
         teamNumber++
+
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.padding(start = 16.dp)
         ) {
-            for (pokemons in team.chunked(3)) {
+            for (pokemons in team.pokemons.chunked(3)) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {

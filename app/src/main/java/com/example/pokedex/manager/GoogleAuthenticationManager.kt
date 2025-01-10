@@ -108,7 +108,7 @@ class GoogleAuthenticationManager(val context: Context) {
         awaitClose()
     }
 
-    private suspend fun saveSignedInState() {
+    suspend fun saveSignedInState() {
         val signedInStateJSON = Gson().toJson(isSignedIn)
         context.dataStore.edit { preferences ->
             preferences[SIGN_IN_STATE_KEY] = signedInStateJSON

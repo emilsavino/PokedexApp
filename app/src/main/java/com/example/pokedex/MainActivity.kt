@@ -45,18 +45,11 @@ fun MainContent() {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
 
-    val authManager = DependencyContainer.googleAuthenticationManager
-    var isSignedIn by remember { mutableStateOf(false) }
-
-
     val showTabBar = when (currentRoute) {
-        Screen.SignIn.route -> false
+        Screen.SignIn.route, Screen.Splash.route -> false
         else -> true
     }
 
-    LaunchedEffect(Dispatchers.IO) {
-        isSignedIn = authManager.fetchSignedIn()
-    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -67,7 +60,7 @@ fun MainContent() {
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            Navigation(navController = navController, isSignedIn)
+            Navigation(navController = navController)
         }
     }
 }

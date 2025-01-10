@@ -31,13 +31,16 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun signOut(navController: NavController) {
-        googleAuthManager.auth.signOut()
-        navController.navigate(Screen.SignIn.route) {
-            popUpTo(Screen.Profile.route) {
-                inclusive = true
+        viewModelScope.launch {
+            googleAuthManager.auth.signOut()
+            googleAuthManager.saveSignedInState()
+            navController.navigate(Screen.SignIn.route) {
+                popUpTo(Screen.Profile.route) {
+                    inclusive = true
+                }
             }
+            resetUserState()
         }
-        resetUserState()
     }
 
     fun deleteAccount(navController: NavController) {
@@ -54,6 +57,7 @@ class ProfileViewModel : ViewModel() {
                     authError.value = task.exception?.message ?: "Failed to delete account"
                 }
             }
+            googleAuthManager.saveSignedInState()
         }
     }
 

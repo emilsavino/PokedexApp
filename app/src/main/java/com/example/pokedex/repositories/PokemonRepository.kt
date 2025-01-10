@@ -156,7 +156,7 @@ class PokemonRepository {
             {
                 description = pokemonSpecies?.flavor_text_entries?.firstOrNull {
                     it.language.name == "en"
-                } ?: FlavorTextEntry("This Pokémon doesn't have many sightings", Language("en"))
+                } ?: FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
                 println("Successfully processed description for $name")
             } catch (e: Exception) {
                 println("Error processing description for $name: ${e.message}")

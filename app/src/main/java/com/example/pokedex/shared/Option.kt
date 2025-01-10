@@ -4,5 +4,6 @@ import androidx.compose.ui.graphics.Color
 
 data class Option (
     val name : String,
-    var color : Color
+    var color : Color,
+    val isCorrect: Boolean = false
 )

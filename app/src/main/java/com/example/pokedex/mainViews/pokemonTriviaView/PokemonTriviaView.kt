@@ -27,11 +27,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.pokedex.repositories.PokemonTriviaRepository
 import com.example.pokedex.shared.BackButton
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.pokedex.shared.Option
 
 @Composable
 fun PokemonTriviaView(navController: NavController) {
-    val viewModel = remember { PokemonTriviaViewModel() }
+    val viewModel = remember { PokemonTriviaViewModel(PokemonTriviaRepository()) }
+    val currentTrivia = viewModel.pokemonTrivia
 
     Column(
         modifier = Modifier
@@ -44,36 +55,46 @@ fun PokemonTriviaView(navController: NavController) {
             modifier = Modifier.align(Alignment.Start)
         )
 
-        Text(
-            text = viewModel.pokemonTrivia.question,
-            modifier = Modifier.padding(horizontal = 25.dp),
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp,
-            textAlign = TextAlign.Center,
-        )
+        if (currentTrivia != null) {
+            Text(
+                text = currentTrivia.question,
+                modifier = Modifier.padding(horizontal = 25.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                textAlign = TextAlign.Center,
+            )
 
-        Spacer(modifier = Modifier.size(120.dp))
+            Spacer(modifier = Modifier.size(120.dp))
 
-        AnswerButtons(viewModel = viewModel)
+            AnswerButtons(viewModel, currentTrivia.options)
+
+            if (viewModel.hasAnswered) {
+                Spacer(modifier = Modifier.size(16.dp))
+                Button(onClick = { viewModel.loadRandomQuestion() }) {
+                    Text(text = "Next Question")
+                }
+            }
+        } else {
+            Text(text = "Loading question...", fontSize = 20.sp)
+        }
     }
-
 }
 
 @Composable
-fun AnswerButtons(viewModel: PokemonTriviaViewModel) {
-    viewModel.options.forEach { option ->
-        Box (
+fun AnswerButtons(viewModel: PokemonTriviaViewModel, options: List<Option>) {
+    options.forEach { option ->
+        Box(
             modifier = Modifier
                 .size(350.dp, 100.dp)
                 .clip(RoundedCornerShape(15.dp))
-                .background(viewModel.getBoxColor(option))
-                .clickable {
-                    viewModel.hasAnswered = true
+                .background(option.color)
+                .clickable(enabled = !viewModel.hasAnswered) {
+                    viewModel.handleAnswer(option)
                 },
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = option.answer,
+                text = option.name,
                 modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,

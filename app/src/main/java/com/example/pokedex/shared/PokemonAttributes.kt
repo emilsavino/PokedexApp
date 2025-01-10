@@ -3,9 +3,9 @@ package com.example.pokedex.shared
 data class PokemonAttributes(
     val description: FlavorTextEntry,
     val types: Types,
-    val weaknesses: DamageRelations,
+    val weaknesses: DamageRelationsResult,
     val abilities: Abilities,
-    val evolutions: Evolutions
+    val evolution_chain: EvolutionChain
 )
 
 //Description and its data classes
@@ -27,8 +27,13 @@ data class Type(
 )
 
 //Weaknesses and its data classes
+data class DamageRelationsResult(
+    val double_damage_from: List<Type>,
+    val half_damage_from: List<Type>
+)
+
 data class DamageRelations(
-    val double_damage_from: List<Type>
+    val damage_relations: DamageRelationsResult
 )
 
 //Abilities and its data classes
@@ -41,21 +46,13 @@ data class Ability(
 )
 
 //Evolutions and its data classes
-data class Evolutions(
-    val evolutions: String
+data class EvolutionChain(
+    val url: String
 )
-
-data class Chain(
-    val species: Species,
-)
-
 
 //------------MISC.----------------
 data class TypeObject(
     val type: Type
-)
-data class Species(
-    val name: String
 )
 
 data class Sprites(
@@ -69,6 +66,11 @@ data class PokemonList (
 data class Result (
     val name: String,
     val url: String
+)
+
+data class FlavorTextAndEvolutionChain(
+    val evolution_chain: EvolutionChain,
+    val flavor_text_entries: List<FlavorTextEntry>
 )
 
 

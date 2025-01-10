@@ -1,8 +1,17 @@
 package com.example.pokedex.repositories
 
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.shared.Abilities
+import com.example.pokedex.shared.Ability
+import com.example.pokedex.shared.DamageRelations
+import com.example.pokedex.shared.DamageRelationsResult
+import com.example.pokedex.shared.EvolutionChain
+import com.example.pokedex.shared.FlavorTextEntry
+import com.example.pokedex.shared.Language
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonAttributes
 import com.example.pokedex.shared.TypeObject
+import com.example.pokedex.shared.Types
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -29,6 +38,9 @@ class PokemonRepository {
 
     /*private val mutableWeaknessesFlow = MutableSharedFlow<Weaknesses>()
     val weaknessesFlow: Flow<Weaknesses> = mutableWeaknessesFlow.asSharedFlow()*/
+
+    private val mutablePokemonAttributesFlow = MutableSharedFlow<PokemonAttributes>()
+    val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
 
     suspend fun fetchTeams() {
         mutableTeamsFlow.emit(pokemonTeams)
@@ -94,5 +106,50 @@ class PokemonRepository {
     suspend fun getPokemonByName(name: String) {
         var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
         mutablePokemonFlow.emit(pokemon)
+    }
+
+    suspend fun getPokemonDetailsByName(name: String) {
+        val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
+        val pokemonSpecies = dataStore.fetchPokemonSpecies(name)
+
+        val types = pokemon.types.map { it.type }
+        val typesInfoList = dataStore.fetchTypeInfo(types)
+
+        val weaknesses = combineDamageRelations(typesInfoList)
+
+        val abilities = Abilities(
+            abilities = pokemon.abilities
+                .filter { it.name != null }
+                .map { Ability(it.name ?: "Unknown Ability") }
+        )
+
+        val description = pokemonSpecies.flavor_text_entries.firstOrNull() {
+            it.language.name == "en"
+        } ?: FlavorTextEntry("This Pokemon doesnt have many sightnings", Language("en"))
+
+        val evolutionChain = EvolutionChain(
+            url = pokemonSpecies.evolution_chain.url
+        )
+
+        val pokemonAttributes = PokemonAttributes(
+            description = description,
+            types = Types(types),
+            weaknesses = weaknesses,
+            abilities = abilities,
+            evolution_chain = evolutionChain
+        )
+
+        mutablePokemonAttributesFlow.emit(pokemonAttributes)
+    }
+
+    private fun combineDamageRelations(typeInfoList: List<DamageRelations>): DamageRelationsResult {
+        val combinedWeaknesses = typeInfoList.flatMap {
+            it.damage_relations.double_damage_from + it.damage_relations.half_damage_from
+        }.distinctBy { it.name }
+
+        return DamageRelationsResult(
+            double_damage_from = combinedWeaknesses,
+            half_damage_from = emptyList()
+        )
     }
 }

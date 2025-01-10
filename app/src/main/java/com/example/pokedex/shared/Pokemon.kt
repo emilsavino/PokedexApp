@@ -4,7 +4,8 @@ data class Pokemon(
     val id: Int,
     var name: String,
     var sprites: Sprites,
-    val types: List<TypeObject>
+    val types: List<TypeObject>,
+    val abilities: List<Ability>
 )
 
 

@@ -1,8 +1,12 @@
 package com.example.pokedex.data
 
+import com.example.pokedex.shared.DamageRelations
+import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
+import com.example.pokedex.shared.Type
+import com.example.pokedex.shared.Types
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -52,5 +56,19 @@ class PokemonDataStore {
         val pokemon = api.getPokemon(name.lowercase())
         pokemon.name = name.replaceFirstChar { it.uppercase() }
         return pokemon
+    }
+
+    suspend fun fetchPokemonSpecies(name: String): FlavorTextAndEvolutionChain {
+        return withContext(Dispatchers.IO) {
+            api.getPokemonSpecies(name)
+        }
+    }
+
+    suspend fun fetchTypeInfo(types: List<Type>): List<DamageRelations> {
+        return withContext(Dispatchers.IO) {
+            types.map { type ->
+                api.getTypeInfo(type.name)
+            }
+        }
     }
 }

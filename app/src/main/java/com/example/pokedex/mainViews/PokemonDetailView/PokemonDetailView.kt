@@ -26,6 +26,7 @@ import coil.compose.AsyncImage
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -42,6 +43,7 @@ import com.example.pokedex.shared.Team
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.pokedex.shared.formatPokemonName
 import kotlinx.coroutines.CoroutineScope
 
@@ -276,23 +278,23 @@ fun CreateTopRow(
             modifier = Modifier.weight(1f)
         )
 
-        Button(
+        CreateSmallButton(
+            imageVector = Icons.Default.AddCircle,
+            color = Color.Black,
+            contentDescription = "Add to Team",
+            onClick = { showDialog() }
+        )
+
+        CreateSmallButton(
+            imageVector = if (viewModel.isFavorited) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+            color = if (viewModel.isFavorited) Color.Red else Color.Black,
+            contentDescription = if (viewModel.isFavorited) "Remove" else "Add",
             onClick = {
                 coroutineScope.launch {
                     viewModel.savePokemon(pokemon)
                 }
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-            modifier = Modifier.padding(8.dp),
-        ) {
-            Icon(
-                imageVector = if (viewModel.isFavorited) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = if (viewModel.isFavorited) "Remove" else "Add",
-                tint = if (viewModel.isFavorited) Color.Red else Color.Black
-            )
-        }
-
-        CreateTeamButton(showDialog)
+            }
+        )
     }
 }
 
@@ -315,15 +317,17 @@ fun CreatePokemonBox(pokemon: Pokemon) {
 }
 
 @Composable
-fun CreateTeamButton(showDialog: () -> Unit) {
-    Button(
-        onClick = showDialog,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+fun CreateSmallButton(imageVector: ImageVector, color: Color, contentDescription: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .padding(6.dp)
+            .clickable { onClick() }
     ) {
         Icon(
-            imageVector = Icons.Default.AddCircle,
-            contentDescription = "Add to Team",
-            tint = Color.Black
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+            tint = color,
+            modifier = Modifier.size(34.dp)
         )
     }
 }

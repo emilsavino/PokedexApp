@@ -6,19 +6,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.Abilities
-import com.example.pokedex.shared.DamageRelationsResult
-import com.example.pokedex.shared.EvolutionChain
-import com.example.pokedex.shared.FlavorTextEntry
-import com.example.pokedex.shared.Language
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import com.example.pokedex.shared.PokemonAttributes
-import com.example.pokedex.shared.Types
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PokemonDetailViewModel(private val name: String) : ViewModel() {

@@ -141,7 +141,7 @@ fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
             )
             Spacer(modifier = Modifier.padding(2.dp))
             Text(
-                text = pokemon.abilities.abilities.toString()
+                text = pokemon.abilities.joinToString(" ") { it.ability.name }
             )
         }
 

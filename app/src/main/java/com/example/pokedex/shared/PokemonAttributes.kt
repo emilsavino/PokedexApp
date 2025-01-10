@@ -5,7 +5,7 @@ data class PokemonAttributes(
     val description: FlavorTextEntry,
     val types: Types,
     val weaknesses: DamageRelationsResult,
-    val abilities: Abilities,
+    val abilities: List<Ability>,
     val evolution_chain: EvolutionChain
 )
 
@@ -43,6 +43,10 @@ data class Abilities(
 )
 
 data class Ability(
+    val ability: AbilityDetails
+)
+
+data class AbilityDetails(
     val name: String
 )
 

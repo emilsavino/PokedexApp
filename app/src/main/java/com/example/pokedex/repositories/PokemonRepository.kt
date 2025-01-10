@@ -3,6 +3,7 @@ package com.example.pokedex.repositories
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Abilities
 import com.example.pokedex.shared.Ability
+import com.example.pokedex.shared.AbilityDetails
 import com.example.pokedex.shared.DamageRelations
 import com.example.pokedex.shared.DamageRelationsResult
 import com.example.pokedex.shared.EvolutionChain
@@ -104,7 +105,7 @@ class PokemonRepository {
             var types: List<Type> = emptyList()
             val typesInfoList: List<DamageRelations>
             var weaknesses: DamageRelationsResult
-            var abilities: Abilities
+            var abilities: List<Ability>
             var description: FlavorTextEntry
             var evolutionChain: EvolutionChain
 
@@ -142,15 +143,13 @@ class PokemonRepository {
 
             try
             {
-                abilities = Abilities(
-                    abilities = pokemon.abilities
-                        .filter { it.name != null }
-                        .map { Ability(it.name ?: "Unknown Ability") }
-                )
+                abilities = pokemon.abilities
+                    .filter { it.ability.name != null }
+                    .map { Ability(AbilityDetails(it.ability.name?: "No Ability")) }
                 println("Successfully processed abilities for $name")
             } catch (e: Exception) {
                 println("Error processing abilities for $name: ${e.message}")
-                abilities = Abilities(abilities = emptyList())
+                abilities = listOf(Ability(AbilityDetails("")))
             }
 
             try

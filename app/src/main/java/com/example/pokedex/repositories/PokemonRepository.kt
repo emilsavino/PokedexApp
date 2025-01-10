@@ -10,6 +10,7 @@ import com.example.pokedex.shared.FlavorTextEntry
 import com.example.pokedex.shared.Language
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonAttributes
+import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.TypeObject
 import com.example.pokedex.shared.Types
 import kotlinx.coroutines.flow.Flow
@@ -32,12 +33,6 @@ class PokemonRepository {
 
     private val mutableTeamsFlow = MutableSharedFlow<List<List<Pokemon>>>()
     val teamsFlow: Flow<List<List<Pokemon>>> = mutableTeamsFlow.asSharedFlow()
-
-    private val mutableTypesFlow = MutableSharedFlow<List<TypeObject>>()
-    val typesFlow: Flow<List<TypeObject>> = mutableTypesFlow.asSharedFlow()
-
-    /*private val mutableWeaknessesFlow = MutableSharedFlow<Weaknesses>()
-    val weaknessesFlow: Flow<Weaknesses> = mutableWeaknessesFlow.asSharedFlow()*/
 
     private val mutablePokemonAttributesFlow = MutableSharedFlow<PokemonAttributes>()
     val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
@@ -132,6 +127,7 @@ class PokemonRepository {
         )
 
         val pokemonAttributes = PokemonAttributes(
+            pokemon = pokemon,
             description = description,
             types = Types(types),
             weaknesses = weaknesses,
@@ -143,9 +139,13 @@ class PokemonRepository {
     }
 
     private fun combineDamageRelations(typeInfoList: List<DamageRelations>): DamageRelationsResult {
-        val combinedWeaknesses = typeInfoList.flatMap {
-            it.damage_relations.double_damage_from + it.damage_relations.half_damage_from
-        }.distinctBy { it.name }
+        val combinedWeaknesses = mutableListOf<Type>()
+        val combinedDouble = mutableListOf<Type>()
+        val combinedHalf = mutableListOf<Type>()
+
+        for (typeInfo in typeInfoList) {
+
+        }
 
         return DamageRelationsResult(
             double_damage_from = combinedWeaknesses,

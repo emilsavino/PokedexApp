@@ -1,6 +1,7 @@
 package com.example.pokedex.shared
 
 data class PokemonAttributes(
+    val pokemon: Pokemon,
     val description: FlavorTextEntry,
     val types: Types,
     val weaknesses: DamageRelationsResult,

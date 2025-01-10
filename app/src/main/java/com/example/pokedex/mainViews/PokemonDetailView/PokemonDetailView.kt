@@ -1,8 +1,11 @@
 package com.example.pokedex.mainViews.PokemonDetailView
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -27,6 +30,7 @@ import coil.compose.AsyncImage
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonAttributes
 import kotlinx.coroutines.launch
 
 @Composable
@@ -48,13 +52,14 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
 }
 
 @Composable
-fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
+fun PokemonDetail(navController: NavController, pokemon: PokemonAttributes, viewModel: PokemonDetailViewModel) {
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFDD99))
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         CreateTopRow(navController, pokemon, viewModel)
 
@@ -64,61 +69,69 @@ fun PokemonDetail(navController: NavController, pokemon: Pokemon, viewModel: Pok
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        CreateDescBox(viewModel)
+        CreateDescBox(pokemon)
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateTypeWeaknessBox()
+        CreateTypeWeaknessBox(pokemon)
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateAbilitiesBox()
+        CreateAbilitiesBox(pokemon)
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateEvoBox()
+        CreateEvoBox(pokemon)
 
     }
 }
 
 @Composable
-fun CreateEvoBox() {
+fun CreateEvoBox(pokemon: PokemonAttributes) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
-        Text(
-            text = "Evolutions",
-            fontWeight = FontWeight.Bold
-        )
+        Column {
+            Text(
+                text = "Evolutions",
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(
+                text = pokemon.evolution_chain.url
+            )
+        }
+
     }
 }
 
 @Composable
-fun CreateAbilitiesBox() {
+fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
-        Text(
-            text = "Abilities",
-            fontWeight = FontWeight.Bold
-        )
+        Column {
+            Text(
+                text = "Abilities",
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(
+                text = pokemon.abilities.abilities.toString()
+            )
+        }
+
     }
 }
 
 @Composable
-fun CreateTypeWeaknessBox() {
-    //val types by viewModel.types.collectAsState()
-    //val weaknesses by viewModel.weaknesses.collectAsState()
-
-    //val formattedTypes = types.joinToString("\n")
-    //val formattedWeaknesses = viewModel.getWeaknessFromList()
-
+fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -136,9 +149,9 @@ fun CreateTypeWeaknessBox() {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
-                /*Text(
-                    text = formattedTypes
-                )*/
+                Text(
+                    text = pokemon.types.types.toString()
+                )
             }
 
         }
@@ -156,9 +169,9 @@ fun CreateTypeWeaknessBox() {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
-                /*Text(
-                    text = formattedWeaknesses
-                )*/
+                Text(
+                    text = pokemon.weaknesses.toString()
+                )
             }
 
         }
@@ -166,8 +179,7 @@ fun CreateTypeWeaknessBox() {
 }
 
 @Composable
-fun CreateDescBox(viewModel: PokemonDetailViewModel) {
-    val desc by viewModel.description.collectAsState()
+fun CreateDescBox(pokemon: PokemonAttributes) {
 
     Box(
         modifier = Modifier
@@ -182,7 +194,7 @@ fun CreateDescBox(viewModel: PokemonDetailViewModel) {
             )
             Spacer(modifier = Modifier.padding(2.dp))
             Text(
-                text = desc.ifEmpty { "Loading..." }
+                text = pokemon.description.flavor_text
             )
         }
 
@@ -190,7 +202,7 @@ fun CreateDescBox(viewModel: PokemonDetailViewModel) {
 }
 
 @Composable
-fun CreatePokemonBox(pokemon: Pokemon) {
+fun CreatePokemonBox(pokemon: PokemonAttributes) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -200,7 +212,7 @@ fun CreatePokemonBox(pokemon: Pokemon) {
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
-            model = pokemon.sprites.front_default,
+            model = pokemon.pokemon.sprites.front_default,
             contentDescription = "Picture of a Pokémon",
             modifier = Modifier.fillMaxSize()
         )
@@ -208,7 +220,7 @@ fun CreatePokemonBox(pokemon: Pokemon) {
 }
 
 @Composable
-fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
+fun CreateTopRow(navController: NavController, pokemon: PokemonAttributes, viewModel: PokemonDetailViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     Row(
@@ -218,7 +230,7 @@ fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: Poke
         BackButton(navController)
 
         Text(
-            text = pokemon.name.formatPokemonName(),
+            text = pokemon.pokemon.name.formatPokemonName(),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -228,7 +240,7 @@ fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: Poke
         Button(
             onClick = {
                 coroutineScope.launch {
-                    viewModel.savePokemon(pokemon)
+                    viewModel.savePokemon(pokemon.pokemon)
                 }
             },
             colors = ButtonDefaults.buttonColors(
@@ -246,6 +258,20 @@ fun CreateTopRow(navController: NavController, pokemon: Pokemon, viewModel: Poke
                 tint = if (viewModel.isFavorited) Color.Red else Color.Black
             )
         }
+    }
+}
+
+@Composable
+fun AttributeBoxColumns(text1: String, text2: String) {
+    Column {
+        Text(
+            text = text1,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.padding(2.dp))
+        Text(
+            text = text2
+        )
     }
 }
 

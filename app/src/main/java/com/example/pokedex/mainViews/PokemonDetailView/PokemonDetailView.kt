@@ -155,12 +155,15 @@ fun ErrorMessage(errorMessage: String) {
 @Composable
 fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Box(
             modifier = Modifier
                 .weight(1f)
+                .fillMaxHeight()
                 .padding(end = 8.dp)
                 .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
@@ -181,6 +184,7 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
         Box(
             modifier = Modifier
                 .weight(1f)
+                .fillMaxHeight()
                 .padding(start = 8.dp)
                 .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)

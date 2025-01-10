@@ -5,13 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.Ability
-import com.example.pokedex.shared.AbilityObject
 import com.example.pokedex.shared.Option
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.Sprites
-import com.example.pokedex.shared.Type
-import com.example.pokedex.shared.TypeObject
 import com.example.pokedex.shared.WhoIsThatPokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,24 +16,21 @@ import kotlinx.coroutines.launch
 class WhoIsThatPokemonViewModel: ViewModel() {
     private val whoIsThatPokemonRepository = DependencyContainer.whoIsThatPokemonRepository
 
-    private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemon>(WhoIsThatPokemon(Pokemon("", Sprites(""), emptyList<AbilityObject>(), emptyList<TypeObject>()),
-        listOf(Option(name = "", Color.Black))
-    ))
-    val whoIsThatPokemonStateFlow: StateFlow<WhoIsThatPokemon> = _whoThepokemonMutableStateFlow.asStateFlow()
+    private val _whoThepokemonMutableStateFlow = MutableStateFlow<WhoIsThatPokemonUIState>(WhoIsThatPokemonUIState.Empty)
+    val whoIsThatPokemonStateFlow: StateFlow<WhoIsThatPokemonUIState> = _whoThepokemonMutableStateFlow.asStateFlow()
 
-    val hasAnswered = mutableStateOf(false)
+    private val hasAnswered = mutableStateOf(false)
 
     fun getColor(option: Option) : Color {
         if (!hasAnswered.value) {
             return Color.Black
         }
 
-        if (option.name == whoIsThatPokemonStateFlow.value.pokemon.name) {
+        if (option.isCorrect) {
             return Color.Green
         }
-        else {
-            return Color.Red
-        }
+
+        return Color.Red
     }
 
     init {
@@ -47,8 +38,9 @@ class WhoIsThatPokemonViewModel: ViewModel() {
             whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow
                 .collect { whoThePokemon ->
                     _whoThepokemonMutableStateFlow.update {
-                        whoThePokemon
+                        WhoIsThatPokemonUIState.Data(whoThePokemon)
                     }
+
                 }
         }
         fetchWhoThatPokemon()
@@ -61,7 +53,14 @@ class WhoIsThatPokemonViewModel: ViewModel() {
         }
     }
 
-    fun guessed(guessedName : String) {
+    fun guessed() {
         hasAnswered.value = true
     }
+}
+
+
+sealed class WhoIsThatPokemonUIState {
+    data class Data(val pokemon: WhoIsThatPokemon): WhoIsThatPokemonUIState()
+    object Loading: WhoIsThatPokemonUIState()
+    object Empty: WhoIsThatPokemonUIState()
 }

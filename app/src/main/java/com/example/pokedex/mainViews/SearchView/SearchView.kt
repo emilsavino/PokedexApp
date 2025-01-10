@@ -12,14 +12,12 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,15 +34,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.navigation.Screen
-import com.example.pokedex.shared.FormatPokemonName
+import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.Result
+import com.example.pokedex.shared.ProgressIndicator
 
 @Composable
 fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel = viewModel<SearchViewModel>()
 
-    val pokemons by viewModel.pokemonList.collectAsState()
+    val pokemons = viewModel.pokemonList.collectAsState().value
 
     Box(
         modifier = modifier
@@ -61,7 +59,22 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            MakeSearchList(pokemons = pokemons, navController = navController)
+            when(pokemons) {
+                is SearchUIState.Empty -> {
+                    Text(
+                        text = "No Pokémon found",
+                        fontSize = 20.sp
+                    )
+                }
+
+                is SearchUIState.Loading -> {
+                    ProgressIndicator()
+                }
+
+                is SearchUIState.Data -> {
+                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController)
+                }
+            }
         }
     }
 }
@@ -153,12 +166,11 @@ fun MakeSortButton(viewModel: SearchViewModel,
             expanded = sortExpanded.value,
             onDismissRequest = { sortExpanded.value = false }
         ) {
-            val selectedOption = viewModel.selectedSortOptionFlow.collectAsState()
             for (option in viewModel.getAllSortOptions())
             {
                 DropdownMenuItem(
                     text = { Text(option, color = textColor) },
-                    modifier = Modifier.background(color = if (selectedOption.value == option) selectedColor else unselectedColor),
+                    modifier = Modifier.background(color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor),
                     onClick = {
                         sortExpanded.value = false
                         viewModel.selectSortOption(option)
@@ -201,12 +213,11 @@ fun MakeFilterButton(viewModel: SearchViewModel,
             expanded = filterExpanded.value,
             onDismissRequest = { filterExpanded.value = false }
         ) {
-            val selectedOptions = viewModel.selectedFilterOptionsListFlow.collectAsState()
             for (option in viewModel.getAllFilterOptions())
             {
                 DropdownMenuItem(
                     text = { Text(option, color = textColor) },
-                    modifier = Modifier.background(color = if (selectedOptions.value.contains(option)) selectedColor else unselectedColor),
+                    modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
                     onClick = { viewModel.selectFilterOption(option) }
                 )
             }
@@ -250,7 +261,7 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController) {
                     .padding(end = 2.dp)
             )*/
             Text(
-                text = pokemon.name.FormatPokemonName(),
+                text = pokemon.name.formatPokemonName(),
                 color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold

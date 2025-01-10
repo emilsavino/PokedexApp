@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -29,7 +28,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.R
-import com.example.pokedex.shared.FormatPokemonName
+import com.example.pokedex.shared.formatPokemonName
 
 private val Padding = 8.dp
 
@@ -54,8 +53,7 @@ fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
 @Composable
 fun MakeHomeLoadingScreen() {
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -137,7 +135,7 @@ fun PokemonDetailsRow(pokemon: Pokemon) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "Name: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        Text(text = pokemon.name, fontSize = 16.sp)
+        Text(text = pokemon.name.formatPokemonName(), fontSize = 16.sp)
         Spacer(modifier = Modifier.width(Padding))
         Text(text = "Type: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Text(text = "Lightning", fontSize = 16.sp) // TODO: Update to display the correct type
@@ -280,7 +278,7 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
                 contentScale = ContentScale.Fit
             )
             Text(
-                text = pokemon.name.FormatPokemonName(),
+                text = pokemon.name.formatPokemonName(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center

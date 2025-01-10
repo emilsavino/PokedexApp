@@ -130,7 +130,7 @@ class PokemonRepository {
             {
                 types = pokemon.types.map { it.type }
                 typesInfoList = dataStore.fetchTypeInfo(types)
-                weaknesses = combineDamageRelations(typesInfoList)
+                weaknesses = combineDamageRelations(typesInfoList, types)
                 println("Successfully fetched and combined type weaknesses for $name")
             } catch (e: Exception) {
                 println("Error fetching type weaknesses for $name: ${e.message}")
@@ -191,12 +191,14 @@ class PokemonRepository {
         }
     }
 
-    private fun combineDamageRelations(typeInfoList: List<DamageRelations>): DamageRelationsResult {
+    private fun combineDamageRelations(typeInfoList: List<DamageRelations>, ownTypeList: List<Type>): DamageRelationsResult {
         val combinedWeaknesses = mutableListOf<Type>()
         for (typeInfo in typeInfoList) {
             val halfDamageFrom = typeInfo.damage_relations.half_damage_from
             for (type in typeInfo.damage_relations.double_damage_from) {
-                if (!combinedWeaknesses.contains(type) && !halfDamageFrom.contains(type)) {
+                if (!combinedWeaknesses.contains(type) &&
+                    !halfDamageFrom.contains(type) &&
+                    !ownTypeList.contains(type)) {
                     combinedWeaknesses.add(type)
                 }
             }

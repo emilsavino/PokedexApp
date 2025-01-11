@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +25,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.shared.PokemonGridItem
 import com.example.pokedex.shared.Team
-import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -95,11 +98,11 @@ private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewM
                 modifier = Modifier.weight(1f)
             )
 
-            Button(
+            IconButton(
                 modifier = Modifier.padding(start = 8.dp),
                 onClick = { viewModel.onDeleteTeam(team.name) }
             ) {
-                Text(text = "Delete")
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
             }
         }
 
@@ -126,7 +129,7 @@ private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewM
 private fun DeleteTeamConfirmationDialog(teamName: String, viewModel: MyTeamsViewModel) {
     AlertDialog(
         onDismissRequest = { viewModel.isShowingDialog = false },
-        title = { Text(text = "Are you sure you want to delete this team?") },
+        title = { Text(text = "Are you sure you want to delete ${teamName}?") },
         text = {
             Text(text = "This action cannot be undone.")
         },

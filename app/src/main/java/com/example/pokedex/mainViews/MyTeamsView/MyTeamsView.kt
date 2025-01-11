@@ -24,10 +24,11 @@ import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 import com.example.pokedex.shared.Team
 import androidx.compose.material3.Button
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun MyTeamsView(navController: NavController) {
-    val viewModel = MyTeamsViewModel()
+    val viewModel = viewModel<MyTeamsViewModel>()
     Column(
         modifier = Modifier
             .background(Color(0xFFFFDD99))

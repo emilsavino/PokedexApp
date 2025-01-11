@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -22,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.pokedex.shared.Pokemon
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -237,8 +235,6 @@ fun CreateTopRow(
     viewModel: PokemonDetailViewModel,
     showDialog: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -263,11 +259,7 @@ fun CreateTopRow(
             imageVector = if (viewModel.isFavorited) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
             color = if (viewModel.isFavorited) Color.Red else Color.Black,
             contentDescription = if (viewModel.isFavorited) "Remove" else "Add",
-            onClick = {
-                coroutineScope.launch {
-                    viewModel.savePokemon(pokemon)
-                }
-            }
+            onClick = { viewModel.savePokemon(pokemon) }
         )
     }
 }

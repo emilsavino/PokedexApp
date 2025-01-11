@@ -50,7 +50,7 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         pokemonRepository.getPokemonByName(name)
     }
 
-    suspend fun savePokemon(pokemon: Pokemon) {
+    fun savePokemon(pokemon: Pokemon) = viewModelScope.launch {
         if (favouritesRepository.pokemonIsFavourite(pokemon)) {
             favouritesRepository.removeFromFavourites(pokemon)
         } else {
@@ -78,24 +78,12 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         errorMessage = null
     }
 
-    fun onCreateTeamClicked(pokemon: Pokemon) {
-        viewModelScope.launch {
-            createTeam(pokemon)
-        }
-    }
-
-    fun onCancelTeamCreation() {
-        showTeamCreationDialog = false
-        newTeamName = ""
-        errorMessage = null
-    }
-
-    suspend fun createTeam(pokemon: Pokemon) {
+    fun onCreateTeamClicked(pokemon: Pokemon) = viewModelScope.launch {
         if (newTeamName.isNotBlank()) {
             val teamNameIsTaken = !teamsRepository.addTeam(Team(name = newTeamName, pokemons = listOf(pokemon)))
             if (teamNameIsTaken) {
                 errorMessage = "This name is already in use"
-                return
+                return@launch
             }
             showTeamCreationDialog = false
             newTeamName = ""
@@ -103,6 +91,12 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         } else {
             errorMessage = "Team name cannot be empty"
         }
+    }
+
+    fun onCancelTeamCreation() {
+        showTeamCreationDialog = false
+        newTeamName = ""
+        errorMessage = null
     }
 
     fun onDismiss() {

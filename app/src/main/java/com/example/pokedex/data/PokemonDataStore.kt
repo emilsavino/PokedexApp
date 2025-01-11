@@ -48,7 +48,7 @@ class PokemonDataStore {
         allPokemonResultList = fetchPokemons(10000,0)
     }
 
-    suspend fun fetchPokemons(limit: Int, offset: Int): PokemonList {
+    private suspend fun fetchPokemons(limit: Int, offset: Int): PokemonList {
         return withContext(Dispatchers.IO) {
             api.getPokemons(limit,offset)
         }

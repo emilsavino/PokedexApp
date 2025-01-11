@@ -54,9 +54,10 @@ data class AbilityDetails(
 data class EvolutionChain(
     val chain: EvolutionChainResult
 )
+
 data class EvolutionChainResult(
     val species: Species,
-    val evolves_to: List<EvolutionChainResult> = emptyList()
+    val evolves_to: List<EvolutionChainResult>
 )
 
 data class EvolutionChainUrlFromSpecies(
@@ -64,7 +65,7 @@ data class EvolutionChainUrlFromSpecies(
 )
 
 data class Species(
-    val url: String
+    val name: String
 )
 
 data class Varieties(

@@ -159,25 +159,22 @@ class PokemonRepository {
 
             try
             {
-                val fetchFlavorTextAndEvoChainURL = dataStore.fetchPokemonSpecies(name)
-                val evoChainURL = fetchFlavorTextAndEvoChainURL.evolution_chain.url
+                val sprites_list = mutableListOf<Sprites>()
+                val pokemonEvoChainUrl = dataStore.fetchPokemonSpecies(name)
+                val getEvoChainID = pokemonEvoChainUrl.evolution_chain.url
+                val id = getEvoChainID
+                    .substringAfter("evolution-chain/")
+                    .substringBefore("/")
+                    .toInt()
 
-                val evolutionChainResult = dataStore.fetchPokemonSpeciesFromURL(evoChainURL)
+                val evoChainResult = dataStore.fetchNameFromEvoChain(id)
+                val pokemonName = evoChainResult.species.name
 
-                val spriteURLs = mutableListOf<String>()
+                val getPokemon = dataStore.fetchPokemon(pokemonName)
+                val sprites = getPokemon.sprites
+                sprites_list.add(sprites)
 
-                suspend fun traverseEvoChain(chain: EvolutionChain) {
-                    val speciesUrl = chain.chain.species.url
-
-                    val varieties = dataStore.fetchPokemonFromVarietiesInSpeciesURL(speciesUrl)
-
-                    val defaultPokemon = dataStore.fetchPokemonFromVarieties(varieties, useDefault = true)
-
-                    spriteURLs.add(defaultPokemon.sprites.front_default)
-
-                }
-
-                evolutionChain = spriteURLs.map { Sprites(it) }
+                evolutionChain = sprites_list
                 println("Successfully processed evolution chain for $name")
             } catch (e: Exception) {
                 println("Error processing evolution chain for $name: ${e.message}")

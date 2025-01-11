@@ -26,12 +26,6 @@ interface PokemonAPIService {
     @GET("type/{type}")
     suspend fun getTypeInfo(@Path("type") type: String): DamageRelations
 
-    @GET
-    suspend fun getPokemonSpeciesFromURL(@Url url: String): EvolutionChainResult
-
-    @GET
-    suspend fun getPokemonVarietiesFromSpeciesURL(@Url url: String): Varieties
-
-    @GET
-    suspend fun getVarPokemonFromURL(@Url url: String): Pokemon
+    @GET("evolution-chain/{id}")
+    suspend fun getEvoChain(@Path("id") id: Int): EvolutionChainResult
 }

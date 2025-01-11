@@ -157,7 +157,7 @@ fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
                     )
 
                     Text(
-                        text = ability.ability.name.capitalize().formatPokemonName(),
+                        text = ability.ability.name.formatPokemonName(),
                         fontStyle = FontStyle.Italic,
                         fontSize = 16.sp
                     )
@@ -242,7 +242,7 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
                         typeImage?.let {
                             Image(
                                 painter = it,
-                                contentDescription = "${type.name.capitalize()} type image",
+                                contentDescription = "${type.name} type image",
                                 modifier = Modifier
                                     .size(60.dp)
                                     .padding(4.dp)
@@ -279,7 +279,7 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
                         weaknessImage?.let {
                             Image(
                                 painter = it,
-                                contentDescription = "${weakness.name.capitalize()} weakness image",
+                                contentDescription = "${weakness.name} weakness image",
                                 modifier = Modifier
                                     .size(60.dp)
                                     .padding(4.dp)

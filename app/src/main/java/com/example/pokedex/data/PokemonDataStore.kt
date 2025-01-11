@@ -74,31 +74,9 @@ class PokemonDataStore {
         }
     }
 
-    suspend fun fetchPokemonSpeciesFromURL(url: String): EvolutionChainResult{
+    suspend fun fetchNameFromEvoChain(id: Int): EvolutionChainResult {
         return withContext(Dispatchers.IO) {
-            api.getPokemonSpeciesFromURL(url)
-        }
-    }
-
-    suspend fun fetchPokemonFromVarietiesInSpeciesURL(url: String): Varieties {
-        return withContext(Dispatchers.IO) {
-            api.getPokemonVarietiesFromSpeciesURL(url)
-        }
-    }
-
-    suspend fun fetchPokemonURL(url: String): Pokemon {
-        return withContext(Dispatchers.IO) {
-            api.getVarPokemonFromURL(url)
-        }
-    }
-
-    suspend fun fetchPokemonFromVarieties(varieties: Varieties, useDefault: Boolean): Pokemon {
-        val selectedVariety = varieties.varieties.firstOrNull() { it.is_default == useDefault }
-
-        return if (selectedVariety != null) {
-            fetchPokemonURL(selectedVariety.pokemon.url)
-        } else {
-            throw IllegalArgumentException("No Pokémon variety found with is_default = $useDefault")
+            api.getEvoChain(id)
         }
     }
 

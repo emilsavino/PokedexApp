@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonGridItem
 import com.example.pokedex.shared.Team
 import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -41,6 +42,10 @@ fun MyTeamsView(navController: NavController) {
         MakeContent(navController, viewModel)
 
         Spacer(modifier = Modifier.padding(10.dp))
+
+        if (viewModel.isShowingDialog) {
+            DeleteTeamConfirmationDialog(viewModel.teamToDelete, viewModel)
+        }
     }
 }
 
@@ -91,8 +96,8 @@ private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewM
             )
 
             Button(
-                onClick = { viewModel.deleteTeam(team.name) },
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 8.dp),
+                onClick = { viewModel.onDeleteTeam(team.name) }
             ) {
                 Text(text = "Delete")
             }
@@ -115,6 +120,27 @@ private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewM
             }
         }
     }
+}
+
+@Composable
+private fun DeleteTeamConfirmationDialog(teamName: String, viewModel: MyTeamsViewModel) {
+    AlertDialog(
+        onDismissRequest = { viewModel.isShowingDialog = false },
+        title = { Text(text = "Are you sure you want to delete this team?") },
+        text = {
+            Text(text = "This action cannot be undone.")
+        },
+        confirmButton = {
+            TextButton(onClick = { viewModel.deleteTeam(teamName) }) {
+                Text(text = "Delete")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { viewModel.isShowingDialog = false }) {
+                Text(text = "Cancel")
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)

@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,7 +32,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -45,7 +42,6 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.pokedex.shared.formatPokemonName
-import kotlinx.coroutines.CoroutineScope
 
 
 @Composable
@@ -68,8 +64,6 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
 
 @Composable
 fun PokemonDetailContent(navController: NavController, pokemon: Pokemon, viewModel: PokemonDetailViewModel) {
-    val coroutineScope = rememberCoroutineScope()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,74 +91,41 @@ fun PokemonDetailContent(navController: NavController, pokemon: Pokemon, viewMod
         Spacer(modifier = Modifier.height(8.dp))
 
         CreateEvoBox()
-
-        if (viewModel.errorMessage != null) {
-            ErrorMessage(viewModel.errorMessage!!)
-        }
     }
 
-    TeamSelectionAndCreationDialogs(navController, pokemon, viewModel, coroutineScope)
+    TeamSelectionAndCreationDialogs(pokemon, viewModel)
 }
 
 @Composable
 fun TeamSelectionAndCreationDialogs(
-    navController: NavController,
     pokemon: Pokemon,
     viewModel: PokemonDetailViewModel,
-    coroutineScope: CoroutineScope
 ) {
     if (viewModel.showDialog) {
         TeamSelectionDialog(
             teams = viewModel.teams.collectAsState().value,
-            onTeamSelected = { teamName ->
-                viewModel.selectedTeam = teamName
-                viewModel.showDialog = false
-                coroutineScope.launch {
-                    viewModel.confirmAddToTeam(pokemon)
-                }
-            },
-            onCreateNewTeam = {
-                viewModel.showDialog = false
-                viewModel.showTeamCreationDialog = true
-            },
-            onDismiss = { viewModel.showDialog = false }
+            viewModel = viewModel,
+            onTeamSelected = { teamName -> viewModel.addToTeam(pokemon, teamName) },
+            onCreateNewTeam = { viewModel.onCreateNewTeam() },
+            onDismiss = { viewModel.onDismiss() }
         )
     }
 
     if (viewModel.showTeamCreationDialog) {
         TeamCreationDialog(
             newTeamName = viewModel.newTeamName,
+            viewModel = viewModel,
             onTeamNameChange = { viewModel.newTeamName = it },
-            onCreateTeam = {
-                coroutineScope.launch {
-                    val creationSuccessful = viewModel.createTeam(pokemon)
-                    if (creationSuccessful) {
-                        viewModel.showTeamCreationDialog = false
-                    }
-                }
-            },
-            onDismiss = {
-                viewModel.onCancelTeamCreation()
-            }
+            onCreateTeam = { viewModel.onCreateTeamClicked(pokemon) },
+            onDismiss = { viewModel.onCancelTeamCreation() }
         )
     }
 }
 
 @Composable
-fun ErrorMessage(errorMessage: String) {
-    Text(
-        text = errorMessage,
-        color = Color.Red,
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(CenterHorizontally)
-            .padding(8.dp)
-    )
-}
-
-@Composable
 fun TeamSelectionContent(
     teams: List<Team>,
+    viewModel: PokemonDetailViewModel,
     onTeamSelected: (String) -> Unit,
     onCreateNewTeam: () -> Unit
 ) {
@@ -181,12 +142,17 @@ fun TeamSelectionContent(
         TextButton(onClick = onCreateNewTeam) {
             Text(text = "Create New Team")
         }
+        Text(
+            text = viewModel.errorMessage ?: "", color = Color.Red,
+            modifier = Modifier.align(CenterHorizontally)
+        )
     }
 }
 
 @Composable
 fun TeamSelectionDialog(
     teams: List<Team>,
+    viewModel: PokemonDetailViewModel,
     onTeamSelected: (String) -> Unit,
     onCreateNewTeam: () -> Unit,
     onDismiss: () -> Unit
@@ -197,6 +163,7 @@ fun TeamSelectionDialog(
         text = {
             TeamSelectionContent(
                 teams = teams,
+                viewModel = viewModel,
                 onTeamSelected = onTeamSelected,
                 onCreateNewTeam = onCreateNewTeam
             )
@@ -214,7 +181,8 @@ fun TeamSelectionDialog(
 @Composable
 fun TeamCreationContent(
     newTeamName: String,
-    onTeamNameChange: (String) -> Unit
+    onTeamNameChange: (String) -> Unit,
+    viewModel: PokemonDetailViewModel
 ) {
     Column {
         Text("Enter Team Name")
@@ -223,12 +191,17 @@ fun TeamCreationContent(
             onValueChange = onTeamNameChange,
             label = { Text("Team Name") }
         )
+        Text(
+            text = viewModel.errorMessage ?: "", color = Color.Red,
+            modifier = Modifier.align(CenterHorizontally)
+        )
     }
 }
 
 @Composable
 fun TeamCreationDialog(
     newTeamName: String,
+    viewModel: PokemonDetailViewModel,
     onTeamNameChange: (String) -> Unit,
     onCreateTeam: () -> Unit,
     onDismiss: () -> Unit
@@ -239,11 +212,12 @@ fun TeamCreationDialog(
         text = {
             TeamCreationContent(
                 newTeamName = newTeamName,
-                onTeamNameChange = onTeamNameChange
+                onTeamNameChange = onTeamNameChange,
+                viewModel = viewModel
             )
         },
         confirmButton = {
-            TextButton(onClick = onCreateTeam) {
+            TextButton(onClick = { onCreateTeam() }) {
                 Text(text = "Create")
             }
         },

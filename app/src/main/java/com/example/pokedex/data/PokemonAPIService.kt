@@ -1,10 +1,12 @@
 package com.example.pokedex.data
 
 import com.example.pokedex.shared.DamageRelations
+import com.example.pokedex.shared.EvolutionChainResult
 import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Species
+import com.example.pokedex.shared.Varieties
 import com.example.pokedex.shared.VarietiesPokemon
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -25,8 +27,11 @@ interface PokemonAPIService {
     suspend fun getTypeInfo(@Path("type") type: String): DamageRelations
 
     @GET
-    suspend fun getPokemonSpeciesFromURL(@Url url: String): Species
+    suspend fun getPokemonSpeciesFromURL(@Url url: String): EvolutionChainResult
 
     @GET
-    suspend fun getVarPokemonFromURL(@Url url: String): VarietiesPokemon
+    suspend fun getPokemonVarietiesFromSpeciesURL(@Url url: String): Varieties
+
+    @GET
+    suspend fun getVarPokemonFromURL(@Url url: String): Pokemon
 }

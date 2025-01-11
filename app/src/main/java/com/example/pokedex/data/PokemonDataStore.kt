@@ -1,6 +1,7 @@
 package com.example.pokedex.data
 
 import com.example.pokedex.shared.DamageRelations
+import com.example.pokedex.shared.EvolutionChainResult
 import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
@@ -73,19 +74,25 @@ class PokemonDataStore {
         }
     }
 
-    suspend fun fetchPokemonSpeciesFromURL(url: String): Species{
+    suspend fun fetchPokemonSpeciesFromURL(url: String): EvolutionChainResult{
         return withContext(Dispatchers.IO) {
             api.getPokemonSpeciesFromURL(url)
         }
     }
 
-    suspend fun fetchPokemonURL(url: String): VarietiesPokemon {
+    suspend fun fetchPokemonFromVarietiesInSpeciesURL(url: String): Varieties {
+        return withContext(Dispatchers.IO) {
+            api.getPokemonVarietiesFromSpeciesURL(url)
+        }
+    }
+
+    suspend fun fetchPokemonURL(url: String): Pokemon {
         return withContext(Dispatchers.IO) {
             api.getVarPokemonFromURL(url)
         }
     }
 
-    suspend fun fetchPokemonFromVarieties(varieties: Varieties, useDefault: Boolean): VarietiesPokemon {
+    suspend fun fetchPokemonFromVarieties(varieties: Varieties, useDefault: Boolean): Pokemon {
         val selectedVariety = varieties.varieties.firstOrNull() { it.is_default == useDefault }
 
         return if (selectedVariety != null) {

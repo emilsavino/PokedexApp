@@ -6,7 +6,7 @@ data class PokemonAttributes(
     val types: Types,
     val weaknesses: DamageRelationsResult,
     val abilities: List<Ability>,
-    val evolution_chain: EvolutionChain
+    val sprites: List<Sprites>
 )
 
 //Description and its data classes
@@ -52,8 +52,15 @@ data class AbilityDetails(
 
 //Evolutions and its data classes
 data class EvolutionChain(
+    val chain: EvolutionChainResult
+)
+data class EvolutionChainResult(
     val species: Species,
-    val evolves_to: List<EvolutionChain> = emptyList()
+    val evolves_to: List<EvolutionChainResult> = emptyList()
+)
+
+data class EvolutionChainUrlFromSpecies(
+    val url: String
 )
 
 data class Species(
@@ -91,7 +98,7 @@ data class Result (
 )
 
 data class FlavorTextAndEvolutionChain(
-    val evolution_chain: EvolutionChain,
+    val evolution_chain: EvolutionChainUrlFromSpecies,
     val flavor_text_entries: List<FlavorTextEntry>
 )
 

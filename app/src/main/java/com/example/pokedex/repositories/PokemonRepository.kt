@@ -13,6 +13,7 @@ import com.example.pokedex.shared.Language
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonAttributes
 import com.example.pokedex.shared.Species
+import com.example.pokedex.shared.Sprites
 import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.TypeObject
 import com.example.pokedex.shared.Types
@@ -108,7 +109,7 @@ class PokemonRepository {
             var weaknesses: DamageRelationsResult
             var abilities: List<Ability>
             var description: FlavorTextEntry
-            var evolutionChain: EvolutionChain = EvolutionChain(Species(""))
+            var evolutionChain: List<Sprites> = emptyList()
 
             try
             {
@@ -158,17 +159,25 @@ class PokemonRepository {
 
             try
             {
-                val species = dataStore.fetchPokemonSpecies(name)
+                val fetchFlavorTextAndEvoChainURL = dataStore.fetchPokemonSpecies(name)
+                val evoChainURL = fetchFlavorTextAndEvoChainURL.evolution_chain.url
 
-                val evoChainData = dataStore.fetchPokemonSpeciesFromURL(species.evolution_chain.species.url)
+                val evolutionChainResult = dataStore.fetchPokemonSpeciesFromURL(evoChainURL)
 
-                val evoSpeciesURLs = mutableListOf<String>()
-                //val pokemonSpeciesFromEvo = dataStore.fetchPokemonSpeciesFromURL(evoChainURL.evolution_chain.species.url)
-                //val varieties = dataStore.fetchPokemonFromVarieties(pokemonSpeciesFromEvo.url)
+                val spriteURLs = mutableListOf<String>()
 
+                suspend fun traverseEvoChain(chain: EvolutionChain) {
+                    val speciesUrl = chain.chain.species.url
 
-                val pokemonSpeciesFromEvo = ""
-                evolutionChain = EvolutionChain(Species(pokemonSpeciesFromEvo))
+                    val varieties = dataStore.fetchPokemonFromVarietiesInSpeciesURL(speciesUrl)
+
+                    val defaultPokemon = dataStore.fetchPokemonFromVarieties(varieties, useDefault = true)
+
+                    spriteURLs.add(defaultPokemon.sprites.front_default)
+
+                }
+
+                evolutionChain = spriteURLs.map { Sprites(it) }
                 println("Successfully processed evolution chain for $name")
             } catch (e: Exception) {
                 println("Error processing evolution chain for $name: ${e.message}")
@@ -180,7 +189,7 @@ class PokemonRepository {
                 types = Types(types),
                 weaknesses = weaknesses,
                 abilities = abilities,
-                evolution_chain = evolutionChain
+                sprites = evolutionChain
             )
 
             mutablePokemonAttributesFlow.emit(pokemonAttributes)

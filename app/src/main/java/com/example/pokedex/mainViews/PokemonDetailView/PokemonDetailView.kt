@@ -121,7 +121,7 @@ fun CreateEvoBox(pokemon: PokemonAttributes) {
             )
             Spacer(modifier = Modifier.padding(2.dp))
             Text(
-                text = pokemon.evolution_chain.species.url //TODO: Make use of the link
+                text = pokemon.sprites.toString() //TODO: Make use of the link
             )
         }
 

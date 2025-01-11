@@ -21,18 +21,6 @@ class WhoIsThatPokemonViewModel: ViewModel() {
 
     private val hasAnswered = mutableStateOf(false)
 
-    fun getColor(option: Option) : Color {
-        if (!hasAnswered.value) {
-            return Color.Black
-        }
-
-        if (option.isCorrect) {
-            return Color.Green
-        }
-
-        return Color.Red
-    }
-
     init {
         viewModelScope.launch {
             whoIsThatPokemonRepository.whoIsThatPokemonSharedFlow
@@ -46,15 +34,31 @@ class WhoIsThatPokemonViewModel: ViewModel() {
         fetchWhoThatPokemon()
     }
 
+    fun guessed() {
+        hasAnswered.value = true
+    }
+
+    fun getColor(option: Option) : Color {
+        if (!hasAnswered.value) {
+            return Color.Black
+        }
+
+        if (option.isCorrect) {
+            return Color.Green
+        }
+
+        return Color.Red
+    }
+
+    fun nextPokemon() {
+        hasAnswered.value = false
+        fetchWhoThatPokemon()
+    }
+
     private fun fetchWhoThatPokemon() {
         viewModelScope.launch {
             whoIsThatPokemonRepository.getWhoIsThatPokemon()
-
         }
-    }
-
-    fun guessed() {
-        hasAnswered.value = true
     }
 }
 

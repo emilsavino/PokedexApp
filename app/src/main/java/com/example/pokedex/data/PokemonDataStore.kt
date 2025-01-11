@@ -37,12 +37,6 @@ class PokemonDataStore {
         return pokemonMap[name]!!
     }
 
-    suspend fun fetchPokemon(name: String): Pokemon {
-        return pokemonMap[name] ?: fetchPokemonFromAPI(name).also { pokemon ->
-            pokemonMap[name] = pokemon
-        }
-    }
-
     private suspend fun fetchAllPokemons()
     {
         allPokemonResultList = fetchPokemons(10000,0)

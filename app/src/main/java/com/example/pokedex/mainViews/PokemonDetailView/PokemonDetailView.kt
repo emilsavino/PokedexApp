@@ -133,36 +133,41 @@ private fun CreateEvoBox(pokemon: PokemonAttributes) {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                pokemon.sprites.forEachIndexed {index, sprite ->
-                    Box(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(
-                                color = Color.White.copy(alpha = 0.6f),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(4.dp)
-                    ) {
-                        AsyncImage(
-                            model = sprite.front_default,
-                            contentDescription = "Sprite",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
-
-                    if (index < pokemon.sprites.size - 1) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "Arrow",
-                            tint = Color.Black.copy(alpha = 0.6f),
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp)
-                                .size(24.dp)
-                        )
-                    }
-                }
+                CreateEvoRow(pokemon)
             }
+        }
+    }
+}
+
+@Composable
+private fun CreateEvoRow(pokemon: PokemonAttributes) {
+    pokemon.sprites.forEachIndexed {index, sprite ->
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(
+                    color = Color.White.copy(alpha = 0.6f),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(4.dp)
+        ) {
+            AsyncImage(
+                model = sprite.front_default,
+                contentDescription = "Sprite",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+        }
+
+        if (index < pokemon.sprites.size - 1) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Arrow",
+                tint = Color.Black.copy(alpha = 0.6f),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .size(24.dp)
+            )
         }
     }
 }

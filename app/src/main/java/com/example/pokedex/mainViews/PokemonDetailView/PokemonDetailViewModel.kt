@@ -8,10 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
+import com.example.pokedex.shared.PokemonAttributes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PokemonDetailViewModel(private val name: String) : ViewModel() {
@@ -35,10 +37,12 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            pokemonRepository.pokemonFlow.collect { newPokemon ->
-                recentlyViewedRepository.addToRecents(newPokemon)
-                _pokemon.value = PokemonDetailUIState.Data(newPokemon)
-                onFavouriteButton(newPokemon)
+            pokemonRepository.pokemonAttributesFlow.collect { newPokemon ->
+                recentlyViewedRepository.addToRecents(newPokemon.pokemon)
+                _pokemon.update {
+                    onFavouriteButton(newPokemon.pokemon)
+                    PokemonDetailUIState.Data(newPokemon)
+                }
             }
         }
 
@@ -46,8 +50,10 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     }
 
     private fun getPokemonByName() = viewModelScope.launch {
-        _pokemon.value = PokemonDetailUIState.Loading
-        pokemonRepository.getPokemonByName(name)
+        _pokemon.update {
+            PokemonDetailUIState.Loading
+        }
+        pokemonRepository.getPokemonDetailsByName(name)
     }
 
     fun savePokemon(pokemon: Pokemon) = viewModelScope.launch {
@@ -68,8 +74,9 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         if (success) {
             showDialog = false
             errorMessage = null
+        } else {
+            errorMessage = "Team is full"
         }
-        errorMessage = "Team is full"
     }
 
     fun onCreateNewTeam() {
@@ -109,7 +116,7 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
 }
 
 sealed class PokemonDetailUIState {
-    data class Data(val pokemon: Pokemon) : PokemonDetailUIState()
-    object Loading : PokemonDetailUIState()
-    object Empty : PokemonDetailUIState()
+    data class Data(val pokemon: PokemonAttributes): PokemonDetailUIState()
+    object Loading: PokemonDetailUIState()
+    object Empty: PokemonDetailUIState()
 }

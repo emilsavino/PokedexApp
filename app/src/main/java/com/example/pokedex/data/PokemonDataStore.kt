@@ -1,8 +1,17 @@
 package com.example.pokedex.data
 
+import com.example.pokedex.shared.DamageRelations
+import com.example.pokedex.shared.EvolutionChain
+import com.example.pokedex.shared.EvolutionChainResult
+import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
+import com.example.pokedex.shared.Species
+import com.example.pokedex.shared.Type
+import com.example.pokedex.shared.Types
+import com.example.pokedex.shared.Varieties
+import com.example.pokedex.shared.VarietiesPokemon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -37,12 +46,6 @@ class PokemonDataStore {
         return pokemonMap[name]!!
     }
 
-    suspend fun fetchPokemon(name: String): Pokemon {
-        return pokemonMap[name] ?: fetchPokemonFromAPI(name).also { pokemon ->
-            pokemonMap[name] = pokemon
-        }
-    }
-
     private suspend fun fetchAllPokemons()
     {
         allPokemonResultList = fetchPokemons(10000,0)
@@ -54,9 +57,23 @@ class PokemonDataStore {
         }
     }
 
-    private suspend fun fetchPokemonFromAPI(name: String): Pokemon {
-        val pokemon = api.getPokemon(name.lowercase())
-        pokemon.name = name.replaceFirstChar { it.uppercase() }
-        return pokemon
+    suspend fun fetchPokemonSpecies(name: String): FlavorTextAndEvolutionChain {
+        return withContext(Dispatchers.IO) {
+            api.getPokemonSpecies(name)
+        }
+    }
+
+    suspend fun fetchNameFromEvoChain(id: Int): EvolutionChain {
+        return withContext(Dispatchers.IO) {
+            api.getEvoChain(id)
+        }
+    }
+
+    suspend fun fetchTypeInfo(types: List<Type>): List<DamageRelations> {
+        return withContext(Dispatchers.IO) {
+            types.map { type ->
+                api.getTypeInfo(type.name)
+            }
+        }
     }
 }

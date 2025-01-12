@@ -1,5 +1,6 @@
 package com.example.pokedex.navigation
 
+import android.window.SplashScreenView
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -7,20 +8,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.pokedex.mainViews.HomeView.HomeView
+import com.example.pokedex.mainViews.MyTeamsView.MyTeamsView
 import com.example.pokedex.mainViews.PokemonDetailView.PokemonDetailView
 import com.example.pokedex.mainViews.ProfileView.ProfileView
-import com.example.pokedex.mainViews.MyTeamsView.MyTeamsView
 import com.example.pokedex.mainViews.SavedPokemonsView.SavedView
 import com.example.pokedex.mainViews.SearchView.SearchView
 import com.example.pokedex.mainViews.WhoIsThatPokemon.WhoIsThatPokemonView
 import com.example.pokedex.mainViews.pokemonTriviaView.PokemonTriviaView
+import com.example.pokedex.mainViews.signInView.SignInView
+import com.example.pokedex.mainViews.splashScreen.MakeSplashScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
+
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Splash.route
     ) {
+        composable(Screen.SignIn.route) {
+            SignInView(navController = navController)
+        }
         composable(Screen.Saved.route) {
             SavedView(navController = navController)
         }
@@ -35,6 +42,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable(Screen.Profile.route) {
             ProfileView(navController = navController)
+        }
+        composable(Screen.Splash.route) {
+            MakeSplashScreen(navController = navController)
         }
         composable(
             route = Screen.PokemonDetails.route,
@@ -63,6 +73,8 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Search : Screen("search")
     object Profile : Screen("profile")
+    object SignIn : Screen("signIn")
+    object Splash : Screen("splash")
     object PokemonDetails : Screen("pokemonDetails/{pokemonName}") {
         fun createRoute(pokemonName: String) = "pokemonDetails/$pokemonName"
     }

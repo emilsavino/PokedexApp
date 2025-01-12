@@ -1,35 +1,55 @@
-package com.example.pokedex.mainViews.ProfileView
-
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import androidx.navigation.NavController
+import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.navigation.Screen
 import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
-    private val _userEmail = MutableStateFlow("name@dtu.dk")
-    val userEmail: StateFlow<String> = _userEmail
+    private val googleAuthManager = DependencyContainer.googleAuthenticationManager
 
-    private val _userPassword = MutableStateFlow("********")
-    val userPassword: StateFlow<String> = _userPassword
+    var email = mutableStateOf("Guest")
+    var profilePictureUrl = mutableStateOf<String?>(null)
+    var authError = mutableStateOf<String?>(null)
 
-    fun updateEmail(newEmail: String){
+    init {
+        initializeUserState()
+    }
+
+    private fun initializeUserState() {
         viewModelScope.launch {
-            _userEmail.value = newEmail
+            val currentUser = googleAuthManager.auth.currentUser
+            email.value = currentUser?.email ?: "Unknown User"
+            profilePictureUrl.value = currentUser?.photoUrl?.toString()
+
         }
     }
 
-    fun changePassword(newPassword : String){
+    fun signOut(navController: NavController) {
         viewModelScope.launch {
-            _userPassword.value = newPassword
+            googleAuthManager.auth.signOut()
+            navController.navigate(Screen.SignIn.route) {
+                popUpTo(Screen.Profile.route) {
+                    inclusive = true
+                }
+            }
         }
     }
 
-    fun signOut(){
-        // TODO: Add functionality to sign out
-    }
-
-    fun deleteAccount(){
-        // TODO: Add functionality to delete account
+    fun deleteAccount(navController: NavController) {
+        viewModelScope.launch {
+            googleAuthManager.auth.currentUser?.delete()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    navController.navigate(Screen.SignIn.route) {
+                        popUpTo(Screen.Profile.route) {
+                            inclusive = true
+                        }
+                    }
+                } else {
+                    authError.value = task.exception?.message ?: "Failed to delete account"
+                }
+            }
+        }
     }
 }

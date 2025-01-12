@@ -170,7 +170,7 @@ class PokemonRepository {
                 val evoChainResult = dataStore.fetchNameFromEvoChain(id)
                 val pokemonName = evoChainResult.species.name
 
-                val getPokemon = dataStore.fetchPokemon(pokemonName)
+                val getPokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(pokemonName)
                 val sprites = getPokemon.sprites
                 sprites_list.add(sprites)
 

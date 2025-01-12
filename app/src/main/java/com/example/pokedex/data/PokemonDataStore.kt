@@ -45,12 +45,6 @@ class PokemonDataStore {
         return pokemonMap[name]!!
     }
 
-    suspend fun fetchPokemon(name: String): Pokemon {
-        return pokemonMap[name] ?: fetchPokemonFromAPI(name).also { pokemon ->
-            pokemonMap[name] = pokemon
-        }
-    }
-
     private suspend fun fetchAllPokemons()
     {
         allPokemonResultList = fetchPokemons(10000,0)
@@ -60,12 +54,6 @@ class PokemonDataStore {
         return withContext(Dispatchers.IO) {
             api.getPokemons(limit,offset)
         }
-    }
-
-    private suspend fun fetchPokemonFromAPI(name: String): Pokemon {
-        val pokemon = api.getPokemon(name.lowercase())
-        pokemon.name = name.replaceFirstChar { it.uppercase() }
-        return pokemon
     }
 
     suspend fun fetchPokemonSpecies(name: String): FlavorTextAndEvolutionChain {

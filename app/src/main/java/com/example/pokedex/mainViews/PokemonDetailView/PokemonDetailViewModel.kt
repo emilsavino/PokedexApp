@@ -59,7 +59,7 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         pokemonRepository.getPokemonDetailsByName(name)
     }
 
-    suspend fun savePokemon(pokemon: Pokemon) {
+    fun savePokemon(pokemon: Pokemon) = viewModelScope.launch {
         if (favouritesRepository.pokemonIsFavourite(pokemon)) {
             favouritesRepository.removeFromFavourites(pokemon)
         } else {
@@ -72,65 +72,48 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         isFavorited = favouritesRepository.pokemonIsFavourite(pokemon)
     }
 
-    suspend fun addToTeam(pokemon: Pokemon, teamName: String) {
-        try {
-            teamsRepository.addToTeam(pokemon, teamName)
+    fun addToTeam(pokemon: Pokemon, teamName: String) = viewModelScope.launch {
+        val success = teamsRepository.addToTeam(pokemon, teamName)
+        if (success) {
+            showDialog = false
             errorMessage = null
-        } catch (error: Exception) {
-            errorMessage = error.message
         }
+        errorMessage = "Team is full"
     }
 
-    suspend fun confirmAddToTeam(pokemon: Pokemon) {
-        if (selectedTeam.isNotEmpty()) {
-            addToTeam(pokemon, selectedTeam)
-        }
-    }
-
-    suspend fun createTeamWithPokemon(pokemon: Pokemon) {
-        if (newTeamName.isNotBlank()) {
-            val newTeam = Team(name = newTeamName, pokemons = listOf(pokemon))
-            teamsRepository.addTeam(newTeam)
-            newTeamName = ""
-        }
-    }
-
-    suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
-        val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
-        teamsRepository.addTeam(newTeam)
-    }
-
-    fun onCreateTeamClicked() {
+    fun onCreateNewTeam() {
+        showDialog = false
         showTeamCreationDialog = true
+        errorMessage = null
+    }
+
+    fun onCreateTeamClicked(pokemon: Pokemon) = viewModelScope.launch {
+        if (newTeamName.isNotBlank()) {
+            val teamNameIsTaken = !teamsRepository.addTeam(Team(name = newTeamName, pokemons = listOf(pokemon)))
+            if (teamNameIsTaken) {
+                errorMessage = "This name is already in use"
+                return@launch
+            }
+            showTeamCreationDialog = false
+            newTeamName = ""
+            errorMessage = null
+        } else {
+            errorMessage = "Team name cannot be empty"
+        }
     }
 
     fun onCancelTeamCreation() {
         showTeamCreationDialog = false
         newTeamName = ""
+        errorMessage = null
     }
 
-    suspend fun createTeam(pokemon: Pokemon): Boolean {
-        if (newTeamName.isNotBlank()) {
-            val newTeam = Team(name = newTeamName, pokemons = listOf(pokemon))
-            teamsRepository.addTeam(newTeam)
-            showTeamCreationDialog = false
-            newTeamName = ""
-            errorMessage = null
-            return true
-        } else {
-            errorMessage = "Team name cannot be empty"
-            return false
-        }
+    fun onDismiss() {
+        showDialog = false
+        selectedTeam = ""
+        errorMessage = null
     }
 
-
-    fun onTeamSelected(pokemon: Pokemon, teamName: String) {
-        viewModelScope.launch {
-            selectedTeam = teamName
-            showDialog = false
-            confirmAddToTeam(pokemon)
-        }
-    }
 
 }
 

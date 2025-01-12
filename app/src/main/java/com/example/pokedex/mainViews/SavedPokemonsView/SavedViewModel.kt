@@ -6,28 +6,44 @@ import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SavedViewModel : ViewModel() {
     private val favouritesRepository = DependencyContainer.favouritesRepository
-    private val mutableStateFlow = MutableStateFlow<List<Pokemon>>(emptyList())
-    val savedState: StateFlow<List<Pokemon>> = mutableStateFlow
+
+    private val mutableStateFlow = MutableStateFlow<SavedUIState>(SavedUIState.Empty)
+    val savedState: StateFlow<SavedUIState> = mutableStateFlow.asStateFlow()
 
     init {
         viewModelScope.launch {
             favouritesRepository.savedPokemonsFlow
                 .collect { saved ->
                     mutableStateFlow.update {
-                        saved
+                        SavedUIState.Data(saved)
                     }
                 }
         }
         fetchSaved()
     }
 
-    private fun fetchSaved() = viewModelScope.launch {
-        favouritesRepository.fetchSaved()
+    fun savedIsEmpty() {
+        mutableStateFlow.update {
+            SavedUIState.Empty
+        }
     }
 
+    private fun fetchSaved() = viewModelScope.launch {
+        mutableStateFlow.update {
+            SavedUIState.Loading
+        }
+        favouritesRepository.fetchSaved()
+    }
+}
+
+sealed class SavedUIState {
+    data class Data(val saved: List<Pokemon>) : SavedUIState()
+    object Loading : SavedUIState()
+    object Empty : SavedUIState()
 }

@@ -34,6 +34,7 @@ class FavouritesRepository(private val context: Context) {
         val savedPokemons = fetchSavedPokemonsFromDataStore()
         favouritePokemons.clear()
         favouritePokemons.addAll(savedPokemons)
+        mutableSavedPokemonsFlow.emit(favouritePokemons)
     }
 
     suspend fun fetchSaved() {

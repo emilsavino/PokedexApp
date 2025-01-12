@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.WhoIsThatPokemon
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -12,12 +13,17 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +33,7 @@ import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.ProgressIndicator
 import com.example.pokedex.shared.WhoIsThatPokemon
+import com.example.pokedex.shared.formatPokemonName
 
 @Composable
 fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavController) {
@@ -38,10 +45,22 @@ fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavContro
                 modifier = modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                BackButton(
-                    navController = navController,
-                    modifier = Modifier.align(Alignment.Start)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    BackButton(
+                        navController = navController,
+                        modifier = modifier.padding(horizontal = 10.dp)
+                    )
+
+                    IconButton(
+                        onClick = { viewModel.nextPokemon() },
+                        modifier = modifier.padding(horizontal = 10.dp)
+                    ) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next")
+                    }
+                }
 
                 Text(text = "Who Is That Pokemon",
                     fontSize = 35.sp,
@@ -65,7 +84,7 @@ fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavContro
 }
 
 @Composable
-fun Options (viewModel: WhoIsThatPokemonViewModel, whoIsThatPokemon : WhoIsThatPokemon) {
+private fun Options (viewModel: WhoIsThatPokemonViewModel, whoIsThatPokemon : WhoIsThatPokemon) {
     LazyColumn (modifier = Modifier.fillMaxHeight()) {
         items(whoIsThatPokemon.options) { item: Option ->
             OptionComposable(option = item, viewModel = viewModel)
@@ -74,7 +93,7 @@ fun Options (viewModel: WhoIsThatPokemonViewModel, whoIsThatPokemon : WhoIsThatP
 }
 
 @Composable
-fun OptionComposable(modifier : Modifier = Modifier, option : Option, viewModel: WhoIsThatPokemonViewModel) {
+private fun OptionComposable(modifier : Modifier = Modifier, option : Option, viewModel: WhoIsThatPokemonViewModel) {
     Button(
         modifier = modifier
             .padding(5.dp)
@@ -82,7 +101,7 @@ fun OptionComposable(modifier : Modifier = Modifier, option : Option, viewModel:
             .fillMaxWidth(),
         onClick = { viewModel.guessed() }
     ) {
-        Text(text = option.name,
+        Text(text = option.name.formatPokemonName(),
             color = viewModel.getColor(option),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold)

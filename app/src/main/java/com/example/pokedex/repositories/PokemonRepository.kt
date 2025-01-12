@@ -1,21 +1,17 @@
 package com.example.pokedex.repositories
 
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.Abilities
 import com.example.pokedex.shared.Ability
 import com.example.pokedex.shared.AbilityDetails
 import com.example.pokedex.shared.DamageRelations
 import com.example.pokedex.shared.DamageRelationsResult
-import com.example.pokedex.shared.EvolutionChain
-import com.example.pokedex.shared.FlavorTextAndEvolutionChain
+import com.example.pokedex.shared.EvolutionChainResult
 import com.example.pokedex.shared.FlavorTextEntry
 import com.example.pokedex.shared.Language
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonAttributes
-import com.example.pokedex.shared.Species
 import com.example.pokedex.shared.Sprites
 import com.example.pokedex.shared.Type
-import com.example.pokedex.shared.TypeObject
 import com.example.pokedex.shared.Types
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -160,6 +156,7 @@ class PokemonRepository {
             try
             {
                 val sprites_list = mutableListOf<Sprites>()
+
                 val pokemonEvoChainUrl = dataStore.fetchPokemonSpecies(name)
                 val getEvoChainID = pokemonEvoChainUrl.evolution_chain.url
                 val id = getEvoChainID
@@ -168,12 +165,25 @@ class PokemonRepository {
                     .toInt()
 
                 val evoChainResult = dataStore.fetchNameFromEvoChain(id)
-                val pokemonName = evoChainResult.species.name
 
-                val getPokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(pokemonName)
-                val sprites = getPokemon.sprites
-                sprites_list.add(sprites)
+                fun extractPokemonNames(chain: EvolutionChainResult): List<String> {
+                    val names = mutableListOf(chain.species.name)
+                    for (evolution in chain.evolves_to) {
+                        names.addAll(extractPokemonNames(evolution))
+                    }
+                    return names
+                }
 
+                val pokemonNames = extractPokemonNames(evoChainResult.chain)
+
+                for (pokemonName in pokemonNames) {
+                    val getPokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(pokemonName)
+                    getPokemon.sprites.front_default?.let { frontSprite ->
+                        sprites_list.add(Sprites(frontSprite))
+                    }
+                }
+
+                println("SPRITELIST " + sprites_list)
                 evolutionChain = sprites_list
                 println("Successfully processed evolution chain for $name")
             } catch (e: Exception) {

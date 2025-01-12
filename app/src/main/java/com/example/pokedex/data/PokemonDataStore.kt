@@ -1,6 +1,7 @@
 package com.example.pokedex.data
 
 import com.example.pokedex.shared.DamageRelations
+import com.example.pokedex.shared.EvolutionChain
 import com.example.pokedex.shared.EvolutionChainResult
 import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
@@ -62,7 +63,7 @@ class PokemonDataStore {
         }
     }
 
-    suspend fun fetchNameFromEvoChain(id: Int): EvolutionChainResult {
+    suspend fun fetchNameFromEvoChain(id: Int): EvolutionChain {
         return withContext(Dispatchers.IO) {
             api.getEvoChain(id)
         }

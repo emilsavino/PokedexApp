@@ -57,7 +57,7 @@ data class EvolutionChain(
 
 data class EvolutionChainResult(
     val species: Species,
-    val evolves_to: List<EvolutionChainResult>
+    val evolves_to: List<EvolutionChainResult> = emptyList()
 )
 
 data class EvolutionChainUrlFromSpecies(

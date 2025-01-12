@@ -1,6 +1,7 @@
 package com.example.pokedex.data
 
 import com.example.pokedex.shared.DamageRelations
+import com.example.pokedex.shared.EvolutionChain
 import com.example.pokedex.shared.EvolutionChainResult
 import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
@@ -27,5 +28,5 @@ interface PokemonAPIService {
     suspend fun getTypeInfo(@Path("type") type: String): DamageRelations
 
     @GET("evolution-chain/{id}")
-    suspend fun getEvoChain(@Path("id") id: Int): EvolutionChainResult
+    suspend fun getEvoChain(@Path("id") id: Int): EvolutionChain
 }

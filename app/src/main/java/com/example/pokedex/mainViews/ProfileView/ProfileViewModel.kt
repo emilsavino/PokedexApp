@@ -34,7 +34,6 @@ class ProfileViewModel : ViewModel() {
                     inclusive = true
                 }
             }
-            resetUserState()
         }
     }
 
@@ -47,17 +46,10 @@ class ProfileViewModel : ViewModel() {
                             inclusive = true
                         }
                     }
-                    resetUserState()
                 } else {
                     authError.value = task.exception?.message ?: "Failed to delete account"
                 }
             }
         }
-    }
-
-    private fun resetUserState() {
-        email.value = "Guest"
-        profilePictureUrl.value = null
-        authError.value = null
     }
 }

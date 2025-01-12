@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {
 
-    var isSignedIn = mutableStateOf(false)
     var email = mutableStateOf("Guest")
     var profilePictureUrl = mutableStateOf<String?>(null)
     var authError = mutableStateOf<String?>(null)
@@ -26,7 +25,6 @@ class SignInViewModel : ViewModel() {
                 when (response) {
                     is AuthResponse.Success -> {
                         val currentUser = googleAuthManager.auth.currentUser
-                        isSignedIn.value = true
                         email.value = currentUser?.email ?: "Unknown User"
                         profilePictureUrl.value = currentUser?.photoUrl?.toString()
                         authError.value = null

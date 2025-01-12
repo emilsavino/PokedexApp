@@ -1,6 +1,7 @@
 package com.example.pokedex.dependencyContainer
 
 import android.app.Application
+import com.example.pokedex.manager.GoogleAuthenticationManager
 import com.example.pokedex.data.PokemonDataStore
 import com.example.pokedex.repositories.PokemonRepository
 import com.example.pokedex.repositories.WhoIsThatPokemonRepository
@@ -44,4 +45,9 @@ object DependencyContainer {
         TeamsRepository(application.applicationContext)
     }
 
+
+    val googleAuthenticationManager: GoogleAuthenticationManager by lazy {
+        GoogleAuthenticationManager(application.applicationContext)
+
+    }
 }

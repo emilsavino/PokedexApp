@@ -9,12 +9,8 @@ import com.example.pokedex.shared.Team
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -46,10 +42,16 @@ class TeamsRepository(private val context: Context) {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun addTeam(newTeam: Team) {
+    suspend fun addTeam(newTeam: Team) : Boolean{
+        for (team in pokemonTeams) {
+            if (team.name == newTeam.name) {
+                return false
+            }
+        }
         pokemonTeams.add(newTeam)
         updateDataStore()
         mutableTeamsFlow.emit(pokemonTeams)
+        return true
     }
 
     suspend fun deleteTeam(teamName: String) {
@@ -58,23 +60,23 @@ class TeamsRepository(private val context: Context) {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun addToTeam(pokemon: Pokemon, teamName: String): Result<String> {
+    suspend fun addToTeam(pokemon: Pokemon, teamName: String) : Boolean {
         val teamIndex = pokemonTeams.indexOfFirst { it.name == teamName }
 
         if (teamIndex == -1) {
-            return Result.failure(IllegalArgumentException("Team with name $teamName does not exist."))
+            return false
         }
 
         val team = pokemonTeams[teamIndex]
         if (team.pokemons.size >= 6) {
-            return Result.failure(IllegalStateException("A team cannot have more than 6 Pokémon."))
+            return false
         }
 
         val updatedTeam = team.copy(pokemons = team.pokemons + pokemon)
         pokemonTeams[teamIndex] = updatedTeam
         updateDataStore()
         mutableTeamsFlow.emit(pokemonTeams)
-        return Result.success("Pokémon added to the team successfully.")
+        return true
     }
 
     suspend fun updateTeam(index: Int, updatedTeam: Team){

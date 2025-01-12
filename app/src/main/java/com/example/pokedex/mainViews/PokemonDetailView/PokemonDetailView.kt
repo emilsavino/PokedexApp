@@ -47,6 +47,8 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import com.example.pokedex.R
 import com.example.pokedex.shared.BackButton
@@ -74,10 +76,13 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
 
 @Composable
 private fun PokemonDetailContent(navController: NavController, pokemon: PokemonAttributes, viewModel: PokemonDetailViewModel) {
+    val primaryType = pokemon.types.types.firstOrNull()?.name ?: "normal"
+    val gradientBrush = getTypeGradient(primaryType)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99))
+            .background(gradientBrush)
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -561,4 +566,37 @@ private fun LoadingState() {
             modifier = Modifier.size(50.dp)
         )
     }
+}
+
+private fun getTypeColor(type: String): Color {
+    val typeColorMap: Map<String, Color> = mapOf(
+        "bug" to Color(0xFFB0D700),
+        "dark" to Color(0xFF3A3A3A),
+        "dragon" to Color(0xFF6F35FC),
+        "electric" to Color(0xFFF7D02C),
+        "fairy" to Color(0xFFFDB9E9),
+        "fighting" to Color(0xFFC22E28),
+        "fire" to Color(0xFFF08030),
+        "flying" to Color(0xFFA98FF3),
+        "ghost" to Color(0xFF5D3583),
+        "grass" to Color(0xFF7AC74C),
+        "ground" to Color(0xFFECC164),
+        "ice" to Color(0xFF98D8D8),
+        "normal" to Color(0xFFA8A77A),
+        "poison" to Color(0x00960CC0),
+        "psychic" to Color(0xFFF85888),
+        "rock" to Color(0xFF8D7D2A),
+        "steel" to Color(0xFFB7B7CE),
+        "water" to Color(0xFF6390F0)
+    )
+    return typeColorMap[type] ?: Color.Gray
+}
+
+private fun getTypeGradient(type: String): Brush {
+    val typeColor = getTypeColor(type)
+    return Brush.linearGradient(
+        colors = listOf(typeColor, Color.White),
+        start = Offset(0f, 0f),
+        end = Offset(0f, Float.POSITIVE_INFINITY)
+    )
 }

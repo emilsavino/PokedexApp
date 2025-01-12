@@ -29,7 +29,7 @@ class PokemonDataStore {
 
     suspend private fun fillUpMapFromAllPokemonResults()
     {
-        val elementsPerBatch = 650
+        val elementsPerBatch = 200
         val pokemonNameMatrix : MutableList<List<String>> = mutableListOf()
         var counter = 0
         var pokemonNameRow = mutableListOf<String>()

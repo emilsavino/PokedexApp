@@ -3,11 +3,8 @@ package com.example.pokedex.mainViews.PokemonDetailView
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pokedex.R
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
@@ -77,8 +74,9 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         if (success) {
             showDialog = false
             errorMessage = null
+        } else {
+            errorMessage = "Team is full"
         }
-        errorMessage = "Team is full"
     }
 
     fun onCreateNewTeam() {

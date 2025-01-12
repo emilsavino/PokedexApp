@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.PokemonDetailView
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,25 +32,25 @@ import coil.compose.AsyncImage
 import com.example.pokedex.shared.Pokemon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import com.example.pokedex.R
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
-import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonAttributes
 import com.example.pokedex.shared.Team
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-
 
 @Composable
 fun PokemonDetailView(pokemonName: String, navController: NavController) {
@@ -64,13 +65,13 @@ fun PokemonDetailView(pokemonName: String, navController: NavController) {
             LoadingState()
         }
         is PokemonDetailUIState.Data -> {
-            PokemonDetail(navController, pokemon.pokemon, viewModel)
+            PokemonDetailContent(navController, pokemon.pokemon, viewModel)
         }
     }
 }
 
 @Composable
-fun PokemonDetailContent(navController: NavController, pokemon: PokemonAttributes, viewModel: PokemonDetailViewModel) {
+private fun PokemonDetailContent(navController: NavController, pokemon: PokemonAttributes, viewModel: PokemonDetailViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,11 +100,13 @@ fun PokemonDetailContent(navController: NavController, pokemon: PokemonAttribute
         Spacer(modifier = Modifier.height(8.dp))
 
         CreateEvoBox(pokemon)
+
+        TeamSelectionAndCreationDialogs(pokemon.pokemon, viewModel)
     }
 }
 
 @Composable
-fun CreateEvoBox(pokemon: PokemonAttributes) {
+private fun CreateEvoBox(pokemon: PokemonAttributes) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -121,12 +124,11 @@ fun CreateEvoBox(pokemon: PokemonAttributes) {
                 text = pokemon.sprites.toString() //TODO: Make use of the link
             )
         }
-
     }
 }
 
 @Composable
-fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
+private fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,19 +175,7 @@ fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
 }
 
 @Composable
-fun ErrorMessage(errorMessage: String) {
-    Text(
-        text = errorMessage,
-        color = Color.Red,
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(CenterHorizontally)
-            .padding(8.dp)
-    )
-}
-
-@Composable
-fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
+private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
     val typeImageMap: Map<String, Painter> = mapOf(
         "bug" to painterResource(id = R.drawable.bug),
         "dark" to painterResource(id = R.drawable.dark),
@@ -290,7 +280,7 @@ fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
 }
 
 @Composable
-fun CreateDescBox(pokemon: PokemonAttributes) {
+private fun CreateDescBox(pokemon: PokemonAttributes) {
 
     Box(
         modifier = Modifier
@@ -310,13 +300,11 @@ fun CreateDescBox(pokemon: PokemonAttributes) {
                 fontStyle = FontStyle.Italic
             )
         }
-
-    TeamSelectionAndCreationDialogs(pokemon, viewModel)
     }
 }
 
 @Composable
-fun CreatePokemonBox(pokemon: PokemonAttributes) {
+private fun CreatePokemonBox(pokemon: PokemonAttributes) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -334,14 +322,12 @@ fun CreatePokemonBox(pokemon: PokemonAttributes) {
 }
 
 @Composable
-fun CreateTopRow(
+private fun CreateTopRow(
     navController: NavController,
     pokemon: PokemonAttributes,
     viewModel: PokemonDetailViewModel,
     showDialog: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -366,33 +352,13 @@ fun CreateTopRow(
             imageVector = if (viewModel.isFavorited) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
             color = if (viewModel.isFavorited) Color.Red else Color.Black,
             contentDescription = if (viewModel.isFavorited) "Remove" else "Add",
-            onClick = {
-                coroutineScope.launch {
-                    viewModel.savePokemon(pokemon.pokemon)
-                }
-            }
+            onClick = { viewModel.savePokemon(pokemon.pokemon) }
         )
     }
 }
 
 @Composable
-fun CreateSmallButton(imageVector: ImageVector, color: Color, contentDescription: String, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .padding(6.dp)
-            .clickable { onClick() }
-    ) {
-        Icon(
-            imageVector = imageVector,
-            contentDescription = contentDescription,
-            tint = color,
-            modifier = Modifier.size(34.dp)
-        )
-    }
-}
-
-@Composable
-fun TeamSelectionAndCreationDialogs(
+private fun TeamSelectionAndCreationDialogs(
     pokemon: Pokemon,
     viewModel: PokemonDetailViewModel,
 ) {
@@ -418,7 +384,7 @@ fun TeamSelectionAndCreationDialogs(
 }
 
 @Composable
-fun TeamSelectionContent(
+private fun TeamSelectionContent(
     teams: List<Team>,
     viewModel: PokemonDetailViewModel,
     onTeamSelected: (String) -> Unit,
@@ -445,7 +411,7 @@ fun TeamSelectionContent(
 }
 
 @Composable
-fun TeamSelectionDialog(
+private fun TeamSelectionDialog(
     teams: List<Team>,
     viewModel: PokemonDetailViewModel,
     onTeamSelected: (String) -> Unit,
@@ -474,7 +440,7 @@ fun TeamSelectionDialog(
 
 
 @Composable
-fun TeamCreationContent(
+private fun TeamCreationContent(
     newTeamName: String,
     onTeamNameChange: (String) -> Unit,
     viewModel: PokemonDetailViewModel
@@ -494,7 +460,7 @@ fun TeamCreationContent(
 }
 
 @Composable
-fun TeamCreationDialog(
+private fun TeamCreationDialog(
     newTeamName: String,
     viewModel: PokemonDetailViewModel,
     onTeamNameChange: (String) -> Unit,
@@ -525,62 +491,9 @@ fun TeamCreationDialog(
 }
 
 
-@Composable
-fun CreateTopRow(
-    navController: NavController,
-    pokemon: Pokemon,
-    viewModel: PokemonDetailViewModel,
-    showDialog: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        BackButton(navController)
-
-        Text(
-            text = pokemon.name.formatPokemonName(),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f)
-        )
-
-        CreateSmallButton(
-            imageVector = Icons.Default.AddCircle,
-            color = Color.Black,
-            contentDescription = "Add to Team",
-            onClick = { showDialog() }
-        )
-
-        CreateSmallButton(
-            imageVector = if (viewModel.isFavorited) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-            color = if (viewModel.isFavorited) Color.Red else Color.Black,
-            contentDescription = if (viewModel.isFavorited) "Remove" else "Add",
-            onClick = { viewModel.savePokemon(pokemon) }
-        )
-    }
-}
 
 @Composable
-fun CreatePokemonBox(pokemon: Pokemon) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        AsyncImage(
-            model = pokemon.sprites.front_default,
-            contentDescription = "Picture of a Pokémon",
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-@Composable
-fun CreateSmallButton(imageVector: ImageVector, color: Color, contentDescription: String, onClick: () -> Unit) {
+private fun CreateSmallButton(imageVector: ImageVector, color: Color, contentDescription: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .padding(6.dp)
@@ -596,36 +509,7 @@ fun CreateSmallButton(imageVector: ImageVector, color: Color, contentDescription
 }
 
 @Composable
-fun CreateDescBox() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Description",
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
-fun AttributeBoxColumns(text1: String, text2: String) {
-    Column {
-        Text(
-            text = text1,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.padding(2.dp))
-        Text(
-            text = text2
-        )
-    }
-}
-
-@Composable
-fun EmptyState() {
+private fun EmptyState() {
     Text(
         text = "No Pokemon found",
         fontSize = 20.sp
@@ -633,7 +517,7 @@ fun EmptyState() {
 }
 
 @Composable
-fun LoadingState() {
+private fun LoadingState() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

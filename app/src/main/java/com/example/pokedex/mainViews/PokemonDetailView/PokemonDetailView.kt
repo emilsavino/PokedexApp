@@ -189,7 +189,9 @@ private fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
             )
             Spacer(modifier = Modifier.padding(2.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.Start
             ) {
                 pokemon.abilities.forEachIndexed { index, ability ->

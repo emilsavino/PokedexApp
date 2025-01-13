@@ -39,10 +39,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainContent() {
-    val pokemonRepo = DependencyContainer.pokemonRepository
-    LaunchedEffect(Dispatchers.IO) {
-        pokemonRepo.getPokemonDetailsByName("bulbasaur")
-    }
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route

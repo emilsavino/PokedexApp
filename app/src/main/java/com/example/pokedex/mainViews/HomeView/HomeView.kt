@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
@@ -135,6 +136,7 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
 
 @Composable
 fun PokemonDetailsRow(pokemon: Pokemon) {
+    val typeResources = PokemonTypeResources()
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -143,10 +145,16 @@ fun PokemonDetailsRow(pokemon: Pokemon) {
         Text(text = pokemon.name.formatPokemonName(), fontSize = 16.sp)
         Spacer(modifier = Modifier.width(Padding))
         Text(text = "Types: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        Text(
-            text = pokemon.types.joinToString(", ") { it.type.name.formatPokemonName() },
-            fontSize = 16.sp
-        )
+        pokemon.types.forEach { type ->
+            val typeImage = typeResources.getTypeImage(type.type.name)
+            Image(
+                painter = typeImage,
+                contentDescription = "${type.type.name} type image",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(4.dp)
+            )
+        }
     }
 }
 

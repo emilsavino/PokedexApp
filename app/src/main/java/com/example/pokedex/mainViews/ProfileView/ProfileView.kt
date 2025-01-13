@@ -2,6 +2,7 @@ package com.example.pokedex.mainViews.ProfileView
 
 import ProfileViewModel
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,20 +19,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.pokedex.shared.PokemonTypeResources
 
 
 @Composable
 fun ProfileButton(
     text: String,
     onClick: () -> Unit,
-    containerColor: Color = Color.LightGray,
+    containerColor: Color = Color.White,
     contentColor: Color = Color.Black
 ) {
     Button(
@@ -40,9 +44,11 @@ fun ProfileButton(
             containerColor = containerColor,
             contentColor = contentColor
         ),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(6.dp, CircleShape)
     ) {
-        Text(text = text)
+        Text(text = text, fontSize = 16.sp)
     }
 }
 
@@ -57,7 +63,8 @@ fun SignedInContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         AsyncImage(
             model = profilePictureUrl,
@@ -69,13 +76,13 @@ fun SignedInContent(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = email)
+        Text(text = email, color = Color.White)
 
         Spacer(modifier = Modifier.height(8.dp))
-        ProfileButton(text = "Sign Out", onClick = onSignOut, contentColor = Color.Red)
+        ProfileButton(text = "Sign Out", onClick = onSignOut)
 
         Spacer(modifier = Modifier.height(8.dp))
-        ProfileButton(text = "Delete Account", onClick = onDeleteAccount, contentColor = Color.Red)
+        ProfileButton(text = "Delete Account", onClick = onDeleteAccount)
     }
 }
 
@@ -86,11 +93,12 @@ fun ProfileView(
     navController: NavController,
 ) {
     val viewModel = viewModel<ProfileViewModel>()
+    val gradient = PokemonTypeResources().getTypeGradient("dark")
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99)),
+            .background(gradient),
         contentAlignment = Alignment.Center
     ) {
         SignedInContent(

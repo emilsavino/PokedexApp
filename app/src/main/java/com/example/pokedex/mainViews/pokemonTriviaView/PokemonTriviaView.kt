@@ -31,6 +31,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.shared.Option
@@ -66,7 +68,7 @@ fun AnswerButtons(viewModel: PokemonTriviaViewModel, options: List<Option>) {
 @Composable
 fun PokemonTriviaView(navController: NavController) {
     val viewModel = remember { PokemonTriviaViewModel(PokemonTriviaRepository()) }
-    val currentTrivia = viewModel.pokemonTrivia
+    val triviaState by viewModel.triviaState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -79,30 +81,39 @@ fun PokemonTriviaView(navController: NavController) {
             modifier = Modifier.align(Alignment.Start)
         )
 
-        if (currentTrivia != null) {
-            Text(
-                text = currentTrivia.question,
-                modifier = Modifier.padding(horizontal = 25.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
-            )
+        when (triviaState) {
+            is PokemonTriviaUIState.Loading -> {
+                Text(text = "Loading question...", fontSize = 20.sp)
+            }
 
-            Spacer(modifier = Modifier.size(120.dp))
-
-            AnswerButtons(viewModel, currentTrivia.options)
-
-            if (viewModel.hasAnswered) {
+            is PokemonTriviaUIState.Empty -> {
+                Text(text = "No more questions available.", fontSize = 20.sp)
                 Spacer(modifier = Modifier.size(16.dp))
-                Button(onClick = { viewModel.loadRandomQuestion() }) {
-                    Text(text = "Next Question")
+                Button(onClick = { viewModel.resetTrivia() }) {
+                    Text(text = "Reset Questions")
                 }
             }
-        } else {
-            Text(text = "No more questions available.", fontSize = 20.sp)
-            Spacer(modifier = Modifier.size(16.dp))
-            Button(onClick = { viewModel.resetTrivia() }) {
-                Text(text = "Reset Questions")
+
+            is PokemonTriviaUIState.Question -> {
+                val trivia = (triviaState as PokemonTriviaUIState.Question).trivia
+                Text(
+                    text = trivia.question,
+                    modifier = Modifier.padding(horizontal = 25.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Center,
+                )
+
+                Spacer(modifier = Modifier.size(120.dp))
+
+                AnswerButtons(viewModel, trivia.options)
+
+                if (viewModel.hasAnswered) {
+                    Spacer(modifier = Modifier.size(16.dp))
+                    Button(onClick = { viewModel.loadRandomQuestion() }) {
+                        Text(text = "Next Question")
+                    }
+                }
             }
         }
     }

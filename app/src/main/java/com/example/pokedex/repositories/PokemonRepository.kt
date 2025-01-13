@@ -27,7 +27,6 @@ class PokemonRepository {
     val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
 
 
-
     suspend fun getPokemonByName(name: String) {
         var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
         mutablePokemonFlow.emit(pokemon)

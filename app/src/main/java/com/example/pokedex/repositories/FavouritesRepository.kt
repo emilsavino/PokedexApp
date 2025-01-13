@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.shared.Pokemon
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "pokemon_preferences")
 
 class FavouritesRepository(private val context: Context) {
+    private val databaseService = DatabaseService<Pokemon>("saved", Pokemon::class.java)
     private val favouritePokemons = mutableListOf<Pokemon>()
     private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
     private val gson = Gson()
@@ -64,6 +66,7 @@ class FavouritesRepository(private val context: Context) {
         context.dataStore.edit { preferences ->
             preferences[FAVOURITE_POKEMONS_KEY] = pokemonJson
         }
+        databaseService.storeArray(favouritePokemons)
     }
 
     private suspend fun fetchSavedPokemonsFromDataStore(): List<Pokemon> {

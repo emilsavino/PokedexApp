@@ -22,7 +22,7 @@ class DatabaseService<T : Any>(private val key: String, private val clazz: Class
             val objectType = object : TypeToken<List<Map<String, Any>>>() {}.type
             val objectArray: List<Map<String, Any>> = gson.fromJson(data, objectType)
 
-            userDocRef.update(mapOf(key to objectArray)).await()
+            userDocRef.set(mapOf(key to objectArray)).await()
         } catch (error: Exception) {
             println("Error encoding $key: ${error.localizedMessage}")
         }
@@ -37,7 +37,7 @@ class DatabaseService<T : Any>(private val key: String, private val clazz: Class
             val data = gson.toJson(obj)
             val objectMap = gson.fromJson(data, Map::class.java) as? Map<String, Any>
 
-            userDocRef.update(mapOf(key to objectMap)).await()
+            userDocRef.set(mapOf(key to objectMap)).await()
         } catch (error: Exception) {
             println("Error encoding $key: ${error.localizedMessage}")
         }

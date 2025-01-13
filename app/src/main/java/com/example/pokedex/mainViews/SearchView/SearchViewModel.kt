@@ -94,6 +94,9 @@ class SearchViewModel: ViewModel() {
     fun addPokemonToRecentlySearched(name : String)
     {
         pokemonRepository.addRecentlySearched(name)
+        viewModelScope.launch {
+            searchPokemonList()
+        }
     }
 }
 

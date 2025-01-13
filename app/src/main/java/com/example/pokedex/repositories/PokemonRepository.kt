@@ -100,8 +100,13 @@ class PokemonRepository {
         val typesInfoList = fetchTypeInfoList(types)
         val weaknesses = combineDamageRelations(typesInfoList, types)
         val abilities = fetchPokemonAbilities(pokemon)
-        val description = fetchPokemonDescription(name)
+        var description = fetchPokemonDescription(name)
         val evolutionChainPokemons = fetchEvolutionChainPokemons(name)
+
+        if (pokemon.sprites.front_default == null) {
+            description = FlavorTextEntry("This Pokémon is so rare, that no photos have been taken!",
+                Language("en"))
+        }
 
         val pokemonAttributes = PokemonAttributes(
             pokemon = pokemon,

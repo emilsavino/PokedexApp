@@ -246,7 +246,7 @@ private fun CreatePokemonBox(pokemon: PokemonAttributes) {
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
-            model = pokemon.pokemon.sprites.front_default,
+            model = pokemon.pokemon.sprites.front_default ?: R.drawable.unknown,
             contentDescription = "Picture of a Pokémon",
             modifier = Modifier.fillMaxSize()
         )

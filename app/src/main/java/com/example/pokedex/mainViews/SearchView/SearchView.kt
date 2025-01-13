@@ -74,7 +74,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                 }
 
                 is SearchUIState.Data -> {
-                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController)
+                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
                 }
             }
         }
@@ -228,21 +228,24 @@ fun MakeFilterButton(viewModel: SearchViewModel,
 }
 
 @Composable
-fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
+fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController, viewModel: SearchViewModel) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(pokemons) { pokemon ->
-            SearchListItem(pokemon = pokemon, navController = navController)
+            SearchListItem(pokemon = pokemon, navController = navController,viewModel)
         }
     }
 }
 
 @Composable
-fun SearchListItem(pokemon: Pokemon, navController: NavController) {
+fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: SearchViewModel) {
     Button(
-        onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
+        onClick = {
+            viewModel.addPokemonToRecentlySearched(pokemon.name)
+            navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name))
+            },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),

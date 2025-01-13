@@ -32,6 +32,8 @@ class PokemonRepository {
     private val mutablePokemonAttributesFlow = MutableSharedFlow<PokemonAttributes>()
     val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
 
+    private val recentlySearchedPokemon : MutableSet<String> = mutableSetOf()
+
     suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String)
     {
         var foundElements = 0
@@ -88,6 +90,17 @@ class PokemonRepository {
             index++
         }
         mutableSearchFlow.emit(mutableFilteredList)
+    }
+    suspend fun getRecentlySearched()
+    {
+        val mutableRecentlySearchedList = mutableListOf<Pokemon>()
+        for (name in recentlySearchedPokemon)
+        {
+            val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
+            mutableRecentlySearchedList.add(pokemon)
+        }
+        val list = mutableRecentlySearchedList.toList()
+        mutableSearchFlow.emit(list.reversed())
     }
 
     suspend fun getPokemonByName(name: String) {
@@ -223,5 +236,10 @@ class PokemonRepository {
             double_damage_from = combinedWeaknesses,
             half_damage_from = emptyList()
         )
+    }
+
+    fun addRecentlySearched(name : String)
+    {
+        recentlySearchedPokemon.add(name)
     }
 }

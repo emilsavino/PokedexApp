@@ -37,6 +37,15 @@ class SearchViewModel: ViewModel() {
             SearchUIState.Loading
 
         }
+
+        if (searchText.value == "")
+        {
+            viewModelScope.launch {
+                pokemonRepository.getRecentlySearched()
+            }
+            return
+        }
+
         viewModelScope.launch {
             pokemonRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value)
         }
@@ -80,6 +89,11 @@ class SearchViewModel: ViewModel() {
             selectedSortOption.value = option
         }
         searchPokemonList()
+    }
+
+    fun addPokemonToRecentlySearched(name : String)
+    {
+        pokemonRepository.addRecentlySearched(name)
     }
 }
 

@@ -116,6 +116,10 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     }
 
     fun navigateToEvo(nextName: String) {
+        if (nextName == currentPokemonName)
+        {
+            return
+        }
         previousPokemonsName.add(currentPokemonName)
         currentPokemonName = nextName
         getPokemonByName()

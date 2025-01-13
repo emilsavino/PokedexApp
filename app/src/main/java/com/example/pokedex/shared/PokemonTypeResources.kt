@@ -1,6 +1,8 @@
 package com.example.pokedex.shared
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -37,8 +39,16 @@ class PokemonTypeResources {
         return painterResource(id = resource)
     }
 
+    fun getTypeGradient(type: String): Brush {
+        val typeColor = getTypeColor(type)
+        return Brush.linearGradient(
+            colors = listOf(typeColor, Color.White),
+            start = Offset(0f, 0f),
+            end = Offset(0f, Float.POSITIVE_INFINITY)
+        )
+    }
+
     fun getTypeColor(type: String): Color {
         return typeResources[type]?.color ?: Color.Gray
     }
-
 }

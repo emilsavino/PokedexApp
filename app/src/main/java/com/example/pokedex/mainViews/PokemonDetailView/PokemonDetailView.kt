@@ -32,11 +32,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -47,8 +49,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import com.example.pokedex.R
 import com.example.pokedex.shared.BackButton
@@ -107,7 +108,7 @@ private fun PokemonDetailContent(
 ) {
 
     val primaryType = pokemon.types.types.firstOrNull()?.name ?: "normal"
-    val gradientBrush = getTypeGradient(primaryType)
+    val gradientBrush = typeResources.getTypeGradient(primaryType)
 
     Column(
         modifier = Modifier
@@ -140,15 +141,6 @@ private fun PokemonDetailContent(
 
         TeamSelectionAndCreationDialogs(pokemon.pokemon, viewModel)
     }
-}
-
-private fun getTypeGradient(type: String): Brush {
-    val typeColor = typeResources.getTypeColor(type)
-    return Brush.linearGradient(
-        colors = listOf(typeColor, Color.White),
-        start = Offset(0f, 0f),
-        end = Offset(0f, Float.POSITIVE_INFINITY)
-    )
 }
 
 @Composable
@@ -262,72 +254,76 @@ private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
             .height(IntrinsicSize.Min),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .padding(end = 8.dp)
-                .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
-        ) {
-            Column {
-                Text(
-                    text = "Types",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    pokemon.types.types.forEach { type ->
-                        val typeImage = typeResources.getTypeImage(type.name)
-                        Image(
-                            painter = typeImage,
-                            contentDescription = "${type.name} type image",
-                            modifier = Modifier
-                                .size(60.dp)
-                                .padding(4.dp)
-                        )
-                    }
+        CreateTypeBox(pokemon)
+
+        CreateWeaknessBox(pokemon)
+    }
+}
+
+@Composable
+private fun CreateTypeBox(pokemon: PokemonAttributes) {
+    Box(
+        modifier = Modifier
+            .padding(end = 8.dp)
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Column {
+            Text(
+                text = "Types",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                pokemon.types.types.forEach { type ->
+                    val typeImage = typeResources.getTypeImage(type.name)
+                    Image(
+                        painter = typeImage,
+                        contentDescription = "${type.name} type image",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(4.dp)
+                    )
                 }
             }
         }
+    }
+}
 
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .padding(start = 8.dp)
-                .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
-        ) {
-            Column {
-                Text(
-                    text = "Weaknesses",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    pokemon.weaknesses.double_damage_from.forEach { weakness ->
-                        val weaknessImage = typeResources.getTypeImage(weakness.name)
-                        Image(
-                            painter = weaknessImage,
-                            contentDescription = "${weakness.name} weakness image",
-                            modifier = Modifier
-                                .size(60.dp)
-                                .padding(4.dp)
-                        )
-                    }
+@Composable
+private fun CreateWeaknessBox(pokemon: PokemonAttributes) {
+    Box(
+        modifier = Modifier
+            .padding(start = 8.dp)
+            .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Column {
+            Text(
+                text = "Weaknesses",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                pokemon.weaknesses.double_damage_from.forEach { weakness ->
+                    val weaknessImage = typeResources.getTypeImage(weakness.name)
+                    Image(
+                        painter = weaknessImage,
+                        contentDescription = "${weakness.name} weakness image",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(4.dp)
+                    )
                 }
             }
         }

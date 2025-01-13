@@ -135,8 +135,7 @@ private fun CreateEvoBox(pokemon: PokemonAttributes, viewModel: PokemonDetailVie
                 modifier = Modifier.fillMaxWidth()
             ) {
                 pokemon.pokemons.forEachIndexed {index, localPokemon ->
-                    Button(
-                        onClick = { viewModel.navigateToEvo(localPokemon.name) },
+                    Box(
                         modifier = Modifier
                             .size(80.dp)
                             .background(
@@ -144,6 +143,7 @@ private fun CreateEvoBox(pokemon: PokemonAttributes, viewModel: PokemonDetailVie
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .padding(4.dp)
+                            .clickable { viewModel.navigateToEvo(localPokemon.name) }
                     ) {
                         AsyncImage(
                             model = localPokemon.sprites.front_default,

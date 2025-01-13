@@ -8,10 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
+import com.example.pokedex.shared.PokemonAttributes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PokemonDetailViewModel(private val name: String) : ViewModel() {
@@ -20,7 +22,6 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     private val teamsRepository = DependencyContainer.teamsRepository
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
 
-    var teamButtonText by mutableStateOf("Add to Team")
     var isFavorited by mutableStateOf(false)
     var showDialog by mutableStateOf(false)
     var selectedTeam by mutableStateOf("")
@@ -36,23 +37,26 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            pokemonRepository.pokemonFlow.collect { newPokemon ->
-                recentlyViewedRepository.addToRecents(newPokemon)
-                _pokemon.value = PokemonDetailUIState.Data(newPokemon)
-                onFavouriteButton(newPokemon)
+            pokemonRepository.pokemonAttributesFlow.collect { newPokemon ->
+                recentlyViewedRepository.addToRecents(newPokemon.pokemon)
+                _pokemon.update {
+                    onFavouriteButton(newPokemon.pokemon)
+                    PokemonDetailUIState.Data(newPokemon)
+                }
             }
         }
 
         getPokemonByName()
     }
 
-
     private fun getPokemonByName() = viewModelScope.launch {
-        _pokemon.value = PokemonDetailUIState.Loading
-        pokemonRepository.getPokemonByName(name)
+        _pokemon.update {
+            PokemonDetailUIState.Loading
+        }
+        pokemonRepository.getPokemonDetailsByName(name)
     }
 
-    suspend fun savePokemon(pokemon: Pokemon) {
+    fun savePokemon(pokemon: Pokemon) = viewModelScope.launch {
         if (favouritesRepository.pokemonIsFavourite(pokemon)) {
             favouritesRepository.removeFromFavourites(pokemon)
         } else {
@@ -65,70 +69,54 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         isFavorited = favouritesRepository.pokemonIsFavourite(pokemon)
     }
 
-    suspend fun addToTeam(pokemon: Pokemon, teamName: String) {
-        try {
-            teamsRepository.addToTeam(pokemon, teamName)
+    fun addToTeam(pokemon: Pokemon, teamName: String) = viewModelScope.launch {
+        val success = teamsRepository.addToTeam(pokemon, teamName)
+        if (success) {
+            showDialog = false
             errorMessage = null
-        } catch (error: Exception) {
-            errorMessage = error.message
+        } else {
+            errorMessage = "Team is full"
         }
     }
 
-    suspend fun confirmAddToTeam(pokemon: Pokemon) {
-        if (selectedTeam.isNotEmpty()) {
-            addToTeam(pokemon, selectedTeam)
-        }
-    }
-
-    suspend fun createTeamWithPokemon(pokemon: Pokemon) {
-        if (newTeamName.isNotBlank()) {
-            val newTeam = Team(name = newTeamName, pokemons = listOf(pokemon))
-            teamsRepository.addTeam(newTeam)
-            newTeamName = ""
-        }
-    }
-
-    suspend fun createNewTeam(pokemon: Pokemon, teamName: String) {
-        val newTeam = Team(name = teamName, pokemons = listOf(pokemon))
-        teamsRepository.addTeam(newTeam)
-    }
-
-    fun onCreateTeamClicked() {
+    fun onCreateNewTeam() {
+        showDialog = false
         showTeamCreationDialog = true
+        errorMessage = null
+    }
+
+    fun onCreateTeamClicked(pokemon: Pokemon) = viewModelScope.launch {
+        if (newTeamName.isNotBlank()) {
+            val teamNameIsTaken = !teamsRepository.addTeam(Team(name = newTeamName, pokemons = listOf(pokemon)))
+            if (teamNameIsTaken) {
+                errorMessage = "This name is already in use"
+                return@launch
+            }
+            showTeamCreationDialog = false
+            newTeamName = ""
+            errorMessage = null
+        } else {
+            errorMessage = "Team name cannot be empty"
+        }
     }
 
     fun onCancelTeamCreation() {
         showTeamCreationDialog = false
         newTeamName = ""
+        errorMessage = null
     }
 
-    suspend fun createTeam(pokemon: Pokemon): Boolean {
-        if (newTeamName.isNotBlank()) {
-            val newTeam = Team(name = newTeamName, pokemons = listOf(pokemon))
-            teamsRepository.addTeam(newTeam)
-            showTeamCreationDialog = false
-            newTeamName = ""
-            errorMessage = null
-            return true
-        } else {
-            errorMessage = "Team name cannot be empty"
-            return false
-        }
+    fun onDismiss() {
+        showDialog = false
+        selectedTeam = ""
+        errorMessage = null
     }
 
-
-    fun onTeamSelected(pokemon: Pokemon, teamName: String) {
-        viewModelScope.launch {
-            selectedTeam = teamName
-            showDialog = false
-            confirmAddToTeam(pokemon)
-        }
-    }
 
 }
 
 sealed class PokemonDetailUIState {
-    data class Data(val pokemon: Pokemon) : PokemonDetailUIState()
-    object Loading : PokemonDetailUIState()
-    object Empty : PokemonDetailUIState()
+    data class Data(val pokemon: PokemonAttributes): PokemonDetailUIState()
+    object Loading: PokemonDetailUIState()
+    object Empty: PokemonDetailUIState()
 }

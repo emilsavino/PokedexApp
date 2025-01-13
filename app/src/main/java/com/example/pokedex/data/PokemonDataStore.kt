@@ -1,11 +1,21 @@
 package com.example.pokedex.data
 
+import com.example.pokedex.shared.DamageRelations
+import com.example.pokedex.shared.EvolutionChain
+import com.example.pokedex.shared.EvolutionChainResult
+import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
+import com.example.pokedex.shared.Species
+import com.example.pokedex.shared.Type
+import com.example.pokedex.shared.Types
+import com.example.pokedex.shared.Varieties
+import com.example.pokedex.shared.VarietiesPokemon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class PokemonDataStore {
@@ -16,6 +26,7 @@ class PokemonDataStore {
     init{
         CoroutineScope(Dispatchers.IO).launch {
             fetchAllPokemons()
+            fillUpMapFromAllPokemonResults()
         }
     }
 
@@ -23,6 +34,40 @@ class PokemonDataStore {
     {
         while (allPokemonResultList.results.isEmpty()) {}
         return allPokemonResultList.results
+    }
+
+    suspend private fun fillUpMapFromAllPokemonResults()
+    {
+        val elementsPerBatch = 200
+        val pokemonNameMatrix : MutableList<List<String>> = mutableListOf()
+        var counter = 0
+        var pokemonNameRow = mutableListOf<String>()
+        while (counter < allPokemonResultList.results.size)
+        {
+            if (counter % elementsPerBatch == 0 && counter != 0 || counter == allPokemonResultList.results.size - 1)
+            {
+                pokemonNameMatrix.add(pokemonNameRow.toList())
+                pokemonNameRow = mutableListOf()
+                pokemonNameRow.clear()
+            }
+            pokemonNameRow.add(allPokemonResultList.results.get(counter).name)
+            counter++
+        }
+
+        for (i in 0 until pokemonNameMatrix.size)
+        {
+            CoroutineScope(Dispatchers.IO).async{
+                for (name in pokemonNameMatrix[i])
+                {
+                    if (pokemonMap[name] == null)
+                    {
+                        pokemonMap[name] = api.getPokemon(name)
+                    }
+                }
+                println("DONE FETCHING BATCH $i")
+            }
+        }
+        println("DONE STARTING ALL BATCH JOBS FOR FETCHING POKEMONS")
     }
 
     suspend fun getPokemonFromMapFallBackAPIPlaygroundClassFeature(name: String) : Pokemon
@@ -37,26 +82,35 @@ class PokemonDataStore {
         return pokemonMap[name]!!
     }
 
-    suspend fun fetchPokemon(name: String): Pokemon {
-        return pokemonMap[name] ?: fetchPokemonFromAPI(name).also { pokemon ->
-            pokemonMap[name] = pokemon
-        }
-    }
-
     private suspend fun fetchAllPokemons()
     {
         allPokemonResultList = fetchPokemons(10000,0)
     }
 
-    suspend fun fetchPokemons(limit: Int, offset: Int): PokemonList {
+    private suspend fun fetchPokemons(limit: Int, offset: Int): PokemonList {
         return withContext(Dispatchers.IO) {
             api.getPokemons(limit,offset)
         }
     }
 
-    private suspend fun fetchPokemonFromAPI(name: String): Pokemon {
-        val pokemon = api.getPokemon(name.lowercase())
-        pokemon.name = name.replaceFirstChar { it.uppercase() }
-        return pokemon
+    suspend fun fetchPokemonSpecies(name: String): FlavorTextAndEvolutionChain {
+        return withContext(Dispatchers.IO) {
+            api.getPokemonSpecies(name)
+        }
     }
+
+    suspend fun fetchNameFromEvoChain(id: Int): EvolutionChain {
+        return withContext(Dispatchers.IO) {
+            api.getEvoChain(id)
+        }
+    }
+
+    suspend fun fetchTypeInfo(types: List<Type>): List<DamageRelations> {
+        return withContext(Dispatchers.IO) {
+            types.map { type ->
+                api.getTypeInfo(type.name)
+            }
+        }
+    }
+
 }

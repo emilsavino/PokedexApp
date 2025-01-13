@@ -1,10 +1,5 @@
 package com.example.pokedex.data
 
-import androidx.compose.ui.graphics.Color
-import com.example.pokedex.shared.Option
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.WhoIsThatPokemon
-
 class MockPokemonDataStore {
     /*private val pokemons = listOf(
         Pokemon("Pikachu", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"),

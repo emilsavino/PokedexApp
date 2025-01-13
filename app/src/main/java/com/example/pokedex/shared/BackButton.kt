@@ -9,9 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun BackButton(navController: NavController, modifier: Modifier = Modifier) {
+fun BackButton(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = { navController.popBackStack() }
+) {
     IconButton(
-        onClick = { navController.popBackStack() },
+        onClick = onClick,
         modifier = modifier
     ) {
         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")

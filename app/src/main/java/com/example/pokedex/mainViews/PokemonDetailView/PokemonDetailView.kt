@@ -52,7 +52,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import com.example.pokedex.R
-import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.PokemonAttributes
@@ -108,14 +107,14 @@ private fun PokemonDetailContent(navController: NavController, pokemon: PokemonA
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateEvoBox(pokemon, navController)
+        CreateEvoBox(pokemon, navController, viewModel)
 
         TeamSelectionAndCreationDialogs(pokemon.pokemon, viewModel)
     }
 }
 
 @Composable
-private fun CreateEvoBox(pokemon: PokemonAttributes, navController: NavController) {
+private fun CreateEvoBox(pokemon: PokemonAttributes, navController: NavController, viewModel: PokemonDetailViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,7 +136,7 @@ private fun CreateEvoBox(pokemon: PokemonAttributes, navController: NavControlle
             ) {
                 pokemon.pokemons.forEachIndexed {index, localPokemon ->
                     Button(
-                        onClick = {navController.navigate(Screen.PokemonDetails.createRoute(localPokemon.name))},
+                        onClick = { viewModel.navigateToEvo(localPokemon.name) },
                         modifier = Modifier
                             .size(80.dp)
                             .background(
@@ -377,7 +376,10 @@ private fun CreateTopRow(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BackButton(navController)
+        BackButton(
+            navController = navController,
+            onClick = {viewModel.navigateToPrevious(navController)}
+        )
 
         Text(
             text = pokemon.pokemon.name.formatPokemonName(),

@@ -1,0 +1,79 @@
+{
+  "project_info": {
+    "project_number": "33466855670",
+    "project_id": "pokedexfirebase-68f91",
+    "storage_bucket": "pokedexfirebase-68f91.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33466855670:android:ca43dbbbacacc59c0b7cd7",
+        "android_client_info": {
+          "package_name": "com.example.pokedex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33466855670-6fb9p9dpt47888kfbd4nerfmm67sa725.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pokedex",
+            "certificate_hash": "cbf9c0d2c3e40246ca100515dcfcd3a54542a48a"
+          }
+        },
+        {
+          "client_id": "33466855670-g6jk8aq2oma6ns3usmjkh7lcahca317q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pokedex",
+            "certificate_hash": "08b5961bde58959a0598463b0ba2996d97ab89b3"
+          }
+        },
+        {
+          "client_id": "33466855670-gvuqosst9u25ogumefumk98avn72jght.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pokedex",
+            "certificate_hash": "8691e27dff4d7c743757b855a2d96b67b507c8ad"
+          }
+        },
+        {
+          "client_id": "33466855670-jucmcd7c03hsp0b7u40k7m84cg2ohjai.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pokedex",
+            "certificate_hash": "a53432c5445c4a1417abeabf0509a0e8cf4e512e"
+          }
+        },
+        {
+          "client_id": "33466855670-t6nvb9905bk0k7e2mrkqarnj2u2bgajd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pokedex",
+            "certificate_hash": "7cf105ecd0e5d601a229de6ac711ee7700880882"
+          }
+        },
+        {
+          "client_id": "33466855670-jmdbk6shcreej6c0iqsjjc5jh43r3kg2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoewrGRT3bOT8fJbILHqRG7chA50Rv53c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33466855670-jmdbk6shcreej6c0iqsjjc5jh43r3kg2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

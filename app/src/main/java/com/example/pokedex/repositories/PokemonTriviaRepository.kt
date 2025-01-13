@@ -15,20 +15,20 @@ class PokemonTriviaRepository {
         PokemonTriviaModel(
             question = "What is the name of the pokémon, with the ability to morph into any other?",
             options = listOf(
-                Option("Swablu", Color.Gray),
-                Option("Pikachu", Color.Gray),
-                Option("Ditto", Color.Gray, isCorrect = true),
-                Option("Magikarp", Color.Gray)
+                Option("Swablu", Color.Gray, false),
+                Option("Pikachu", Color.Gray, false),
+                Option("Ditto", Color.Gray,true),
+                Option("Magikarp", Color.Gray, isCorrect = false)
             ),
             correctAnswer = "Ditto"
         ),
         PokemonTriviaModel(
             question = "Which Pokémon is known as the Fire Lizard?",
             options = listOf(
-                Option("Bulbasaur", Color.Gray),
+                Option("Bulbasaur", Color.Gray, isCorrect = false),
                 Option("Charmander", Color.Gray, isCorrect = true),
-                Option("Squirtle", Color.Gray),
-                Option("Eevee", Color.Gray)
+                Option("Squirtle", Color.Gray, isCorrect = false),
+                Option("Eevee", Color.Gray, isCorrect = false)
             ),
             correctAnswer = "Charmander"
         ),
@@ -36,49 +36,49 @@ class PokemonTriviaRepository {
             question = "What is the evolved form of Pikachu?",
             options = listOf(
                 Option("Raichu", Color.Gray, isCorrect = true),
-                Option("Jolteon", Color.Gray),
-                Option("Zubat", Color.Gray),
-                Option("Electrode", Color.Gray)
+                Option("Jolteon", Color.Gray, isCorrect = false),
+                Option("Zubat", Color.Gray, isCorrect = false),
+                Option("Electrode", Color.Gray, isCorrect = false)
             ),
             correctAnswer = "Raichu"
         ),
         PokemonTriviaModel(
             question = "Which Pokemon has the types dragon and ground?",
             options = listOf(
-                Option("Pawmo", Color.Gray),
-                Option("Gulpin", Color.Gray),
+                Option("Pawmo", Color.Gray, isCorrect = false),
+                Option("Gulpin", Color.Gray, isCorrect = false),
                 Option("Gabite", Color.Gray, isCorrect = true),
-                Option("Pheromosa", Color.Gray)
+                Option("Pheromosa", Color.Gray, isCorrect = false)
             ),
             correctAnswer = "Gabite"
         ),
         PokemonTriviaModel(
             question = "Which Pokemon has the desc: With quick movements, it chases down its foes, attacking relentlessly with its horns until it prevails",
             options = listOf(
-                Option("Rellor", Color.Gray),
+                Option("Rellor", Color.Gray, isCorrect = false),
                 Option("Scolipede", Color.Gray, isCorrect = true),
-                Option("Machamp", Color.Gray),
-                Option("Gengar", Color.Gray)
+                Option("Machamp", Color.Gray, isCorrect = false),
+                Option("Gengar", Color.Gray, isCorrect = false)
             ),
             correctAnswer = "Scolipede"
         ),
         PokemonTriviaModel(
             question = "What Pokemon is a starter pokemon in generation 1",
             options = listOf(
-                Option("Pikachu", Color.Gray),
-                Option("Geodude", Color.Gray),
+                Option("Pikachu", Color.Gray, isCorrect = false),
+                Option("Geodude", Color.Gray, isCorrect = false),
                 Option("Squirtle", Color.Gray, isCorrect = true),
-                Option("Rattata", Color.Gray)
+                Option("Rattata", Color.Gray, isCorrect = false)
             ),
             correctAnswer = "Squirtle"
         ),
         PokemonTriviaModel(
             question = "What type is the legendary pokemon Moltres",
             options = listOf(
-                Option("Ice", Color.Gray),
+                Option("Ice", Color.Gray, isCorrect = false),
                 Option("Fire", Color.Gray, isCorrect = true),
-                Option("Lightning", Color.Gray),
-                Option("Dragon", Color.Gray)
+                Option("Lightning", Color.Gray, isCorrect = false),
+                Option("Dragon", Color.Gray, isCorrect = false)
             ),
             correctAnswer = "Fire"
         ),

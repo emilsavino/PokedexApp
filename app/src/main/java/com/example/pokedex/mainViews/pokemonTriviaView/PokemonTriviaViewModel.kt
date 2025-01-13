@@ -14,38 +14,52 @@ import androidx.lifecycle.viewModelScope
 import com.example.pokedex.repositories.PokemonTriviaRepository
 import com.example.pokedex.shared.Option
 import kotlinx.coroutines.flow.collectLatest
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository): ViewModel() {
-    var pokemonTrivia: PokemonTriviaModel? by mutableStateOf(null)
+class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository) : ViewModel() {
+
+    private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Loading)
+    val triviaState: StateFlow<PokemonTriviaUIState> = _triviaState.asStateFlow()
+
     var hasAnswered by mutableStateOf(false)
+        private set
 
     init {
         loadRandomQuestion()
     }
 
-    fun loadRandomQuestion() {
+    fun loadRandomQuestion() = viewModelScope.launch {
+        _triviaState.update { PokemonTriviaUIState.Loading }
+
         val question = repository.getRandomUnansweredQuestion()
         if (question != null) {
-            pokemonTrivia = question
             hasAnswered = false
+            _triviaState.update { PokemonTriviaUIState.Question(question) }
         } else {
-            pokemonTrivia = null
+            _triviaState.update { PokemonTriviaUIState.Empty }
         }
     }
 
     fun handleAnswer(option: Option) {
         hasAnswered = true
-        pokemonTrivia?.let { question ->
+        val currentState = _triviaState.value
+        if (currentState is PokemonTriviaUIState.Question) {
+            val question = currentState.trivia
             question.options.forEach {
                 it.color = if (it.isCorrect) {
-                    Color.Green
+                    androidx.compose.ui.graphics.Color.Green
                 } else {
-                    if (it.name == option.name) Color.Red else Color.Gray
+                    if (it.name == option.name) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Gray
                 }
             }
             repository.markQuestionAsAnswered(question)
+            _triviaState.update { PokemonTriviaUIState.Question(question) }
         }
     }
 
@@ -53,4 +67,10 @@ class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository): V
         repository.resetQuestions()
         loadRandomQuestion()
     }
+}
+
+sealed class PokemonTriviaUIState {
+    object Loading : PokemonTriviaUIState()
+    object Empty : PokemonTriviaUIState()
+    data class Question(val trivia: PokemonTriviaModel) : PokemonTriviaUIState()
 }

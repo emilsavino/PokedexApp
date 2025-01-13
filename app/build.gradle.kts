@@ -1,11 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.pokedex"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.pokedex"
@@ -64,6 +65,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
 
     // Compose preview support (optional)
     debugImplementation(libs.androidx.compose.ui.tooling)
@@ -96,5 +99,16 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     //implementation(libs.accompanist.flowlayout)
+
+    //Firebase authentication
+    implementation(libs.firebase.analytics)
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation(libs.firebase.auth)
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+
+    val credentialsManagerVersion = "1.5.0-alpha05"
+    implementation("androidx.credentials:credentials-play-services-auth:$credentialsManagerVersion")
+    implementation("androidx.credentials:credentials:$credentialsManagerVersion")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
 }

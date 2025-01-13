@@ -105,7 +105,7 @@ class PokemonRepository {
             var weaknesses: DamageRelationsResult
             var abilities: List<Ability>
             var description: FlavorTextEntry
-            var evolutionChain: List<Sprites> = emptyList()
+            var evolutionChainPokemons : List<Pokemon> = emptyList()
 
             try
             {
@@ -155,7 +155,7 @@ class PokemonRepository {
 
             try
             {
-                val sprites_list = mutableListOf<Sprites>()
+                val evolutionPokemonList = mutableListOf<Pokemon>()
 
                 val pokemonEvoChainUrl = dataStore.fetchPokemonSpecies(name)
                 val getEvoChainID = pokemonEvoChainUrl.evolution_chain.url
@@ -178,13 +178,12 @@ class PokemonRepository {
 
                 for (pokemonName in pokemonNames) {
                     val getPokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(pokemonName)
-                    getPokemon.sprites.front_default?.let { frontSprite ->
-                        sprites_list.add(Sprites(frontSprite))
-                    }
+                    evolutionPokemonList.add(getPokemon)
                 }
 
-                println("SPRITELIST " + sprites_list)
-                evolutionChain = sprites_list
+
+
+                evolutionChainPokemons = evolutionPokemonList
                 println("Successfully processed evolution chain for $name")
             } catch (e: Exception) {
                 println("Error processing evolution chain for $name: ${e.message}")
@@ -196,7 +195,7 @@ class PokemonRepository {
                 types = Types(types),
                 weaknesses = weaknesses,
                 abilities = abilities,
-                sprites = evolutionChain
+                pokemons = evolutionChainPokemons
             )
 
             mutablePokemonAttributesFlow.emit(pokemonAttributes)

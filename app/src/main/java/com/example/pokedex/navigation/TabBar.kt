@@ -27,12 +27,12 @@ fun TabBar(navController: NavController) {
     val viewModel = remember { TabBarViewModel() }
 
     NavigationBar {
-        viewModel.tabs.forEachIndexed() { index, tab ->
+        viewModel.tabs.forEachIndexed { index, tab ->
             NavigationBarItem(
                 selected = index == viewModel.selectedTabIndex,
                 onClick = {
                     viewModel.selectedTabIndex = index
-                    navController.navigate(tab.route)
+                        navController.navigate(tab.route)
                 },
                 icon = {
                     if (tab.title == "Home") {
@@ -67,10 +67,10 @@ fun CreateHomeButton(tab: Tab) {
 
 @Composable
 fun CreateOtherButtons(tab: Tab) {
-    Column (
+    Column(
         modifier = Modifier.padding(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    ) {
         Icon(
             imageVector = tab.icon,
             contentDescription = "${tab.title} Icon",

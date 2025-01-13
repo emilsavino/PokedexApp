@@ -47,10 +47,12 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import com.example.pokedex.R
+import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.PokemonAttributes
@@ -106,14 +108,14 @@ private fun PokemonDetailContent(navController: NavController, pokemon: PokemonA
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateEvoBox(pokemon)
+        CreateEvoBox(pokemon, navController)
 
         TeamSelectionAndCreationDialogs(pokemon.pokemon, viewModel)
     }
 }
 
 @Composable
-private fun CreateEvoBox(pokemon: PokemonAttributes) {
+private fun CreateEvoBox(pokemon: PokemonAttributes, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,41 +135,37 @@ private fun CreateEvoBox(pokemon: PokemonAttributes) {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CreateEvoRow(pokemon)
+                pokemon.pokemons.forEachIndexed {index, localPokemon ->
+                    Button(
+                        onClick = {navController.navigate(Screen.PokemonDetails.createRoute(localPokemon.name))},
+                        modifier = Modifier
+                            .size(80.dp)
+                            .background(
+                                color = Color.White.copy(alpha = 0.6f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(4.dp)
+                    ) {
+                        AsyncImage(
+                            model = localPokemon.sprites.front_default,
+                            contentDescription = "Sprite",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+
+                    if (index < pokemon.pokemons.size - 1) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "Arrow",
+                            tint = Color.Black.copy(alpha = 0.6f),
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .size(24.dp)
+                        )
+                    }
+                }
             }
-        }
-    }
-}
-
-@Composable
-private fun CreateEvoRow(pokemon: PokemonAttributes) {
-    pokemon.sprites.forEachIndexed {index, sprite ->
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .background(
-                    color = Color.White.copy(alpha = 0.6f),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(4.dp)
-        ) {
-            AsyncImage(
-                model = sprite.front_default,
-                contentDescription = "Sprite",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit
-            )
-        }
-
-        if (index < pokemon.sprites.size - 1) {
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = "Arrow",
-                tint = Color.Black.copy(alpha = 0.6f),
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .size(24.dp)
-            )
         }
     }
 }

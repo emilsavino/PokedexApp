@@ -6,7 +6,7 @@ data class PokemonAttributes(
     val types: Types,
     val weaknesses: DamageRelationsResult,
     val abilities: List<Ability>,
-    val sprites: List<Sprites>
+    val pokemons: List<Pokemon>
 )
 
 //Description and its data classes

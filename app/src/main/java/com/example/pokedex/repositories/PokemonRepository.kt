@@ -52,7 +52,8 @@ class PokemonRepository {
         while (index < allPokemonResults.size && foundElements < elementsToFind)
         {
             val result = allPokemonResults.get(index)
-            if (result.name.contains(name, ignoreCase = true))
+            val resultName = result.name.replace('-',' ')
+            if (resultName.contains(name, ignoreCase = true))
             {
                 var pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(result.name)
                 var typeRelevant = false

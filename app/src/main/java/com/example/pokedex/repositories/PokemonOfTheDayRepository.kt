@@ -21,6 +21,6 @@ class PokemonOfTheDayRepository {
     private suspend fun determinPokemonOfTheDay(): Pokemon {
         val pokemons = dataStore.getAllPokemonResults()
         val date = LocalDate.now().dayOfMonth
-        return dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(pokemons[date].name)
+        return dataStore.getPokemonFromMapFallBackAPI(pokemons[date].name)
     }
 }

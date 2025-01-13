@@ -65,7 +65,7 @@ class PokemonDataStore {
         println("DONE STARTING ALL BATCH JOBS FOR FETCHING POKEMONS")
     }
 
-    suspend fun getPokemonFromMapFallBackAPIPlaygroundClassFeature(name: String) : Pokemon
+    suspend fun getPokemonFromMapFallBackAPI(name: String) : Pokemon
     {
         val pokemon = pokemonMap[name]
 

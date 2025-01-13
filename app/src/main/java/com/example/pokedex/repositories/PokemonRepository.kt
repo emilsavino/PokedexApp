@@ -53,7 +53,7 @@ class PokemonRepository {
             val result = allPokemonResults.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
-                val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(result.name)
+                val pokemon = dataStore.getPokemonFromMapFallBackAPI(result.name)
                 var typeRelevant = false
                 for (type in filterOptions)
                 {
@@ -90,7 +90,7 @@ class PokemonRepository {
     }
 
     suspend fun getPokemonByName(name: String) {
-        val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
+        val pokemon = dataStore.getPokemonFromMapFallBackAPI(name)
         mutablePokemonFlow.emit(pokemon)
     }
 
@@ -121,7 +121,7 @@ class PokemonRepository {
     }
 
     private suspend fun fetchPokemonDetails(name: String): Pokemon {
-        return dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
+        return dataStore.getPokemonFromMapFallBackAPI(name)
     }
 
     private fun fetchPokemonTypes(pokemon: Pokemon): List<Type> {
@@ -189,7 +189,7 @@ class PokemonRepository {
             val pokemonNames = extractPokemonNames(evoChainResult.chain)
 
             for (pokemonName in pokemonNames) {
-                val getPokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(pokemonName)
+                val getPokemon = dataStore.getPokemonFromMapFallBackAPI(pokemonName)
                 evolutionPokemonList.add(getPokemon)
             }
 

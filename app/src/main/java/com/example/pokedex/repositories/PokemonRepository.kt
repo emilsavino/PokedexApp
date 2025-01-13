@@ -240,6 +240,7 @@ class PokemonRepository {
 
     fun addRecentlySearched(name : String)
     {
+        recentlySearchedPokemon.remove(name)
         recentlySearchedPokemon.add(name)
     }
 }

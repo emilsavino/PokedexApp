@@ -107,14 +107,14 @@ private fun PokemonDetailContent(navController: NavController, pokemon: PokemonA
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateEvoBox(pokemon, navController, viewModel)
+        CreateEvoBox(pokemon, viewModel)
 
         TeamSelectionAndCreationDialogs(pokemon.pokemon, viewModel)
     }
 }
 
 @Composable
-private fun CreateEvoBox(pokemon: PokemonAttributes, navController: NavController, viewModel: PokemonDetailViewModel) {
+private fun CreateEvoBox(pokemon: PokemonAttributes, viewModel: PokemonDetailViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()

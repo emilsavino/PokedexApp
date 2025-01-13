@@ -28,9 +28,11 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.R
+import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.formatPokemonName
 
 private val Padding = 8.dp
+private val typeResources = PokemonTypeResources()
 
 @Composable
 fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
@@ -72,10 +74,12 @@ fun MakeHomeLoadingScreen() {
 @Composable
 fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: HomeViewModel) {
     val recentPokemons = viewModel.recentlyViewedPokemons.collectAsState().value
+    val primaryTypeOfPokemonOfTheDay = pokemon.types.firstOrNull()?.type?.name ?: "normal"
+    val typeGradientColor = typeResources.getTypeGradient(primaryTypeOfPokemonOfTheDay)
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99))
+            .background(typeGradientColor)
             .verticalScroll(rememberScrollState()),
     ) {
         PokemonOfDayView(pokemon = pokemon, navController = navController)
@@ -107,7 +111,8 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
         Text(
             text = "Pokémon of the Day",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
         )
 
         Box(

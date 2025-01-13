@@ -32,13 +32,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -49,7 +46,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import com.example.pokedex.R
 import com.example.pokedex.shared.BackButton
@@ -254,9 +250,17 @@ private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
             .height(IntrinsicSize.Min),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        CreateTypeBox(pokemon)
+        Box(
+            modifier = Modifier.weight(1f)
+        ) {
+            CreateTypeBox(pokemon)
+        }
 
-        CreateWeaknessBox(pokemon)
+        Box(
+            modifier = Modifier.weight(1f)
+        ) {
+            CreateWeaknessBox(pokemon)
+        }
     }
 }
 
@@ -267,6 +271,7 @@ private fun CreateTypeBox(pokemon: PokemonAttributes) {
             .padding(end = 8.dp)
             .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
+            .fillMaxSize()
     ) {
         Column {
             Text(
@@ -302,6 +307,7 @@ private fun CreateWeaknessBox(pokemon: PokemonAttributes) {
             .padding(start = 8.dp)
             .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
+            .fillMaxSize()
     ) {
         Column {
             Text(

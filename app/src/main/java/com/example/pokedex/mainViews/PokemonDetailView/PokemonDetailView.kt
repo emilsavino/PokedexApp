@@ -48,6 +48,8 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
@@ -137,18 +139,20 @@ private fun CreateEvoBox(pokemon: PokemonAttributes, viewModel: PokemonDetailVie
                 pokemon.pokemons.forEachIndexed {index, localPokemon ->
                     Box(
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(100.dp)
                             .background(
-                                color = Color.White.copy(alpha = 0.6f),
+                                color = Color.White.copy(alpha = 0f),
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .padding(4.dp)
                             .clickable { viewModel.navigateToEvo(localPokemon.name) }
                     ) {
                         AsyncImage(
                             model = localPokemon.sprites.front_default,
                             contentDescription = "Sprite",
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp))
+                                .scale(1.2f),
                             contentScale = ContentScale.Fit
                         )
                     }
@@ -159,8 +163,8 @@ private fun CreateEvoBox(pokemon: PokemonAttributes, viewModel: PokemonDetailVie
                             contentDescription = "Arrow",
                             tint = Color.Black.copy(alpha = 0.6f),
                             modifier = Modifier
-                                .padding(horizontal = 8.dp)
-                                .size(24.dp)
+                                .padding(horizontal = 4.dp)
+                                .size(14.dp)
                         )
                     }
                 }

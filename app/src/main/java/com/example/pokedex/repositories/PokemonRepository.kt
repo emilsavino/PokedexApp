@@ -150,7 +150,7 @@ class PokemonRepository {
                 println("Successfully processed description for $name")
             } catch (e: Exception) {
                 println("Error processing description for $name: ${e.message}")
-                description = FlavorTextEntry("Error fetching description", Language("en"))
+                description = FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
             }
 
             try

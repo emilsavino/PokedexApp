@@ -25,25 +25,32 @@ class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository): V
         loadRandomQuestion()
     }
 
-    private fun fetchTrivia() {
-        viewModelScope.launch {
-            pokemonTrivia = repository.getRandomQuestion()
-        }
-    }
-
     fun loadRandomQuestion() {
-        pokemonTrivia = repository.getRandomQuestion()
-        hasAnswered = false
+        val question = repository.getRandomUnansweredQuestion()
+        if (question != null) {
+            pokemonTrivia = question
+            hasAnswered = false
+        } else {
+            pokemonTrivia = null
+        }
     }
 
     fun handleAnswer(option: Option) {
         hasAnswered = true
-        pokemonTrivia?.options?.forEach {
-            it.color = if (it.isCorrect) {
-                Color.Green
-            } else {
-                if (it.name == option.name) Color.Red else Color.Gray
+        pokemonTrivia?.let { question ->
+            question.options.forEach {
+                it.color = if (it.isCorrect) {
+                    Color.Green
+                } else {
+                    if (it.name == option.name) Color.Red else Color.Gray
+                }
             }
+            repository.markQuestionAsAnswered(question)
         }
+    }
+
+    fun resetTrivia() {
+        repository.resetQuestions()
+        loadRandomQuestion()
     }
 }

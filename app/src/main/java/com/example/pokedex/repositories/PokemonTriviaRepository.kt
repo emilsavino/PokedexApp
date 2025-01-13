@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 class PokemonTriviaRepository {
 
+    private val answeredQuestions = mutableSetOf<PokemonTriviaModel>()
+
+
     private val triviaQuestions = listOf(
         PokemonTriviaModel(
             question = "What is the name of the pokémon, with the ability to morph into any other?",
@@ -81,8 +84,21 @@ class PokemonTriviaRepository {
         ),
     )
 
-    fun getRandomQuestion(): PokemonTriviaModel {
-        return triviaQuestions.random()
+    fun getRandomUnansweredQuestion(): PokemonTriviaModel? {
+        val unansweredQuestions = triviaQuestions.filterNot { answeredQuestions.contains(it) }
+        return if (unansweredQuestions.isNotEmpty()) {
+            unansweredQuestions.random()
+        } else {
+            null
+        }
+    }
+
+    fun markQuestionAsAnswered(question: PokemonTriviaModel) {
+        answeredQuestions.add(question)
+    }
+
+    fun resetQuestions() {
+        answeredQuestions.clear()
     }
 }
 

@@ -39,6 +39,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.shared.Option
 
+
+@Composable
+fun AnswerButtons(viewModel: PokemonTriviaViewModel, options: List<Option>) {
+    options.forEach { option ->
+        Box(
+            modifier = Modifier
+                .size(350.dp, 100.dp)
+                .clip(RoundedCornerShape(15.dp))
+                .background(option.color)
+                .clickable(enabled = !viewModel.hasAnswered) {
+                    viewModel.handleAnswer(option)
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = option.name,
+                modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Spacer(modifier = Modifier.size(10.dp))
+    }
+}
+
 @Composable
 fun PokemonTriviaView(navController: NavController) {
     val viewModel = remember { PokemonTriviaViewModel(PokemonTriviaRepository()) }
@@ -75,41 +103,17 @@ fun PokemonTriviaView(navController: NavController) {
                 }
             }
         } else {
-            Text(text = "Loading question...", fontSize = 20.sp)
+            Text(text = "No more questions available.", fontSize = 20.sp)
+            Spacer(modifier = Modifier.size(16.dp))
+            Button(onClick = { viewModel.resetTrivia() }) {
+                Text(text = "Reset Questions")
+            }
         }
     }
-}
 
-@Composable
-fun AnswerButtons(viewModel: PokemonTriviaViewModel, options: List<Option>) {
-    options.forEach { option ->
-        Box(
-            modifier = Modifier
-                .size(350.dp, 100.dp)
-                .clip(RoundedCornerShape(15.dp))
-                .background(option.color)
-                .clickable(enabled = !viewModel.hasAnswered) {
-                    viewModel.handleAnswer(option)
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = option.name,
-                modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        Spacer(modifier = Modifier.size(10.dp))
+    @Composable
+    fun PokemonTriviaViewPreview() {
+        val navController = rememberNavController()
+        PokemonTriviaView(navController)
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PokemonTriviaViewPreview() {
-    val navController = rememberNavController()
-    PokemonTriviaView(navController)
 }

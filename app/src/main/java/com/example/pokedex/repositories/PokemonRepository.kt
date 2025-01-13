@@ -20,7 +20,6 @@ class PokemonRepository {
     private var dataStore = DependencyContainer.pokemonDataStore
 
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
-    //val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
     val filterOptions = mutableListOf("fire","grass","ASAP-Rocky")
     val sortOptions = mutableListOf("NameASC","NameDSC")
@@ -95,9 +94,9 @@ class PokemonRepository {
     }
 
     suspend fun getPokemonDetailsByName(name: String) {
-        val pokemon = fetchPokemonDetails(name)
-        val types = fetchPokemonTypes(pokemon)
-        val typesInfoList = fetchTypeInfoList(types)
+        val pokemon = dataStore.getPokemonFromMapFallBackAPI(name)
+        val types = pokemon.types.map { it.type }
+        val typesInfoList = dataStore.fetchTypeInfo(types)
         val weaknesses = combineDamageRelations(typesInfoList, types)
         val abilities = fetchPokemonAbilities(pokemon)
         var description = fetchPokemonDescription(name)
@@ -118,18 +117,6 @@ class PokemonRepository {
         )
 
         mutablePokemonAttributesFlow.emit(pokemonAttributes)
-    }
-
-    private suspend fun fetchPokemonDetails(name: String): Pokemon {
-        return dataStore.getPokemonFromMapFallBackAPI(name)
-    }
-
-    private fun fetchPokemonTypes(pokemon: Pokemon): List<Type> {
-        return pokemon.types.map { it.type }
-    }
-
-    private suspend fun fetchTypeInfoList(types: List<Type>): List<DamageRelations> {
-        return dataStore.fetchTypeInfo(types)
     }
 
     private fun combineDamageRelations(typeInfoList: List<DamageRelations>, ownTypeList: List<Type>): DamageRelationsResult {

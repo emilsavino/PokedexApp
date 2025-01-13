@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
@@ -252,13 +253,13 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            /*AsyncImage(
-                model = pokemon.sprites,
+            AsyncImage(
+                model = pokemon.sprites.front_default,
                 contentDescription = "${pokemon.name} Image",
                 modifier = Modifier
                     .size(100.dp)
                     .padding(end = 2.dp)
-            )*/
+            )
             Text(
                 text = pokemon.name.formatPokemonName(),
                 color = Color.Black,

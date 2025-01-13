@@ -27,8 +27,10 @@ class FavouritesRepository(private val context: Context) {
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
-            initializeCache()
+        if (!fetchFromDatabase()) {
+            CoroutineScope(Dispatchers.IO).launch {
+                initializeCache()
+            }
         }
     }
 
@@ -47,6 +49,7 @@ class FavouritesRepository(private val context: Context) {
         if (!favouritePokemons.contains(pokemon)) {
             favouritePokemons.add(pokemon)
             updateDataStore()
+            databaseService.storeArray(favouritePokemons)
         }
     }
 
@@ -54,6 +57,7 @@ class FavouritesRepository(private val context: Context) {
         if (favouritePokemons.contains(pokemon)) {
             favouritePokemons.remove(pokemon)
             updateDataStore()
+            databaseService.storeArray(favouritePokemons)
         }
     }
 
@@ -66,12 +70,28 @@ class FavouritesRepository(private val context: Context) {
         context.dataStore.edit { preferences ->
             preferences[FAVOURITE_POKEMONS_KEY] = pokemonJson
         }
-        databaseService.storeArray(favouritePokemons)
     }
 
     private suspend fun fetchSavedPokemonsFromDataStore(): List<Pokemon> {
         val preferences = context.dataStore.data.first()
         val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"
         return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()
+    }
+
+    private fun fetchFromDatabase(): Boolean {
+        var successful = false
+        databaseService.addListenerForArray { pokemons ->
+            if (pokemons.isNotEmpty()) {
+                favouritePokemons.clear()
+                favouritePokemons.addAll(pokemons)
+                mutableSavedPokemonsFlow.tryEmit(favouritePokemons)
+                CoroutineScope(Dispatchers.IO).launch {
+                    updateDataStore()
+                }
+                successful = true
+
+            }
+        }
+        return successful
     }
 }

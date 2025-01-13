@@ -8,11 +8,12 @@ import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
-    private val pokemonRepository = DependencyContainer.pokemonRepository
+    private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
 
     var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
     var selectedSortOption = mutableStateOf("")
@@ -23,7 +24,7 @@ class SearchViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
-            pokemonRepository.searchFlow.collect { newPokemonList ->
+            recentlySearchedRepository.searchFlow.collect { newPokemonList ->
                 _pokemonList.update {
                     SearchUIState.Data(newPokemonList)
                 }
@@ -35,19 +36,18 @@ class SearchViewModel: ViewModel() {
     fun searchPokemonList() {
         _pokemonList.update {
             SearchUIState.Loading
-
         }
 
-        if (searchText.value == "")
+        if (searchText.value.isEmpty())
         {
             viewModelScope.launch {
-                pokemonRepository.getRecentlySearched()
+               recentlySearchedRepository.fetchRecentlySearched()
             }
             return
         }
 
         viewModelScope.launch {
-            pokemonRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value)
+            recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value)
         }
     }
 
@@ -70,12 +70,12 @@ class SearchViewModel: ViewModel() {
 
     fun getAllFilterOptions() : List<String>
     {
-        return pokemonRepository.filterOptions
+        return recentlySearchedRepository.filterOptions
     }
 
     fun getAllSortOptions() : List<String>
     {
-        return pokemonRepository.sortOptions
+        return recentlySearchedRepository.sortOptions
     }
 
     fun selectSortOption(option : String)
@@ -93,9 +93,8 @@ class SearchViewModel: ViewModel() {
 
     fun addPokemonToRecentlySearched(name : String)
     {
-        pokemonRepository.addRecentlySearched(name)
         viewModelScope.launch {
-            searchPokemonList()
+            recentlySearchedRepository.addToRecentlySearched(name)
         }
     }
 }

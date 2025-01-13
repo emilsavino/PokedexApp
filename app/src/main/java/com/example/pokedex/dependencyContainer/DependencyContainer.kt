@@ -7,6 +7,7 @@ import com.example.pokedex.repositories.PokemonRepository
 import com.example.pokedex.repositories.WhoIsThatPokemonRepository
 import com.example.pokedex.repositories.FavouritesRepository
 import com.example.pokedex.repositories.PokemonOfTheDayRepository
+import com.example.pokedex.repositories.RecentlySearchedRepository
 import com.example.pokedex.repositories.RecentlyViewedRepository
 import com.example.pokedex.repositories.TeamsRepository
 
@@ -48,6 +49,9 @@ object DependencyContainer {
 
     val googleAuthenticationManager: GoogleAuthenticationManager by lazy {
         GoogleAuthenticationManager(application.applicationContext)
+    }
 
+    val recentlySearchedRepository : RecentlySearchedRepository by lazy {
+        RecentlySearchedRepository(application.applicationContext)
     }
 }

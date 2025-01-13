@@ -70,6 +70,7 @@ fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel)
 fun PokemonTriviaView(navController: NavController) {
     val viewModel = remember { PokemonTriviaViewModel(PokemonTriviaRepository()) }
     val triviaState by viewModel.triviaState.collectAsState()
+    val streakCount by viewModel.streakCount.collectAsState()
 
     Column(
         modifier = Modifier
@@ -80,6 +81,16 @@ fun PokemonTriviaView(navController: NavController) {
         BackButton(
             navController = navController,
             modifier = Modifier.align(Alignment.Start)
+        )
+
+        // Display Streak Counter
+        Text(
+            text = "Correct Streak: $streakCount",
+            modifier = Modifier.padding(vertical = 16.dp),
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            textAlign = TextAlign.Center,
+            color = Color.Black
         )
 
         when (triviaState) {

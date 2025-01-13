@@ -29,6 +29,9 @@ class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository) : 
     var hasAnswered by mutableStateOf(false)
         private set
 
+    private val _streakCount = MutableStateFlow(0)
+    val streakCount: StateFlow<Int> = _streakCount.asStateFlow()
+
     init {
         loadRandomQuestion()
     }
@@ -44,15 +47,23 @@ class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository) : 
             _triviaState.update { PokemonTriviaUIState.Empty }
         }
     }
+
     fun handleAnswer(option: Option) {
         hasAnswered = true
         val currentState = _triviaState.value
         if (currentState is PokemonTriviaUIState.Question) {
-            repository.markQuestionAsAnswered(currentState.trivia)
+            val question = currentState.trivia
+            val isCorrect = option.isCorrect
+            if (isCorrect) {
+                _streakCount.update { it + 1 }
+            } else {
+                _streakCount.update { 0 }
+            }
+
+            repository.markQuestionAsAnswered(question)
             _triviaState.update { currentState }
         }
     }
-
 
     fun getOptionColor(option: Option): Color {
         return if (hasAnswered) {
@@ -64,6 +75,7 @@ class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository) : 
 
     fun resetTrivia() {
         repository.resetQuestions()
+        _streakCount.update { 0 }
         loadRandomQuestion()
     }
 }

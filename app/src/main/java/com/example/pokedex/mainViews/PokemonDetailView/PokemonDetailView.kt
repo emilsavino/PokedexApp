@@ -19,9 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,7 +54,10 @@ import com.example.pokedex.R
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.PokemonAttributes
+import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.Team
+
+val typeResources = PokemonTypeResources()
 
 @Composable
 fun PokemonDetailView(
@@ -141,32 +142,8 @@ private fun PokemonDetailContent(
     }
 }
 
-private fun getTypeColor(type: String): Color {
-    val typeColorMap: Map<String, Color> = mapOf(
-        "bug" to Color(0xFFB0D700),
-        "dark" to Color(0xFF3A3A3A),
-        "dragon" to Color(0xFF6F35FC),
-        "electric" to Color(0xFFF7D02C),
-        "fairy" to Color(0xFFFDB9E9),
-        "fighting" to Color(0xFFC22E28),
-        "fire" to Color(0xFFF08030),
-        "flying" to Color(0xFFA98FF3),
-        "ghost" to Color(0xFF5D3583),
-        "grass" to Color(0xFF7AC74C),
-        "ground" to Color(0xFFECC164),
-        "ice" to Color(0xFF98D8D8),
-        "normal" to Color(0xFFA8A77A),
-        "poison" to Color(0x00960CC0),
-        "psychic" to Color(0xFFF85888),
-        "rock" to Color(0xFF8D7D2A),
-        "steel" to Color(0xFFB7B7CE),
-        "water" to Color(0xFF6390F0)
-    )
-    return typeColorMap[type] ?: Color.Gray
-}
-
 private fun getTypeGradient(type: String): Brush {
-    val typeColor = getTypeColor(type)
+    val typeColor = typeResources.getTypeColor(type)
     return Brush.linearGradient(
         colors = listOf(typeColor, Color.White),
         start = Offset(0f, 0f),
@@ -279,27 +256,6 @@ private fun CreateDescBox(pokemon: PokemonAttributes) {
 
 @Composable
 private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
-    val typeImageMap: Map<String, Painter> = mapOf(
-        "bug" to painterResource(id = R.drawable.bug),
-        "dark" to painterResource(id = R.drawable.dark),
-        "dragon" to painterResource(id = R.drawable.dragon),
-        "electric" to painterResource(id = R.drawable.electric),
-        "fairy" to painterResource(id = R.drawable.fairy),
-        "fighting" to painterResource(id = R.drawable.fighting),
-        "fire" to painterResource(id = R.drawable.fire),
-        "flying" to painterResource(id = R.drawable.flying),
-        "ghost" to painterResource(id = R.drawable.ghost),
-        "grass" to painterResource(id = R.drawable.grass),
-        "ground" to painterResource(id = R.drawable.ground),
-        "ice" to painterResource(id = R.drawable.ice),
-        "normal" to painterResource(id = R.drawable.normal),
-        "poison" to painterResource(id = R.drawable.poison),
-        "psychic" to painterResource(id = R.drawable.psychic),
-        "rock" to painterResource(id = R.drawable.rock),
-        "steel" to painterResource(id = R.drawable.steel),
-        "water" to painterResource(id = R.drawable.water)
-    )
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -328,16 +284,14 @@ private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
                         .horizontalScroll(rememberScrollState())
                 ) {
                     pokemon.types.types.forEach { type ->
-                        val typeImage = typeImageMap[type.name]
-                        typeImage?.let {
-                            Image(
-                                painter = it,
-                                contentDescription = "${type.name} type image",
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .padding(4.dp)
-                            )
-                        }
+                        val typeImage = typeResources.getTypeImage(type.name)
+                        Image(
+                            painter = typeImage,
+                            contentDescription = "${type.name} type image",
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(4.dp)
+                        )
                     }
                 }
             }
@@ -365,16 +319,14 @@ private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
                         .horizontalScroll(rememberScrollState())
                 ) {
                     pokemon.weaknesses.double_damage_from.forEach { weakness ->
-                        val weaknessImage = typeImageMap[weakness.name]
-                        weaknessImage?.let {
-                            Image(
-                                painter = it,
-                                contentDescription = "${weakness.name} weakness image",
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .padding(4.dp)
-                            )
-                        }
+                        val weaknessImage = typeResources.getTypeImage(weakness.name)
+                        Image(
+                            painter = weaknessImage,
+                            contentDescription = "${weakness.name} weakness image",
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(4.dp)
+                        )
                     }
                 }
             }

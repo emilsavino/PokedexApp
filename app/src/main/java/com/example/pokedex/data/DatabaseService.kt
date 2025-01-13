@@ -3,6 +3,7 @@ package com.example.pokedex.data
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.tasks.await
 
 class DatabaseService<T : Any>(private val key: String, private val clazz: Class<T>) {
@@ -17,7 +18,9 @@ class DatabaseService<T : Any>(private val key: String, private val clazz: Class
 
         try {
             val data = gson.toJson(objects)
-            val objectArray = gson.fromJson(data, Array<Map<String, Any>>::class.java)?.toList()
+
+            val objectType = object : TypeToken<List<Map<String, Any>>>() {}.type
+            val objectArray: List<Map<String, Any>> = gson.fromJson(data, objectType)
 
             userDocRef.update(mapOf(key to objectArray)).await()
         } catch (error: Exception) {
@@ -60,7 +63,6 @@ class DatabaseService<T : Any>(private val key: String, private val clazz: Class
         }
     }
 
-    // Add Listener for Array
     fun addListenerForArray(completion: (List<T>) -> Unit) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
@@ -70,7 +72,10 @@ class DatabaseService<T : Any>(private val key: String, private val clazz: Class
                 if (data != null) {
                     try {
                         val jsonData = gson.toJson(data)
-                        val objectArray = gson.fromJson(jsonData, Array<T>::class.java).toList()
+
+                        val typeToken = object : TypeToken<List<T>>() {}.type
+                        val objectArray: List<T> = gson.fromJson(jsonData, typeToken)
+
                         completion(objectArray)
                     } catch (error: Exception) {
                         println("Error decoding $key: ${error.localizedMessage}")

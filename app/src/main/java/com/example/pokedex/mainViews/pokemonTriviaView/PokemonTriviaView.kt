@@ -36,16 +36,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokedex.shared.Option
+import com.example.pokedex.shared.PokemonTriviaModel
 
 
 @Composable
-fun AnswerButtons(viewModel: PokemonTriviaViewModel, options: List<Option>) {
-    options.forEach { option ->
+fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel) {
+    trivia.options.forEach { option ->
         Box(
             modifier = Modifier
                 .size(350.dp, 100.dp)
                 .clip(RoundedCornerShape(15.dp))
-                .background(option.color)
+                .background(viewModel.getOptionColor(option))
                 .clickable(enabled = !viewModel.hasAnswered) {
                     viewModel.handleAnswer(option)
                 },
@@ -106,7 +107,7 @@ fun PokemonTriviaView(navController: NavController) {
 
                 Spacer(modifier = Modifier.size(120.dp))
 
-                AnswerButtons(viewModel, trivia.options)
+                AnswerButtons(viewModel, trivia)
 
                 if (viewModel.hasAnswered) {
                     Spacer(modifier = Modifier.size(16.dp))

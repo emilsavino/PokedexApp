@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import com.example.pokedex.shared.PokemonTriviaAnswer
 import com.example.pokedex.shared.PokemonTriviaModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,21 +44,21 @@ class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository) : 
             _triviaState.update { PokemonTriviaUIState.Empty }
         }
     }
-
     fun handleAnswer(option: Option) {
         hasAnswered = true
         val currentState = _triviaState.value
         if (currentState is PokemonTriviaUIState.Question) {
-            val question = currentState.trivia
-            question.options.forEach {
-                it.color = if (it.isCorrect) {
-                    androidx.compose.ui.graphics.Color.Green
-                } else {
-                    if (it.name == option.name) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Gray
-                }
-            }
-            repository.markQuestionAsAnswered(question)
-            _triviaState.update { PokemonTriviaUIState.Question(question) }
+            repository.markQuestionAsAnswered(currentState.trivia)
+            _triviaState.update { currentState }
+        }
+    }
+
+
+    fun getOptionColor(option: Option): Color {
+        return if (hasAnswered) {
+            if (option.isCorrect) Color.Green else Color.Red
+        } else {
+            Color.Gray
         }
     }
 

@@ -23,9 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -216,7 +218,7 @@ fun MakeFilterButton(viewModel: SearchViewModel,
             for (option in viewModel.getAllFilterOptions())
             {
                 DropdownMenuItem(
-                    text = { Text(option, color = textColor) },
+                    text = { Text(option.capitalize(Locale.current), color = textColor) },
                     modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
                     onClick = { viewModel.selectFilterOption(option) }
                 )

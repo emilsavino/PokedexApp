@@ -76,7 +76,7 @@ fun SignedInContent(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = email, color = Color.White)
+        Text(text = email, color = Color.Black)
 
         Spacer(modifier = Modifier.height(8.dp))
         ProfileButton(text = "Sign Out", onClick = onSignOut)
@@ -93,7 +93,7 @@ fun ProfileView(
     navController: NavController,
 ) {
     val viewModel = viewModel<ProfileViewModel>()
-    val gradient = PokemonTypeResources().getTypeGradient("dark")
+    val gradient = PokemonTypeResources().appGradient()
 
     Box(
         modifier = modifier

@@ -93,7 +93,6 @@ sealed class Screen(val route: String) {
     object PokemonDetails : Screen("pokemonDetails/{pokemonName}") {
         fun createRoute(pokemonName: String) = "pokemonDetails/$pokemonName"
     }
-
     object WhoIsThatPokemon : Screen("whoIsThatPokemon")
     object PokemonTrivia : Screen("pokemonTrivia")
 }

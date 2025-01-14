@@ -21,34 +21,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.pokedex.shared.PokemonTypeResources
 
 
 @Composable
-fun ProfileButton(
-    text: String,
-    onClick: () -> Unit,
-    containerColor: Color = Color.White,
-    contentColor: Color = Color.Black
+fun ProfileView(
+    modifier: Modifier = Modifier,
+    navController: NavController,
 ) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(6.dp, CircleShape)
+    val viewModel = viewModel<ProfileViewModel>()
+    val gradient = PokemonTypeResources().appGradient()
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(gradient),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text = text, fontSize = 16.sp)
+        SignedInContent(
+            email = viewModel.email.value,
+            profilePictureUrl = viewModel.profilePictureUrl.value,
+            onSignOut = {
+                viewModel.signOut(navController)
+            },
+            onDeleteAccount = {
+                viewModel.deleteAccount(navController)
+            }
+        )
+
     }
 }
 
@@ -86,39 +91,23 @@ fun SignedInContent(
     }
 }
 
-
 @Composable
-fun ProfileView(
-    modifier: Modifier = Modifier,
-    navController: NavController,
+fun ProfileButton(
+    text: String,
+    onClick: () -> Unit,
+    containerColor: Color = Color.White,
+    contentColor: Color = Color.Black
 ) {
-    val viewModel = viewModel<ProfileViewModel>()
-    val gradient = PokemonTypeResources().appGradient()
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(gradient),
-        contentAlignment = Alignment.Center
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(6.dp, CircleShape)
     ) {
-        SignedInContent(
-            email = viewModel.email.value,
-            profilePictureUrl = viewModel.profilePictureUrl.value,
-            onSignOut = {
-                viewModel.signOut(navController)
-            },
-            onDeleteAccount = {
-                viewModel.deleteAccount(navController)
-            }
-        )
-
+        Text(text = text, fontSize = 16.sp)
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileViewPreview() {
-    val navController = rememberNavController()
-    ProfileView(navController = navController)
 }

@@ -24,65 +24,6 @@ class PokemonRepository {
     private val mutablePokemonAttributesFlow = MutableSharedFlow<PokemonAttributes>()
     val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
 
-    suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String)
-    {
-        var foundElements = 0
-        val elementsToFind = 20
-        val mutableFilteredList = mutableListOf<Pokemon>()
-        var index = offset
-        var allPokemonResults = dataStore.getAllPokemonResults()
-        if (sortOption == "NameASC")
-        {
-            allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
-        }
-        else if (sortOption == "NameDSC")
-        {
-            allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
-            allPokemonResults = allPokemonResults.reversed()
-        }
-
-        while (index < allPokemonResults.size && foundElements < elementsToFind)
-        {
-            val result = allPokemonResults.get(index)
-            val resultName = result.name.replace('-',' ')
-            if (resultName.contains(name, ignoreCase = true))
-            {
-                val pokemon = dataStore.getPokemonFromMapFallBackAPI(result.name)
-                var typeRelevant = false
-                for (type in filterOptions)
-                {
-                    for (innerType in pokemon.types)
-                    {
-                        if (type == innerType.type.name)
-                        {
-                            typeRelevant = true
-                            break
-                        }
-                        if (typeRelevant)
-                        {
-                            break
-                        }
-                    }
-                }
-                if (filterOptions.isEmpty())
-                {
-                    typeRelevant = true
-                }
-
-                if (!typeRelevant)
-                {
-                    index++
-                    continue
-                }
-
-                mutableFilteredList.add(pokemon)
-                foundElements++
-            }
-            index++
-        }
-        mutableSearchFlow.emit(mutableFilteredList)
-    }
-
     suspend fun getPokemonByName(name: String) {
         val pokemon = dataStore.getPokemonFromMapFallBackAPI(name)
         mutablePokemonFlow.emit(pokemon)

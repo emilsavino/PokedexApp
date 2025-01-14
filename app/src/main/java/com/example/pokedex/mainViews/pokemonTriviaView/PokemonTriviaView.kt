@@ -112,7 +112,7 @@ fun PokemonTriviaView(navController: NavController) {
 }
 
 @Composable
-fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel) {
+private fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel) {
     trivia.options.forEach { option ->
         Box(
             modifier = Modifier

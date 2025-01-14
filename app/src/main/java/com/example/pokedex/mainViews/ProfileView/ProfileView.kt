@@ -58,7 +58,7 @@ fun ProfileView(
 }
 
 @Composable
-fun SignedInContent(
+private fun SignedInContent(
     email: String,
     profilePictureUrl: String?,
     onSignOut: () -> Unit,
@@ -92,7 +92,7 @@ fun SignedInContent(
 }
 
 @Composable
-fun ProfileButton(
+private fun ProfileButton(
     text: String,
     onClick: () -> Unit,
     containerColor: Color = Color.White,

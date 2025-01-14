@@ -72,6 +72,7 @@ class MyTeamsViewModel : ViewModel() {
         fetchTeams()
         isShowingDeletePokemonDialog = false
     }
+
 }
 
 sealed class TeamsUIState {

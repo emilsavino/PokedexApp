@@ -139,7 +139,7 @@ private fun MakeTeamsGrid(
                         val remainingSlots = 3 - chunk.size
                         repeat(remainingSlots) {
                             if (displayedPokemonCount + it == displayedPokemonCount) {
-                                AddToTeamGridItem(navController)
+                                AddToTeamGridItem(navController, team.name)
                             } else {
                                 EmptyGridItem(navController)
                             }
@@ -155,7 +155,7 @@ private fun MakeTeamsGrid(
                         val remainingSlots = 3
                         for (slot in 1..remainingSlots) {
                             if (team.pokemons.size == 3 && slot == 1) {
-                                AddToTeamGridItem(navController)
+                                AddToTeamGridItem(navController, team.name)
                             } else {
                                 EmptyGridItem(navController)
                             }

@@ -1,5 +1,6 @@
 package com.example.pokedex.repositories
 
+import com.example.pokedex.R
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Ability
 import com.example.pokedex.shared.AbilityDetails
@@ -39,7 +40,7 @@ class PokemonRepository {
         var description = fetchPokemonDescription(name)
         val evolutionChainPokemons = fetchEvolutionChainPokemons(name)
 
-        if (pokemon.getSprite() == null) {
+        if (pokemon.getSprite() == R.drawable.unknown) {
             description = FlavorTextEntry("This Pokémon is so rare, that no photos have been taken!",
                 Language("en"))
         }

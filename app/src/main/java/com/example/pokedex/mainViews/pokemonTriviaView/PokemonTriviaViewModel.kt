@@ -14,6 +14,7 @@ import com.example.pokedex.repositories.PokemonTriviaRepository
 import com.example.pokedex.shared.Option
 import kotlinx.coroutines.flow.collectLatest
 import androidx.lifecycle.viewModelScope
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,9 +22,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository) : ViewModel() {
+class PokemonTriviaViewModel : ViewModel() {
 
-    private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Empty)
+    private val repository = DependencyContainer.pokemonTriviaRepository
+
+    private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Empty) // Start with Empty state
     val triviaState: StateFlow<PokemonTriviaUIState> = _triviaState.asStateFlow()
 
     var hasAnswered by mutableStateOf(false)

@@ -7,6 +7,7 @@ import com.example.pokedex.repositories.PokemonRepository
 import com.example.pokedex.repositories.WhoIsThatPokemonRepository
 import com.example.pokedex.repositories.FavouritesRepository
 import com.example.pokedex.repositories.PokemonOfTheDayRepository
+import com.example.pokedex.repositories.PokemonTriviaRepository
 import com.example.pokedex.repositories.RecentlyViewedRepository
 import com.example.pokedex.repositories.TeamsRepository
 
@@ -23,6 +24,10 @@ object DependencyContainer {
 
     val whoIsThatPokemonRepository: WhoIsThatPokemonRepository by lazy {
         WhoIsThatPokemonRepository()
+    }
+
+    val pokemonTriviaRepository: PokemonTriviaRepository by lazy {
+        PokemonTriviaRepository()
     }
 
     val favouritesRepository: FavouritesRepository by lazy {

@@ -1,11 +1,16 @@
 package com.example.pokedex.shared
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +41,36 @@ fun PokemonGridItem(navController: NavController, pokemon: Pokemon, onLongClick:
             modifier = Modifier.fillMaxSize()
         )
     }
+}
+
+@Composable
+fun AddToTeamGridItem(navController: NavController) {
+    Box(
+        modifier = Modifier
+            .size(110.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(Color.Gray.copy(alpha = 0.6f))
+            .clickable {}
+    ) {
+        Icon(
+            imageVector = Icons.Default.AddCircle,
+            tint = Color.White,
+            contentDescription = "Add to Team",
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+        )
+    }
+}
+
+@Composable
+fun EmptyGridItem(navController: NavController) {
+    Box(
+        modifier = Modifier
+            .size(110.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(Color.Gray.copy(alpha = 0.6f))
+    )
 }
 
 

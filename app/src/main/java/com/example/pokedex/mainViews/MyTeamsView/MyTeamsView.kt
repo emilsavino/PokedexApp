@@ -29,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pokedex.shared.AddToTeamGridItem
+import com.example.pokedex.shared.EmptyGridItem
 
 @Composable
 fun MyTeamsView(navController: NavController) {
@@ -76,12 +78,14 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
                 fontSize = 20.sp
             )
         }
+
         is TeamsUIState.Loading -> {
             Text(
                 text = "Loading...",
                 fontSize = 20.sp
             )
         }
+
         is TeamsUIState.Data -> {
             MakeTeamsGrid(navController, teamsState.teams, viewModel)
         }
@@ -89,7 +93,11 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
 }
 
 @Composable
-private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewModel: MyTeamsViewModel) {
+private fun MakeTeamsGrid(
+    navController: NavController,
+    teams: List<Team>,
+    viewModel: MyTeamsViewModel
+) {
     var teamNumber = 1
     for (team in teams) {
         Row(
@@ -110,28 +118,57 @@ private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewM
             }
         }
 
-        teamNumber++
-
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.padding(start = 16.dp)
         ) {
-            for (pokemons in team.pokemons.chunked(3)) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    for (pokemon in pokemons) {
+            val totalGridItems = 6
+            val pokemonChunks = team.pokemons.chunked(3)
+            val displayedPokemonCount = team.pokemons.size
+
+            for ((index, chunk) in pokemonChunks.withIndex()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    for (pokemon in chunk) {
                         PokemonGridItem(
                             navController = navController,
                             pokemon = pokemon,
                             onLongClick = { viewModel.onLongClick(pokemon.name, team.name) }
                         )
                     }
+                    if (index == pokemonChunks.lastIndex && chunk.size < 3) {
+                        val remainingSlots = 3 - chunk.size
+                        repeat(remainingSlots) {
+                            if (displayedPokemonCount + it == displayedPokemonCount) {
+                                AddToTeamGridItem(navController)
+                            } else {
+                                EmptyGridItem(navController)
+                            }
+                        }
+                    }
+                }
+            }
+
+            val currentRowCount = pokemonChunks.size
+            if (currentRowCount < 2) {
+                repeat(2 - currentRowCount) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        val remainingSlots = 3
+                        for (slot in 1..remainingSlots) {
+                            if (team.pokemons.size == 3 && slot == 1) {
+                                AddToTeamGridItem(navController)
+                            } else {
+                                EmptyGridItem(navController)
+                            }
+                        }
+                    }
                 }
             }
         }
+
+        teamNumber++
     }
 }
+
 
 @Composable
 private fun DeleteTeamConfirmationDialog(teamName: String, viewModel: MyTeamsViewModel) {

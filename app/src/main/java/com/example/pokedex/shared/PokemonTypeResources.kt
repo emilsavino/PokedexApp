@@ -1,16 +1,23 @@
 package com.example.pokedex.shared
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffectResult
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import com.example.pokedex.R
+import com.example.pokedex.dependencyContainer.DependencyContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 class PokemonTypeResources {
     data class TypeResource(val drawableRes: Int, val color: Color)
+    val pokemonOfTheDayRepository = DependencyContainer.pokemonOfTheDayRepository
 
     private val typeResources: Map<String, TypeResource> = mapOf(
         "bug" to TypeResource(R.drawable.bug, Color(0xFFB0D700)),
@@ -50,5 +57,11 @@ class PokemonTypeResources {
 
     fun getTypeColor(type: String): Color {
         return typeResources[type]?.color ?: Color.Gray
+    }
+
+    fun appGradient(): Brush {
+        val pokemonOfTheDay = runBlocking {  pokemonOfTheDayRepository.determinPokemonOfTheDay() }
+        val primaryType = pokemonOfTheDay.types.firstOrNull()?.type?.name ?: "normal"
+        return getTypeGradient(primaryType)
     }
 }

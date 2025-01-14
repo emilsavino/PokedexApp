@@ -75,12 +75,10 @@ fun MakeHomeLoadingScreen() {
 @Composable
 fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: HomeViewModel) {
     val recentPokemons = viewModel.recentlyViewedPokemons.collectAsState().value
-    val primaryTypeOfPokemonOfTheDay = pokemon.types.firstOrNull()?.type?.name ?: "normal"
-    val typeGradientColor = typeResources.getTypeGradient(primaryTypeOfPokemonOfTheDay)
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(typeGradientColor)
+            .background(PokemonTypeResources().appGradient())
             .verticalScroll(rememberScrollState()),
     ) {
         PokemonOfDayView(pokemon = pokemon, navController = navController)
@@ -274,7 +272,7 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
 @Composable
 fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
     HomePageBox(
-        color = Color.Gray.copy(0.6f),
+        color = Color.Gray.copy(0.5f),
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
     ) {
         Column(

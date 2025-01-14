@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.ProgressIndicator
 
 @Composable
@@ -46,7 +48,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99)),
+            .background(PokemonTypeResources().appGradient()),
         contentAlignment = Alignment.TopCenter,
     ) {
         Column(
@@ -142,7 +144,8 @@ fun MakeSortButton(viewModel: SearchViewModel,
     var sortExpanded = remember { mutableStateOf(false) }
     Button(
         onClick = { sortExpanded.value = true },
-        colors = buttonColors(containerColor = Color(0xfff2f2f2))
+        colors = buttonColors(containerColor = Color.White),
+        modifier = Modifier.shadow(2.dp, CircleShape)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -189,7 +192,8 @@ fun MakeFilterButton(viewModel: SearchViewModel,
     var filterExpanded = remember { mutableStateOf(false) }
     Button(
         onClick = { filterExpanded.value = true},
-        colors = buttonColors(containerColor = Color(0xfff2f2f2))
+        colors = buttonColors(containerColor = Color.White),
+        modifier = Modifier.shadow(2.dp, CircleShape)
     ) {
         Row (
             horizontalArrangement = Arrangement.Center,
@@ -242,23 +246,17 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController) {
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .shadow(2.dp, CircleShape),
         shape = RoundedCornerShape(24.dp),
         colors = buttonColors(
-            containerColor = Color(0xfff2f2f2)
+            containerColor = Color.White
         )
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            /*AsyncImage(
-                model = pokemon.sprites,
-                contentDescription = "${pokemon.name} Image",
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(end = 2.dp)
-            )*/
             Text(
                 text = pokemon.name.formatPokemonName(),
                 color = Color.Black,

@@ -64,7 +64,6 @@ class RecentlySearchedRepository(private val context: Context) {
 
         recentlySearchedPokemon.add(name)
         updateDataStore()
-        fetchRecentlySearched()
     }
 
     private suspend fun updateDataStore() {

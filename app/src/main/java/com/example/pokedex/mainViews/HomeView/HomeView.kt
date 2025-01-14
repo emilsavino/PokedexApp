@@ -25,14 +25,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.R
-import com.example.pokedex.shared.ProgressIndicator
+import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.formatPokemonName
+import com.example.pokedex.shared.ProgressIndicator
 
 private val Padding = 8.dp
+private val typeResources = PokemonTypeResources()
 
 @Composable
 fun HomeView(navController: NavController) {
@@ -82,7 +85,7 @@ fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: Home
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99))
+            .background(PokemonTypeResources().appGradient())
             .verticalScroll(rememberScrollState()),
     ) {
         PokemonOfDayView(pokemon = pokemon, navController = navController)
@@ -114,7 +117,8 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
         Text(
             text = "Pokémon of the Day",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
         )
 
         Box(
@@ -145,10 +149,16 @@ fun PokemonDetailsRow(pokemon: Pokemon) {
         Text(text = pokemon.name.formatPokemonName(), fontSize = 16.sp)
         Spacer(modifier = Modifier.width(Padding))
         Text(text = "Types: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        Text(
-            text = pokemon.types.joinToString(", ") { it.type.name.formatPokemonName() },
-            fontSize = 16.sp
-        )
+        pokemon.types.forEach { type ->
+            val typeImage = typeResources.getTypeImage(type.type.name)
+            Image(
+                painter = typeImage,
+                contentDescription = "${type.type.name} type image",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(4.dp)
+            )
+        }
     }
 }
 
@@ -268,7 +278,7 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
 @Composable
 fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
     HomePageBox(
-        color = Color.Gray.copy(0.6f),
+        color = Color.Gray.copy(0.5f),
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
     ) {
         Column(

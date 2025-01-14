@@ -28,7 +28,13 @@ import com.example.pokedex.shared.Team
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.AddToTeamGridItem
 import com.example.pokedex.shared.EmptyGridItem
 
@@ -37,7 +43,7 @@ fun MyTeamsView(navController: NavController) {
     val viewModel = viewModel<MyTeamsViewModel>()
     Column(
         modifier = Modifier
-            .background(Color(0xFFFFDD99))
+            .background(PokemonTypeResources().appGradient())
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -105,7 +111,14 @@ private fun MakeTeamsGrid(
             modifier = Modifier.padding(10.dp)
         ) {
             Text(
-                text = "Team $teamNumber: ${team.name}",
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Team $teamNumber: ")
+                    }
+                    withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
+                        append(team.name)
+                    }
+                },
                 fontSize = 20.sp,
                 modifier = Modifier.weight(1f)
             )

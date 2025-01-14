@@ -27,13 +27,13 @@ fun PokemonGridItem(navController: NavController, pokemon: Pokemon, onLongClick:
         modifier = Modifier
             .size(110.dp)
             .clip(RoundedCornerShape(15.dp))
-            .background(Color.Gray.copy(alpha = 0.6f))
+            .background(Color.Gray.copy(alpha = 0.5f))
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = { onLongClick() },
                     onTap = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
                 )
-            },
+            }
     ) {
         AsyncImage(
             model = pokemon.sprites.front_default,

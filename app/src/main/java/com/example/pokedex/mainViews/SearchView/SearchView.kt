@@ -45,7 +45,9 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel = viewModel<SearchViewModel>()
 
     val pokemons = viewModel.pokemonList.collectAsState().value
-
+    LaunchedEffect(Unit) {
+        viewModel.searchPokemonList()
+    }
     Box(
         modifier = modifier
             .fillMaxSize()

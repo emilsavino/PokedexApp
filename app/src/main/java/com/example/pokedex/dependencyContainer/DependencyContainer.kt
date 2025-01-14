@@ -1,5 +1,6 @@
 package com.example.pokedex.dependencyContainer
 
+import PokemonTriviaRepository
 import android.app.Application
 import com.example.pokedex.manager.GoogleAuthenticationManager
 import com.example.pokedex.data.PokemonDataStore
@@ -24,6 +25,10 @@ object DependencyContainer {
 
     val whoIsThatPokemonRepository: WhoIsThatPokemonRepository by lazy {
         WhoIsThatPokemonRepository()
+    }
+
+    val pokemonTriviaRepository: PokemonTriviaRepository by lazy {
+        PokemonTriviaRepository()
     }
 
     val favouritesRepository: FavouritesRepository by lazy {

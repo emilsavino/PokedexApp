@@ -14,11 +14,11 @@ class PokemonOfTheDayRepository {
     private val mutablePokemonOfTheDayFlow = MutableSharedFlow<Pokemon?>()
     val pokemonOfTheDayFlow: Flow<Pokemon?> = mutablePokemonOfTheDayFlow.asSharedFlow()
 
-    suspend fun getPokemonOfTheDayByName() {
-        mutablePokemonOfTheDayFlow.emit(determinPokemonOfTheDay())
+    suspend fun getPokemonOfTheDayByName(){
+        mutablePokemonOfTheDayFlow.emit(determinePokemonOfTheDay())
     }
 
-    private suspend fun determinPokemonOfTheDay(): Pokemon {
+    private suspend fun determinePokemonOfTheDay(): Pokemon {
         val pokemons = dataStore.getAllPokemonResults()
         val date = LocalDate.now().dayOfMonth
         return dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(pokemons[date].name)

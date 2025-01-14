@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
@@ -62,7 +61,7 @@ fun HomeView(navController: NavController) {
 }
 
 @Composable
-fun MakeHomeLoadingScreen() {
+private fun MakeHomeLoadingScreen() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -81,7 +80,11 @@ fun MakeHomeLoadingScreen() {
 }
 
 @Composable
-fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: HomeViewModel) {
+private fun MakeHomeView(
+    navController: NavController,
+    pokemon: Pokemon,
+    viewModel: HomeViewModel
+) {
     val recentPokemons = viewModel.recentlyViewedPokemons.collectAsState().value
     Column(
         modifier = Modifier
@@ -107,7 +110,7 @@ fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: Home
 }
 
 @Composable
-fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
+private fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,7 +144,7 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
 }
 
 @Composable
-fun PokemonDetailsRow(pokemon: Pokemon) {
+private fun PokemonDetailsRow(pokemon: Pokemon) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -164,7 +167,7 @@ fun PokemonDetailsRow(pokemon: Pokemon) {
 }
 
 @Composable
-fun GamesRow(navController: NavController) {
+private fun GamesRow(navController: NavController) {
     Text(
         text = "Pokémon Games",
         style = MaterialTheme.typography.titleMedium,
@@ -192,7 +195,24 @@ fun GamesRow(navController: NavController) {
 }
 
 @Composable
-fun MakeWhosThatPokemonBox() {
+private fun HomePageBox(color: Color,
+                onClick: () -> Unit,
+                content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .width(190.dp)
+            .height(160.dp)
+            .padding(6.dp)
+            .background(color, RoundedCornerShape(Padding))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun MakeWhosThatPokemonBox() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -221,7 +241,7 @@ fun MakeWhosThatPokemonBox() {
 }
 
 @Composable
-fun MakePokemonTriviaBox() {
+private fun MakePokemonTriviaBox() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -250,7 +270,7 @@ fun MakePokemonTriviaBox() {
 }
 
 @Composable
-fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavController) {
+private fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavController) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -277,7 +297,7 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
 }
 
 @Composable
-fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
+private fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
     HomePageBox(
         color = Color.Gray.copy(0.5f),
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
@@ -306,22 +326,4 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
             )
         }
     }
-}
-
-@Composable
-fun HomePageBox(color: Color,
-                onClick: () -> Unit,
-                content: @Composable () -> Unit) {
-    Box(
-        modifier = Modifier
-            .width(190.dp)
-            .height(160.dp)
-            .padding(6.dp)
-            .background(color, RoundedCornerShape(Padding))
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        content()
-    }
-
 }

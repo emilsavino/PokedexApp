@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.google.gson.Gson
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "recently_searched_preferences")
 
 class RecentlySearchedRepository(private val context: Context) {
+    private val databaseService = DatabaseService("recentlySearched", String::class.java)
     private val recentlySearchedPokemon = mutableListOf<String>()
     private val pokemonDataStore = DependencyContainer.pokemonDataStore
     private val RECENTLY_SEARCHED_KEY = stringPreferencesKey("recently_searched")
@@ -32,7 +34,20 @@ class RecentlySearchedRepository(private val context: Context) {
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            initializeCache()
+            initializeDataBase()
+            if (recentlySearchedPokemon.isEmpty())
+            {
+                initializeCache()
+            }
+        }
+    }
+
+    private suspend fun initializeDataBase() {
+        databaseService.addListenerForList { recentlySearched ->
+            if (recentlySearched != null) {
+                recentlySearchedPokemon.clear()
+                recentlySearchedPokemon.addAll(recentlySearched)
+            }
         }
     }
 
@@ -63,6 +78,7 @@ class RecentlySearchedRepository(private val context: Context) {
         }
 
         recentlySearchedPokemon.add(name)
+        databaseService.storeList(recentlySearchedPokemon)
         updateDataStore()
     }
 

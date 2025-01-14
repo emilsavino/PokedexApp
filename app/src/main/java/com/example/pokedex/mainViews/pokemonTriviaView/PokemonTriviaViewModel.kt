@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.pokemonTriviaView
 
+import PokemonTriviaRepository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.example.pokedex.repositories.PokemonTriviaRepository
 import com.example.pokedex.shared.Option
 import kotlinx.coroutines.flow.collectLatest
 import androidx.lifecycle.viewModelScope
@@ -23,62 +23,57 @@ import kotlinx.coroutines.launch
 
 
 class PokemonTriviaViewModel : ViewModel() {
-
-    private val repository = DependencyContainer.pokemonTriviaRepository
+    private val repository: PokemonTriviaRepository = DependencyContainer.pokemonTriviaRepository
 
     private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Empty)
     val triviaState: StateFlow<PokemonTriviaUIState> = _triviaState.asStateFlow()
 
-    var hasAnswered by mutableStateOf(false)
-
     private val _streakCount = MutableStateFlow(0)
     val streakCount: StateFlow<Int> = _streakCount.asStateFlow()
 
+    var hasAnswered by mutableStateOf(false)
+
     init {
-        loadRandomQuestion()
-    }
-
-    fun loadRandomQuestion() = viewModelScope.launch {
-        _triviaState.update { PokemonTriviaUIState.Loading }
-
-        val question = repository.getRandomUnansweredQuestion()
-        if (question != null) {
-            hasAnswered = false
-            _triviaState.update { PokemonTriviaUIState.Question(question) }
-        } else {
-            _triviaState.update { PokemonTriviaUIState.Empty }
+        viewModelScope.launch {
+            repository.triviaFlow.collect { question ->
+                _triviaState.value = if (question != null) {
+                    PokemonTriviaUIState.Question(question)
+                } else {
+                    PokemonTriviaUIState.Empty
+                }
+            }
         }
     }
 
+    fun loadRandomQuestion() = viewModelScope.launch {
+        repository.loadRandomUnansweredQuestion()
+        hasAnswered = false
+    }
+
     fun handleAnswer(option: Option) {
-        hasAnswered = true
         val currentState = _triviaState.value
-        if (currentState is PokemonTriviaUIState.Question) {
-            val question = currentState.trivia
-            val isCorrect = option.isCorrect
-            if (isCorrect) {
+        if (currentState is PokemonTriviaUIState.Question && !hasAnswered) {
+            hasAnswered = true
+
+            if (option.isCorrect) {
                 _streakCount.update { it + 1 }
             } else {
                 _streakCount.update { 0 }
             }
 
-            repository.markQuestionAsAnswered(question)
-            _triviaState.update { currentState }
         }
     }
 
-    fun getOptionColor(option: Option): Color {
-        return if (hasAnswered) {
-            if (option.isCorrect) Color.Green else Color.Red
-        } else {
-            Color.Gray
-        }
-    }
-
-    fun resetTrivia() {
+    fun resetTrivia() = viewModelScope.launch {
         repository.resetQuestions()
         _streakCount.update { 0 }
-        _triviaState.update { PokemonTriviaUIState.Empty }
+        hasAnswered = false
+    }
+
+    fun getOptionColor(option: Option) = if (hasAnswered) {
+        if (option.isCorrect) Color.Green else Color.Red
+    } else {
+        Color.Gray
     }
 }
 

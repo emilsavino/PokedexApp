@@ -1,15 +1,15 @@
-package com.example.pokedex.repositories
-
-import androidx.compose.ui.graphics.Color
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.PokemonTriviaModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 class PokemonTriviaRepository {
 
     private val answeredQuestions = mutableSetOf<PokemonTriviaModel>()
 
+    private val mutableTriviaFlow = MutableSharedFlow<PokemonTriviaModel?>()
+    val triviaFlow: SharedFlow<PokemonTriviaModel?> = mutableTriviaFlow.asSharedFlow()
 
     private val triviaQuestions = listOf(
         PokemonTriviaModel(
@@ -36,16 +36,16 @@ class PokemonTriviaRepository {
                 Option("Raichu", true),
                 Option("Jolteon", false),
                 Option("Zubat", false),
-                Option("Electrode",false)
+                Option("Electrode", false)
             )
         ),
         PokemonTriviaModel(
             question = "Which Pokemon has the types dragon and ground?",
             options = listOf(
-                Option("Pawmo",false),
-                Option("Gulpin",false),
-                Option("Gabite",true),
-                Option("Pheromosa",false)
+                Option("Pawmo", false),
+                Option("Gulpin", false),
+                Option("Gabite", true),
+                Option("Pheromosa", false)
             )
         ),
         PokemonTriviaModel(
@@ -53,42 +53,43 @@ class PokemonTriviaRepository {
             options = listOf(
                 Option("Rellor", false),
                 Option("Scolipede", true),
-                Option("Machamp",false),
-                Option("Gengar",false)
+                Option("Machamp", false),
+                Option("Gengar", false)
             )
         ),
         PokemonTriviaModel(
             question = "What Pokemon is a starter pokemon in generation 1",
             options = listOf(
-                Option("Pikachu",false),
-                Option("Geodude",false),
-                Option("Squirtle",true),
-                Option("Rattata",false)
+                Option("Pikachu", false),
+                Option("Geodude", false),
+                Option("Squirtle", true),
+                Option("Rattata", false)
             )
         ),
         PokemonTriviaModel(
             question = "What type is the legendary pokemon Moltres",
             options = listOf(
-                Option("Ice",false),
-                Option("Fire",true),
-                Option("Lightning",false),
-                Option("Dragon",false)
+                Option("Ice", false),
+                Option("Fire", true),
+                Option("Lightning", false),
+                Option("Dragon", false)
             )
         ),
     )
 
-    fun getRandomUnansweredQuestion(): PokemonTriviaModel? {
+    suspend fun loadRandomUnansweredQuestion() {
         val unansweredQuestions = triviaQuestions.filterNot { answeredQuestions.contains(it) }
-        return unansweredQuestions.randomOrNull()
+        val question = unansweredQuestions.randomOrNull()
+        mutableTriviaFlow.emit(question)
     }
 
-    fun markQuestionAsAnswered(question: PokemonTriviaModel) {
+    suspend fun markQuestionAsAnswered(question: PokemonTriviaModel) {
         answeredQuestions.add(question)
+        loadRandomUnansweredQuestion()
     }
 
-    fun resetQuestions() {
+    suspend fun resetQuestions() {
         answeredQuestions.clear()
+        loadRandomUnansweredQuestion()
     }
 }
-
-

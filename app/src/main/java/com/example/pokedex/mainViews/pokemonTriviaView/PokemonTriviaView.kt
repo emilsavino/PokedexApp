@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.pokedex.repositories.PokemonTriviaRepository
 import com.example.pokedex.shared.BackButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -74,13 +73,6 @@ fun PokemonTriviaView(navController: NavController) {
             )
 
             when (triviaState) {
-                is PokemonTriviaUIState.Loading -> {
-                    Text(
-                        text = "Loading question...",
-                        fontSize = 18.sp
-                    )
-                }
-
                 is PokemonTriviaUIState.Empty -> {
                     Text(
                         text = "No more questions available.",
@@ -108,9 +100,8 @@ fun PokemonTriviaView(navController: NavController) {
 
                     AnswerButtons(viewModel, trivia)
 
-                    Spacer(modifier = Modifier.weight(1f))
-
                     if (viewModel.hasAnswered) {
+                        Spacer(modifier = Modifier.size(16.dp))
                         Button(
                             onClick = { viewModel.loadRandomQuestion() },
                             modifier = Modifier
@@ -120,6 +111,10 @@ fun PokemonTriviaView(navController: NavController) {
                             Text(text = "Next Question")
                         }
                     }
+                }
+
+                else -> {
+                    Text(text = "Loading...", fontSize = 18.sp)
                 }
             }
         }

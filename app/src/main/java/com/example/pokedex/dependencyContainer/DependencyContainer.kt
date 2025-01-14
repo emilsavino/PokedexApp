@@ -1,5 +1,6 @@
 package com.example.pokedex.dependencyContainer
 
+import PokemonTriviaRepository
 import android.app.Application
 import com.example.pokedex.manager.GoogleAuthenticationManager
 import com.example.pokedex.data.PokemonDataStore
@@ -7,7 +8,6 @@ import com.example.pokedex.repositories.PokemonRepository
 import com.example.pokedex.repositories.WhoIsThatPokemonRepository
 import com.example.pokedex.repositories.FavouritesRepository
 import com.example.pokedex.repositories.PokemonOfTheDayRepository
-import com.example.pokedex.repositories.PokemonTriviaRepository
 import com.example.pokedex.repositories.RecentlySearchedRepository
 import com.example.pokedex.repositories.RecentlyViewedRepository
 import com.example.pokedex.repositories.TeamsRepository

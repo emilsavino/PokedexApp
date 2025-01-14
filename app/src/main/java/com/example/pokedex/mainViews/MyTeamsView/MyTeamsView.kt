@@ -47,7 +47,11 @@ fun MyTeamsView(navController: NavController) {
         Spacer(modifier = Modifier.padding(10.dp))
 
         if (viewModel.isShowingDialog) {
-            DeleteTeamConfirmationDialog(viewModel.teamToDelete, viewModel)
+            DeleteTeamConfirmationDialog(viewModel.teamToEdit, viewModel)
+        }
+
+        if (viewModel.isShowingDeletePokemonDialog) {
+            DeletePokemonConfirmationDialog(viewModel)
         }
     }
 }
@@ -100,7 +104,7 @@ private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewM
 
             IconButton(
                 modifier = Modifier.padding(start = 8.dp),
-                onClick = { viewModel.onDeleteTeam(team.name) }
+                onClick = { viewModel.onDeleteTeamClicked(team.name) }
             ) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
             }
@@ -117,7 +121,11 @@ private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewM
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     for (pokemon in pokemons) {
-                        PokemonGridItem(navController, pokemon = pokemon)
+                        PokemonGridItem(
+                            navController = navController,
+                            pokemon = pokemon,
+                            onLongClick = { viewModel.onLongClick(pokemon.name, team.name) }
+                        )
                     }
                 }
             }
@@ -140,6 +148,27 @@ private fun DeleteTeamConfirmationDialog(teamName: String, viewModel: MyTeamsVie
         },
         dismissButton = {
             TextButton(onClick = { viewModel.isShowingDialog = false }) {
+                Text(text = "Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+private fun DeletePokemonConfirmationDialog(viewModel: MyTeamsViewModel) {
+    AlertDialog(
+        onDismissRequest = { viewModel.isShowingDeletePokemonDialog = false },
+        title = { Text(text = "Are you sure you want to remove ${viewModel.pokemonToDelete} from ${viewModel.teamToEdit}? ") },
+        text = {
+            Text(text = "This action cannot be undone.")
+        },
+        confirmButton = {
+            TextButton(onClick = { viewModel.deletePokemonFromTeam() }) {
+                Text(text = "Delete")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { viewModel.isShowingDeletePokemonDialog = false }) {
                 Text(text = "Cancel")
             }
         }

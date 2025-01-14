@@ -1,7 +1,7 @@
 package com.example.pokedex.shared
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -10,19 +10,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
 
 @Composable
-fun PokemonGridItem(navController: NavController, pokemon: Pokemon) {
+fun PokemonGridItem(navController: NavController, pokemon: Pokemon, onLongClick: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .size(110.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.Gray.copy(alpha = 0.6f))
-            .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = { onLongClick() },
+                    onTap = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
+                )
+            },
     ) {
         AsyncImage(
             model = pokemon.sprites.front_default,

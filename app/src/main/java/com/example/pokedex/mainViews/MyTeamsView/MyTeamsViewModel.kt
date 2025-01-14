@@ -18,7 +18,9 @@ class MyTeamsViewModel : ViewModel() {
     private val teamsRepository = DependencyContainer.teamsRepository
 
     var isShowingDialog by mutableStateOf(false)
-    var teamToDelete by mutableStateOf("")
+    var isShowingDeletePokemonDialog by mutableStateOf(false)
+    var teamToEdit by mutableStateOf("")
+    var pokemonToDelete by mutableStateOf("")
 
     private val _teamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Loading)
     val teamsState: StateFlow<TeamsUIState> = _teamsState.asStateFlow()
@@ -46,9 +48,9 @@ class MyTeamsViewModel : ViewModel() {
         }
     }
 
-    fun onDeleteTeam(teamName: String) {
+    fun onDeleteTeamClicked(teamName: String) {
         isShowingDialog = true
-        teamToDelete = teamName
+        teamToEdit = teamName
     }
 
     fun deleteTeam(teamName: String) {
@@ -57,6 +59,18 @@ class MyTeamsViewModel : ViewModel() {
             fetchTeams()
         }
         isShowingDialog = false
+    }
+
+    fun onLongClick(pokemonName: String, teamName: String) {
+        isShowingDeletePokemonDialog = true
+        teamToEdit = teamName
+        pokemonToDelete = pokemonName
+    }
+
+    fun deletePokemonFromTeam() = viewModelScope.launch {
+        teamsRepository.deletePokemonFromTeam(pokemonToDelete, teamToEdit)
+        fetchTeams()
+        isShowingDeletePokemonDialog = false
     }
 }
 

@@ -95,6 +95,29 @@ class TeamsRepository(private val context: Context) {
         return true
     }
 
+    suspend fun deletePokemonFromTeam(name: String, teamName: String) {
+        val teamIndex = pokemonTeams.indexOfFirst { it.name == teamName }
+
+        val team = pokemonTeams[teamIndex]
+        for (pokemon in team.pokemons) {
+            if (pokemon.name == name) {
+                val updatedTeam = team.copy(pokemons = team.pokemons - pokemon)
+                if (updatedTeam.pokemons.isEmpty()) {
+                    deleteTeam(teamName)
+                    return
+                }
+                pokemonTeams[teamIndex] = updatedTeam
+                updateDataStore()
+                mutableTeamsFlow.emit(pokemonTeams)
+                break
+            }
+        }
+    }
+
+    fun getTeam(index: Int): Team?{
+        return if (index in pokemonTeams.indices) pokemonTeams[index] else null
+    }
+
     private suspend fun updateDataStore() {
         val teamsJson = gson.toJson(pokemonTeams)
         context.dataStore.edit { preferences ->

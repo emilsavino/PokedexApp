@@ -143,13 +143,14 @@ class PokemonRepository {
     }
 
     private suspend fun fetchPokemonDescription(name: String): FlavorTextEntry {
+        val fallbackEntry = FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
         return try {
             val pokemonSpecies = dataStore.fetchPokemonSpecies(name)
             pokemonSpecies.flavor_text_entries.firstOrNull {
                 it.language.name == "en"
-            } ?: FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
+            } ?: fallbackEntry
         } catch (e: Exception) {
-            FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
+            fallbackEntry
         }
     }
 

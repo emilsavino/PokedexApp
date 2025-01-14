@@ -30,6 +30,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -73,58 +75,70 @@ fun PokemonTriviaView(navController: NavController) {
     val triviaState by viewModel.triviaState.collectAsState()
     val streakCount by viewModel.streakCount.collectAsState()
 
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99)),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color(0xFFFFDD99))
     ) {
-        BackButton(
-            navController = navController,
-            modifier = Modifier.align(Alignment.Start)
-        )
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BackButton(
+                navController = navController,
+                modifier = Modifier.align(Alignment.Start)
+            )
 
-        Text(
-            text = "Correct Streak: $streakCount",
-            modifier = Modifier.padding(vertical = 16.dp),
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            textAlign = TextAlign.Center,
-            color = Color.Black
-        )
+            Text(
+                text = "Correct Streak: $streakCount",
+                modifier = Modifier.padding(vertical = 16.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
+                color = Color.Black
+            )
 
-        when (triviaState) {
-            is PokemonTriviaUIState.Loading -> {
-                Text(text = "Loading question...", fontSize = 20.sp)
-            }
-
-            is PokemonTriviaUIState.Empty -> {
-                Text(text = "No more questions available.", fontSize = 20.sp)
-                Spacer(modifier = Modifier.size(16.dp))
-                androidx.compose.material3.Button(onClick = { viewModel.resetTrivia() }) {
-                    Text(text = "Reset Questions")
+            when (triviaState) {
+                is PokemonTriviaUIState.Loading -> {
+                    Text(
+                        text = "Loading question...",
+                        fontSize = 20.sp
+                    )
                 }
-            }
 
-            is PokemonTriviaUIState.Question -> {
-                val trivia = (triviaState as PokemonTriviaUIState.Question).trivia
-                Text(
-                    text = trivia.question,
-                    modifier = Modifier.padding(horizontal = 25.dp),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp,
-                    textAlign = TextAlign.Center,
-                )
-
-                Spacer(modifier = Modifier.size(120.dp))
-
-                AnswerButtons(viewModel, trivia)
-
-                if (viewModel.hasAnswered) {
+                is PokemonTriviaUIState.Empty -> {
+                    Text(
+                        text = "No more questions available.",
+                        fontSize = 20.sp
+                    )
                     Spacer(modifier = Modifier.size(16.dp))
-                    androidx.compose.material3.Button(onClick = { viewModel.loadRandomQuestion() }) {
-                        Text(text = "Next Question")
+                    androidx.compose.material3.Button(onClick = { viewModel.resetTrivia() }) {
+                        Text(text = "Reset Questions")
+                    }
+                }
+
+                is PokemonTriviaUIState.Question -> {
+                    val trivia = (triviaState as PokemonTriviaUIState.Question).trivia
+                    Text(
+                        text = trivia.question,
+                        modifier = Modifier.padding(horizontal = 25.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        textAlign = TextAlign.Center,
+                    )
+
+                    Spacer(modifier = Modifier.size(24.dp))
+
+                    AnswerButtons(viewModel, trivia)
+
+                    if (viewModel.hasAnswered) {
+                        Spacer(modifier = Modifier.size(16.dp))
+                        androidx.compose.material3.Button(onClick = { viewModel.loadRandomQuestion() }) {
+                            Text(text = "Next Question")
+                        }
                     }
                 }
             }

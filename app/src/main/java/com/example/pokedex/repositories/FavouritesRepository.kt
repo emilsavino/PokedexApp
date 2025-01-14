@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.shared.Pokemon
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "pokemon_preferences")
 
 class FavouritesRepository(private val context: Context) {
+    private val databaseService = DatabaseService("favorites", Pokemon::class.java)
     private val favouritePokemons = mutableListOf<Pokemon>()
     private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
     private val gson = Gson()
@@ -26,7 +28,20 @@ class FavouritesRepository(private val context: Context) {
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            initializeCache()
+            initializeDatabase()
+            if (favouritePokemons.isEmpty()) {
+                initializeCache()
+            }
+            mutableSavedPokemonsFlow.emit(favouritePokemons)
+        }
+    }
+
+    private suspend fun initializeDatabase() {
+        databaseService.addListenerForList { favorites ->
+            if (favorites != null) {
+                favouritePokemons.clear()
+                favouritePokemons.addAll(favorites)
+            }
         }
     }
 
@@ -34,7 +49,6 @@ class FavouritesRepository(private val context: Context) {
         val savedPokemons = fetchSavedPokemonsFromDataStore()
         favouritePokemons.clear()
         favouritePokemons.addAll(savedPokemons)
-        mutableSavedPokemonsFlow.emit(favouritePokemons)
     }
 
     suspend fun fetchSaved() {
@@ -44,6 +58,7 @@ class FavouritesRepository(private val context: Context) {
     suspend fun makeFavourite(pokemon: Pokemon) {
         if (!favouritePokemons.contains(pokemon)) {
             favouritePokemons.add(pokemon)
+            databaseService.storeList(favouritePokemons)
             updateDataStore()
         }
     }
@@ -51,6 +66,7 @@ class FavouritesRepository(private val context: Context) {
     suspend fun removeFromFavourites(pokemon: Pokemon) {
         if (favouritePokemons.contains(pokemon)) {
             favouritePokemons.remove(pokemon)
+            databaseService.storeList(favouritePokemons)
             updateDataStore()
         }
     }

@@ -20,79 +20,19 @@ class PokemonRepository {
     private var dataStore = DependencyContainer.pokemonDataStore
 
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
-    //val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
     private val mutablePokemonAttributesFlow = MutableSharedFlow<PokemonAttributes>()
     val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
 
-    suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String)
-    {
-        var foundElements = 0
-        val elementsToFind = 20
-        val mutableFilteredList = mutableListOf<Pokemon>()
-        var index = offset
-        var allPokemonResults = dataStore.getAllPokemonResults()
-        if (sortOption == "NameASC")
-        {
-            allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
-        }
-        else if (sortOption == "NameDSC")
-        {
-            allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
-            allPokemonResults = allPokemonResults.reversed()
-        }
-
-        while (index < allPokemonResults.size && foundElements < elementsToFind)
-        {
-            val result = allPokemonResults.get(index)
-            val resultName = result.name.replace('-',' ')
-            if (resultName.contains(name, ignoreCase = true))
-            {
-                val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(result.name)
-                var typeRelevant = false
-                for (type in filterOptions)
-                {
-                    for (innerType in pokemon.types)
-                    {
-                        if (type == innerType.type.name)
-                        {
-                            typeRelevant = true
-                            break
-                        }
-                        if (typeRelevant)
-                        {
-                            break
-                        }
-                    }
-                }
-                if (filterOptions.isEmpty())
-                {
-                    typeRelevant = true
-                }
-
-                if (!typeRelevant)
-                {
-                    index++
-                    continue
-                }
-
-                mutableFilteredList.add(pokemon)
-                foundElements++
-            }
-            index++
-        }
-        mutableSearchFlow.emit(mutableFilteredList)
-    }
-    
     suspend fun getPokemonByName(name: String) {
-        val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
+        val pokemon = dataStore.getPokemonFromMapFallBackAPI(name)
         mutablePokemonFlow.emit(pokemon)
     }
 
     suspend fun getPokemonDetailsByName(name: String) {
-        val pokemon = fetchPokemonDetails(name)
-        val types = fetchPokemonTypes(pokemon)
-        val typesInfoList = fetchTypeInfoList(types)
+        val pokemon = dataStore.getPokemonFromMapFallBackAPI(name)
+        val types = pokemon.types.map { it.type }
+        val typesInfoList = dataStore.fetchTypeInfo(types)
         val weaknesses = combineDamageRelations(typesInfoList, types)
         val abilities = fetchPokemonAbilities(pokemon)
         var description = fetchPokemonDescription(name)
@@ -113,18 +53,6 @@ class PokemonRepository {
         )
 
         mutablePokemonAttributesFlow.emit(pokemonAttributes)
-    }
-
-    private suspend fun fetchPokemonDetails(name: String): Pokemon {
-        return dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
-    }
-
-    private fun fetchPokemonTypes(pokemon: Pokemon): List<Type> {
-        return pokemon.types.map { it.type }
-    }
-
-    private suspend fun fetchTypeInfoList(types: List<Type>): List<DamageRelations> {
-        return dataStore.fetchTypeInfo(types)
     }
 
     private fun combineDamageRelations(typeInfoList: List<DamageRelations>, ownTypeList: List<Type>): DamageRelationsResult {
@@ -150,13 +78,14 @@ class PokemonRepository {
     }
 
     private suspend fun fetchPokemonDescription(name: String): FlavorTextEntry {
+        val fallbackEntry = FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
         return try {
             val pokemonSpecies = dataStore.fetchPokemonSpecies(name)
             pokemonSpecies.flavor_text_entries.firstOrNull {
                 it.language.name == "en"
-            } ?: FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
+            } ?: fallbackEntry
         } catch (e: Exception) {
-            FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
+            fallbackEntry
         }
     }
 
@@ -184,7 +113,7 @@ class PokemonRepository {
             val pokemonNames = extractPokemonNames(evoChainResult.chain)
 
             for (pokemonName in pokemonNames) {
-                val getPokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(pokemonName)
+                val getPokemon = dataStore.getPokemonFromMapFallBackAPI(pokemonName)
                 evolutionPokemonList.add(getPokemon)
             }
 

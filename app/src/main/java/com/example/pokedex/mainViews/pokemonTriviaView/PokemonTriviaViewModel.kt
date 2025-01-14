@@ -26,11 +26,10 @@ class PokemonTriviaViewModel : ViewModel() {
 
     private val repository = DependencyContainer.pokemonTriviaRepository
 
-    private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Empty) // Start with Empty state
+    private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Empty)
     val triviaState: StateFlow<PokemonTriviaUIState> = _triviaState.asStateFlow()
 
     var hasAnswered by mutableStateOf(false)
-        private set
 
     private val _streakCount = MutableStateFlow(0)
     val streakCount: StateFlow<Int> = _streakCount.asStateFlow()

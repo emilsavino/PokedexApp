@@ -110,5 +110,6 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:$credentialsManagerVersion")
     implementation("androidx.credentials:credentials:$credentialsManagerVersion")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("dev.gitlive:firebase-firestore:1.8.1")
 
 }

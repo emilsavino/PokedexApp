@@ -21,12 +21,6 @@ class PokemonRepository {
 
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
 
-    val filterOptions = mutableListOf("fire","grass","ASAP-Rocky")
-    val sortOptions = mutableListOf("NameASC","NameDSC")
-
-    private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
-    val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()
-
     private val mutablePokemonAttributesFlow = MutableSharedFlow<PokemonAttributes>()
     val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
 

@@ -11,6 +11,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,14 +29,20 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.R
+import com.example.pokedex.shared.ProgressIndicator
 import com.example.pokedex.shared.formatPokemonName
 
 private val Padding = 8.dp
 
 @Composable
-fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
+fun HomeView(navController: NavController) {
     val viewModel = viewModel<HomeViewModel>()
     val pokemonOfTheDay = viewModel.pokemonOfTheDay.collectAsState().value
+
+    LaunchedEffect(Unit) {
+        viewModel.getPokemonOfTheDay()
+        viewModel.getRecentlyViewedPokemons()
+    }
 
     when (pokemonOfTheDay) {
         is HomeUIState.Empty -> {
@@ -86,7 +93,7 @@ fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: Home
                 Text(text = "No recently viewed Pokémon")
             }
             is RecentsUIState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+                ProgressIndicator()
             }
             is RecentsUIState.Data -> {
                 RecentlyViewedPokemons(recentPokemons = recentPokemons.pokemons, navController = navController)

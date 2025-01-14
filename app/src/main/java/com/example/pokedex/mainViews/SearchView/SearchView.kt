@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.pokedex.R
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
@@ -266,7 +267,7 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: Se
             modifier = Modifier.fillMaxWidth()
         ) {
             AsyncImage(
-                model = pokemon.sprites.front_default,
+                model = pokemon.sprites.front_default ?: R.drawable.unknown,
                 contentDescription = "${pokemon.name} Image",
                 modifier = Modifier
                     .size(100.dp)

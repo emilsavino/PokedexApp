@@ -24,15 +24,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
@@ -73,7 +76,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                 }
 
                 is SearchUIState.Data -> {
-                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController)
+                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
                 }
             }
         }
@@ -219,7 +222,7 @@ fun MakeFilterButton(viewModel: SearchViewModel,
             for (option in viewModel.getAllFilterOptions())
             {
                 DropdownMenuItem(
-                    text = { Text(option, color = textColor) },
+                    text = { Text(option.capitalize(Locale.current), color = textColor) },
                     modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
                     onClick = { viewModel.selectFilterOption(option) }
                 )
@@ -229,21 +232,24 @@ fun MakeFilterButton(viewModel: SearchViewModel,
 }
 
 @Composable
-fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController) {
+fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController, viewModel: SearchViewModel) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(pokemons) { pokemon ->
-            SearchListItem(pokemon = pokemon, navController = navController)
+            SearchListItem(pokemon = pokemon, navController = navController,viewModel)
         }
     }
 }
 
 @Composable
-fun SearchListItem(pokemon: Pokemon, navController: NavController) {
+fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: SearchViewModel) {
     Button(
-        onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
+        onClick = {
+            viewModel.addPokemonToRecentlySearched(pokemon.name)
+            navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name))
+            },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)

@@ -22,12 +22,6 @@ class PokemonRepository {
     private val mutablePokemonFlow = MutableSharedFlow<Pokemon>()
     //val pokemonFlow: Flow<Pokemon> = mutablePokemonFlow.asSharedFlow()
 
-    val filterOptions = mutableListOf("fire","grass","ASAP-Rocky")
-    val sortOptions = mutableListOf("NameASC","NameDSC")
-
-    private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
-    val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()
-
     private val mutablePokemonAttributesFlow = MutableSharedFlow<PokemonAttributes>()
     val pokemonAttributesFlow: Flow<PokemonAttributes> = mutablePokemonAttributesFlow.asSharedFlow()
 
@@ -89,7 +83,7 @@ class PokemonRepository {
         }
         mutableSearchFlow.emit(mutableFilteredList)
     }
-
+    
     suspend fun getPokemonByName(name: String) {
         val pokemon = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
         mutablePokemonFlow.emit(pokemon)

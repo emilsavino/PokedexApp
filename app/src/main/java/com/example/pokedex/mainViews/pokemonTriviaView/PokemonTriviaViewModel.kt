@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository) : ViewModel() {
 
-    private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Loading)
+    private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Empty)
     val triviaState: StateFlow<PokemonTriviaUIState> = _triviaState.asStateFlow()
 
     var hasAnswered by mutableStateOf(false)
@@ -76,7 +76,7 @@ class PokemonTriviaViewModel(private val repository: PokemonTriviaRepository) : 
     fun resetTrivia() {
         repository.resetQuestions()
         _streakCount.update { 0 }
-        loadRandomQuestion()
+        _triviaState.update { PokemonTriviaUIState.Empty }
     }
 }
 

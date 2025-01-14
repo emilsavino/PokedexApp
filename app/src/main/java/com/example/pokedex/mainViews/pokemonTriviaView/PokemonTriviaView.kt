@@ -66,9 +66,9 @@ fun PokemonTriviaView(navController: NavController) {
 
             Text(
                 text = "Correct Streak: $streakCount",
-                modifier = Modifier.padding(vertical = 16.dp),
+                modifier = Modifier.padding(vertical = 8.dp),
                 fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 textAlign = TextAlign.Center,
                 color = Color.Black
             )
@@ -77,17 +77,17 @@ fun PokemonTriviaView(navController: NavController) {
                 is PokemonTriviaUIState.Loading -> {
                     Text(
                         text = "Loading question...",
-                        fontSize = 20.sp
+                        fontSize = 18.sp
                     )
                 }
 
                 is PokemonTriviaUIState.Empty -> {
                     Text(
                         text = "No more questions available.",
-                        fontSize = 20.sp
+                        fontSize = 18.sp
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
-                    androidx.compose.material3.Button(onClick = { viewModel.resetTrivia() }) {
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Button(onClick = { viewModel.resetTrivia() }) {
                         Text(text = "Reset Questions")
                     }
                 }
@@ -96,31 +96,33 @@ fun PokemonTriviaView(navController: NavController) {
                     val trivia = (triviaState as PokemonTriviaUIState.Question).trivia
                     Text(
                         text = trivia.question,
-                        modifier = Modifier.padding(horizontal = 25.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .align(Alignment.Start),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp,
-                        textAlign = TextAlign.Center,
+                        fontSize = 22.sp,
+                        textAlign = TextAlign.Start,
                     )
 
-                    Spacer(modifier = Modifier.size(24.dp))
+                    Spacer(modifier = Modifier.size(16.dp))
 
                     AnswerButtons(viewModel, trivia)
 
+                    Spacer(modifier = Modifier.weight(1f))
+
                     if (viewModel.hasAnswered) {
-                        Spacer(modifier = Modifier.size(16.dp))
-                        androidx.compose.material3.Button(onClick = { viewModel.loadRandomQuestion() }) {
+                        Button(
+                            onClick = { viewModel.loadRandomQuestion() },
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 16.dp)
+                        ) {
                             Text(text = "Next Question")
                         }
                     }
                 }
             }
         }
-    }
-
-    @Composable
-    fun PokemonTriviaViewPreview() {
-        val navController = rememberNavController()
-        PokemonTriviaView(navController)
     }
 }
 
@@ -129,8 +131,8 @@ fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel)
     trivia.options.forEach { option ->
         Box(
             modifier = Modifier
-                .size(350.dp, 100.dp)
-                .clip(RoundedCornerShape(15.dp))
+                .size(300.dp, 80.dp)
+                .clip(RoundedCornerShape(10.dp))
                 .background(viewModel.getOptionColor(option))
                 .clickable(enabled = !viewModel.hasAnswered) {
                     viewModel.handleAnswer(option)
@@ -139,14 +141,21 @@ fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel)
         ) {
             Text(
                 text = option.name,
-                modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
-                fontSize = 30.sp,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 textAlign = TextAlign.Center
             )
         }
 
-        Spacer(modifier = Modifier.size(10.dp))
+        Spacer(modifier = Modifier.size(8.dp))
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PokemonTriviaViewPreview() {
+    val navController = rememberNavController()
+    PokemonTriviaView(navController)
 }

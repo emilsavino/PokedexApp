@@ -2,16 +2,11 @@ package com.example.pokedex.data
 
 import com.example.pokedex.shared.DamageRelations
 import com.example.pokedex.shared.EvolutionChain
-import com.example.pokedex.shared.EvolutionChainResult
 import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
-import com.example.pokedex.shared.Species
 import com.example.pokedex.shared.Type
-import com.example.pokedex.shared.Types
-import com.example.pokedex.shared.Varieties
-import com.example.pokedex.shared.VarietiesPokemon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +65,7 @@ class PokemonDataStore {
         println("DONE STARTING ALL BATCH JOBS FOR FETCHING POKEMONS")
     }
 
-    suspend fun getPokemonFromMapFallBackAPIPlaygroundClassFeature(name: String) : Pokemon
+    suspend fun getPokemonFromMapFallBackAPI(name: String) : Pokemon
     {
         val pokemon = pokemonMap[name]
 

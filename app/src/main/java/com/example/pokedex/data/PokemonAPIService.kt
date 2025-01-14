@@ -2,17 +2,12 @@ package com.example.pokedex.data
 
 import com.example.pokedex.shared.DamageRelations
 import com.example.pokedex.shared.EvolutionChain
-import com.example.pokedex.shared.EvolutionChainResult
 import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
-import com.example.pokedex.shared.Species
-import com.example.pokedex.shared.Varieties
-import com.example.pokedex.shared.VarietiesPokemon
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 interface PokemonAPIService {
     @GET("pokemon")

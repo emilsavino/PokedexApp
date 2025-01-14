@@ -28,14 +28,22 @@ import com.example.pokedex.shared.Team
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pokedex.shared.PokemonTypeResources
+import com.example.pokedex.shared.AddToTeamGridItem
+import com.example.pokedex.shared.EmptyGridItem
 
 @Composable
 fun MyTeamsView(navController: NavController) {
     val viewModel = viewModel<MyTeamsViewModel>()
     Column(
         modifier = Modifier
-            .background(Color(0xFFFFDD99))
+            .background(PokemonTypeResources().appGradient())
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -47,7 +55,11 @@ fun MyTeamsView(navController: NavController) {
         Spacer(modifier = Modifier.padding(10.dp))
 
         if (viewModel.isShowingDialog) {
-            DeleteTeamConfirmationDialog(viewModel.teamToDelete, viewModel)
+            DeleteTeamConfirmationDialog(viewModel.teamToEdit, viewModel)
+        }
+
+        if (viewModel.isShowingDeletePokemonDialog) {
+            DeletePokemonConfirmationDialog(viewModel)
         }
     }
 }
@@ -72,12 +84,14 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
                 fontSize = 20.sp
             )
         }
+
         is TeamsUIState.Loading -> {
             Text(
                 text = "Loading...",
                 fontSize = 20.sp
             )
         }
+
         is TeamsUIState.Data -> {
             MakeTeamsGrid(navController, teamsState.teams, viewModel)
         }
@@ -85,7 +99,11 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
 }
 
 @Composable
-private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewModel: MyTeamsViewModel) {
+private fun MakeTeamsGrid(
+    navController: NavController,
+    teams: List<Team>,
+    viewModel: MyTeamsViewModel
+) {
     var teamNumber = 1
     for (team in teams) {
         Row(
@@ -93,37 +111,77 @@ private fun MakeTeamsGrid(navController: NavController, teams: List<Team>, viewM
             modifier = Modifier.padding(10.dp)
         ) {
             Text(
-                text = "Team $teamNumber: ${team.name}",
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Team $teamNumber: ")
+                    }
+                    withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
+                        append(team.name)
+                    }
+                },
                 fontSize = 20.sp,
                 modifier = Modifier.weight(1f)
             )
 
             IconButton(
                 modifier = Modifier.padding(start = 8.dp),
-                onClick = { viewModel.onDeleteTeam(team.name) }
+                onClick = { viewModel.onDeleteTeamClicked(team.name) }
             ) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
             }
         }
 
-        teamNumber++
-
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.padding(start = 16.dp)
         ) {
-            for (pokemons in team.pokemons.chunked(3)) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    for (pokemon in pokemons) {
-                        PokemonGridItem(navController, pokemon = pokemon)
+            val totalGridItems = 6
+            val pokemonChunks = team.pokemons.chunked(3)
+            val displayedPokemonCount = team.pokemons.size
+
+            for ((index, chunk) in pokemonChunks.withIndex()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    for (pokemon in chunk) {
+                        PokemonGridItem(
+                            navController = navController,
+                            pokemon = pokemon,
+                            onLongClick = { viewModel.onLongClick(pokemon.name, team.name) }
+                        )
+                    }
+                    if (index == pokemonChunks.lastIndex && chunk.size < 3) {
+                        val remainingSlots = 3 - chunk.size
+                        repeat(remainingSlots) {
+                            if (displayedPokemonCount + it == displayedPokemonCount) {
+                                AddToTeamGridItem(navController, team.name)
+                            } else {
+                                EmptyGridItem(navController)
+                            }
+                        }
+                    }
+                }
+            }
+
+            val currentRowCount = pokemonChunks.size
+            if (currentRowCount < 2) {
+                repeat(2 - currentRowCount) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        val remainingSlots = 3
+                        for (slot in 1..remainingSlots) {
+                            if (team.pokemons.size == 3 && slot == 1) {
+                                AddToTeamGridItem(navController, team.name)
+                            } else {
+                                EmptyGridItem(navController)
+                            }
+                        }
                     }
                 }
             }
         }
+
+        teamNumber++
     }
 }
+
 
 @Composable
 private fun DeleteTeamConfirmationDialog(teamName: String, viewModel: MyTeamsViewModel) {
@@ -140,6 +198,27 @@ private fun DeleteTeamConfirmationDialog(teamName: String, viewModel: MyTeamsVie
         },
         dismissButton = {
             TextButton(onClick = { viewModel.isShowingDialog = false }) {
+                Text(text = "Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+private fun DeletePokemonConfirmationDialog(viewModel: MyTeamsViewModel) {
+    AlertDialog(
+        onDismissRequest = { viewModel.isShowingDeletePokemonDialog = false },
+        title = { Text(text = "Are you sure you want to remove ${viewModel.pokemonToDelete} from ${viewModel.teamToEdit}? ") },
+        text = {
+            Text(text = "This action cannot be undone.")
+        },
+        confirmButton = {
+            TextButton(onClick = { viewModel.deletePokemonFromTeam() }) {
+                Text(text = "Delete")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { viewModel.isShowingDeletePokemonDialog = false }) {
                 Text(text = "Cancel")
             }
         }

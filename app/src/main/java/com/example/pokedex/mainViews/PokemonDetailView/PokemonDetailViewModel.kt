@@ -134,8 +134,6 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
             navController.popBackStack()
         }
     }
-
-
 }
 
 sealed class PokemonDetailUIState {

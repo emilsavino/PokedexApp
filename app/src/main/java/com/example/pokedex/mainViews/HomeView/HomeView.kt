@@ -11,6 +11,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,18 +25,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.R
+import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.formatPokemonName
+import com.example.pokedex.shared.ProgressIndicator
 
 private val Padding = 8.dp
+private val typeResources = PokemonTypeResources()
 
 @Composable
-fun HomeView(modifier: Modifier = Modifier, navController: NavController) {
+fun HomeView(navController: NavController) {
     val viewModel = viewModel<HomeViewModel>()
     val pokemonOfTheDay = viewModel.pokemonOfTheDay.collectAsState().value
+
+    LaunchedEffect(Unit) {
+        viewModel.getPokemonOfTheDay()
+        viewModel.getRecentlyViewedPokemons()
+    }
 
     when (pokemonOfTheDay) {
         is HomeUIState.Empty -> {
@@ -75,7 +85,7 @@ fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: Home
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99))
+            .background(PokemonTypeResources().appGradient())
             .verticalScroll(rememberScrollState()),
     ) {
         PokemonOfDayView(pokemon = pokemon, navController = navController)
@@ -86,7 +96,7 @@ fun MakeHomeView(navController: NavController, pokemon: Pokemon, viewModel: Home
                 Text(text = "No recently viewed Pokémon")
             }
             is RecentsUIState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+                ProgressIndicator()
             }
             is RecentsUIState.Data -> {
                 RecentlyViewedPokemons(recentPokemons = recentPokemons.pokemons, navController = navController)
@@ -107,7 +117,8 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
         Text(
             text = "Pokémon of the Day",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
         )
 
         Box(
@@ -137,8 +148,17 @@ fun PokemonDetailsRow(pokemon: Pokemon) {
         Text(text = "Name: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Text(text = pokemon.name.formatPokemonName(), fontSize = 16.sp)
         Spacer(modifier = Modifier.width(Padding))
-        Text(text = "Type: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        Text(text = "Lightning", fontSize = 16.sp) // TODO: Update to display the correct type
+        Text(text = "Types: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        pokemon.types.forEach { type ->
+            val typeImage = typeResources.getTypeImage(type.type.name)
+            Image(
+                painter = typeImage,
+                contentDescription = "${type.type.name} type image",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(4.dp)
+            )
+        }
     }
 }
 
@@ -258,7 +278,7 @@ fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController: NavCont
 @Composable
 fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
     HomePageBox(
-        color = Color.Gray.copy(0.6f),
+        color = Color.Gray.copy(0.5f),
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }
     ) {
         Column(
@@ -268,7 +288,7 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default),
+                painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default?: R.drawable.unknown),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize(1f)
@@ -288,7 +308,9 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
 }
 
 @Composable
-fun HomePageBox(color: Color, onClick: () -> Unit, content: @Composable () -> Unit) {
+fun HomePageBox(color: Color,
+                onClick: () -> Unit,
+                content: @Composable () -> Unit) {
     Box(
         modifier = Modifier
             .width(190.dp)

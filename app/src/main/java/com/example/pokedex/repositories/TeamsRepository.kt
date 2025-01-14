@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import com.google.gson.Gson
@@ -18,6 +19,8 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "team_preferences")
 
 class TeamsRepository(private val context: Context) {
+    private val databaseService = DatabaseService("teams", Team::class.java)
+
     private val pokemonTeams = mutableListOf<Team>()
     private val TEAMS_KEY = stringPreferencesKey("teams")
     private val gson = Gson()
@@ -27,7 +30,20 @@ class TeamsRepository(private val context: Context) {
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            initializeCache()
+            initializeDatabase()
+            if (pokemonTeams.isEmpty()) {
+                initializeCache()
+            }
+            mutableTeamsFlow.emit(pokemonTeams)
+        }
+    }
+
+    private suspend fun initializeDatabase() {
+        databaseService.addListenerForList { teams ->
+            if (teams != null) {
+                pokemonTeams.clear()
+                pokemonTeams.addAll(teams)
+            }
         }
     }
 
@@ -35,32 +51,31 @@ class TeamsRepository(private val context: Context) {
         val savedTeams = fetchTeamsFromDataStore()
         pokemonTeams.clear()
         pokemonTeams.addAll(savedTeams)
-        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     suspend fun fetchTeams() {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun addTeam(newTeam: Team) : Boolean{
+    suspend fun addTeam(newTeam: Team): Boolean {
         for (team in pokemonTeams) {
             if (team.name == newTeam.name) {
                 return false
             }
         }
         pokemonTeams.add(newTeam)
+        databaseService.storeList(pokemonTeams)
         updateDataStore()
-        mutableTeamsFlow.emit(pokemonTeams)
         return true
     }
 
     suspend fun deleteTeam(teamName: String) {
         pokemonTeams.removeAll { it.name == teamName }
+        databaseService.storeList(pokemonTeams)
         updateDataStore()
-        mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun addToTeam(pokemon: Pokemon, teamName: String) : Boolean {
+    suspend fun addToTeam(pokemon: Pokemon, teamName: String): Boolean {
         val teamIndex = pokemonTeams.indexOfFirst { it.name == teamName }
 
         if (teamIndex == -1) {
@@ -74,15 +89,28 @@ class TeamsRepository(private val context: Context) {
 
         val updatedTeam = team.copy(pokemons = team.pokemons + pokemon)
         pokemonTeams[teamIndex] = updatedTeam
+        databaseService.storeList(pokemonTeams)
         updateDataStore()
         mutableTeamsFlow.emit(pokemonTeams)
         return true
     }
 
-    suspend fun updateTeam(index: Int, updatedTeam: Team){
-        if(index in pokemonTeams.indices){
-            pokemonTeams[index] = updatedTeam
-            updateDataStore()
+    suspend fun deletePokemonFromTeam(name: String, teamName: String) {
+        val teamIndex = pokemonTeams.indexOfFirst { it.name == teamName }
+
+        val team = pokemonTeams[teamIndex]
+        for (pokemon in team.pokemons) {
+            if (pokemon.name == name) {
+                val updatedTeam = team.copy(pokemons = team.pokemons - pokemon)
+                if (updatedTeam.pokemons.isEmpty()) {
+                    deleteTeam(teamName)
+                    return
+                }
+                pokemonTeams[teamIndex] = updatedTeam
+                updateDataStore()
+                mutableTeamsFlow.emit(pokemonTeams)
+                break
+            }
         }
     }
 

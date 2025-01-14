@@ -39,6 +39,7 @@ import com.example.pokedex.mainViews.PokemonDetailView.PokemonDetailViewModel
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.ProgressIndicator
 
 @Composable
@@ -50,7 +51,7 @@ fun AddToTeamView(teamName: String, modifier: Modifier = Modifier, navController
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFFFDD99)),
+            .background(PokemonTypeResources().appGradient()),
         contentAlignment = Alignment.TopCenter,
     ) {
         Column(

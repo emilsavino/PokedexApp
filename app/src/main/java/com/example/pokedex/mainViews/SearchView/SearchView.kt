@@ -251,11 +251,11 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: Se
         onClick = {
             viewModel.addPokemonToRecentlySearched(pokemon.name)
             navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name))
-            },
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .shadow(2.dp, CircleShape),
+            .shadow(3.dp, RoundedCornerShape(24.dp)),
         shape = RoundedCornerShape(24.dp),
         colors = buttonColors(
             containerColor = Color.White
@@ -265,6 +265,13 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: Se
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
+            AsyncImage(
+                model = pokemon.sprites.front_default,
+                contentDescription = "${pokemon.name} Image",
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(end = 2.dp)
+            )
             Text(
                 text = pokemon.name.formatPokemonName(),
                 color = Color.Black,

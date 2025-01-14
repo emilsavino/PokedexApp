@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "pokemon_preferences")
 
 class FavouritesRepository(private val context: Context) {
-    private val databaseService = DatabaseService<Pokemon>("saved", Pokemon::class.java)
+    private val databaseService = DatabaseService("favorites", Pokemon::class.java)
     private val favouritePokemons = mutableListOf<Pokemon>()
     private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
     private val gson = Gson()
@@ -27,9 +27,20 @@ class FavouritesRepository(private val context: Context) {
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
 
     init {
-        if (!fetchFromDatabase()) {
-            CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
+            initializeDatabase()
+            if (favouritePokemons.isEmpty()) {
                 initializeCache()
+            }
+            mutableSavedPokemonsFlow.emit(favouritePokemons)
+        }
+    }
+
+    private suspend fun initializeDatabase() {
+        databaseService.addListenerForList { favorites ->
+            if (favorites != null) {
+                favouritePokemons.clear()
+                favouritePokemons.addAll(favorites)
             }
         }
     }
@@ -48,16 +59,16 @@ class FavouritesRepository(private val context: Context) {
     suspend fun makeFavourite(pokemon: Pokemon) {
         if (!favouritePokemons.contains(pokemon)) {
             favouritePokemons.add(pokemon)
+            databaseService.storeList(favouritePokemons)
             updateDataStore()
-            databaseService.storeArray(favouritePokemons)
         }
     }
 
     suspend fun removeFromFavourites(pokemon: Pokemon) {
         if (favouritePokemons.contains(pokemon)) {
             favouritePokemons.remove(pokemon)
+            databaseService.storeList(favouritePokemons)
             updateDataStore()
-            databaseService.storeArray(favouritePokemons)
         }
     }
 
@@ -76,22 +87,5 @@ class FavouritesRepository(private val context: Context) {
         val preferences = context.dataStore.data.first()
         val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"
         return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()
-    }
-
-    private fun fetchFromDatabase(): Boolean {
-        var successful = false
-        databaseService.addListenerForArray { pokemons ->
-            if (pokemons.isNotEmpty()) {
-                favouritePokemons.clear()
-                favouritePokemons.addAll(pokemons)
-                mutableSavedPokemonsFlow.tryEmit(favouritePokemons)
-                CoroutineScope(Dispatchers.IO).launch {
-                    updateDataStore()
-                }
-                successful = true
-
-            }
-        }
-        return successful
     }
 }

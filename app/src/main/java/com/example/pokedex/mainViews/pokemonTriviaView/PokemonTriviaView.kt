@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.PokemonTriviaModel
 
@@ -68,9 +69,10 @@ fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel)
 
 @Composable
 fun PokemonTriviaView(navController: NavController) {
-    val viewModel = remember { PokemonTriviaViewModel(PokemonTriviaRepository()) }
+    val viewModel: PokemonTriviaViewModel = viewModel()
     val triviaState by viewModel.triviaState.collectAsState()
     val streakCount by viewModel.streakCount.collectAsState()
+
 
     Column(
         modifier = Modifier
@@ -83,7 +85,6 @@ fun PokemonTriviaView(navController: NavController) {
             modifier = Modifier.align(Alignment.Start)
         )
 
-        // Display Streak Counter
         Text(
             text = "Correct Streak: $streakCount",
             modifier = Modifier.padding(vertical = 16.dp),
@@ -101,7 +102,7 @@ fun PokemonTriviaView(navController: NavController) {
             is PokemonTriviaUIState.Empty -> {
                 Text(text = "No more questions available.", fontSize = 20.sp)
                 Spacer(modifier = Modifier.size(16.dp))
-                Button(onClick = { viewModel.resetTrivia() }) {
+                androidx.compose.material3.Button(onClick = { viewModel.resetTrivia() }) {
                     Text(text = "Reset Questions")
                 }
             }
@@ -122,7 +123,7 @@ fun PokemonTriviaView(navController: NavController) {
 
                 if (viewModel.hasAnswered) {
                     Spacer(modifier = Modifier.size(16.dp))
-                    Button(onClick = { viewModel.loadRandomQuestion() }) {
+                    androidx.compose.material3.Button(onClick = { viewModel.loadRandomQuestion() }) {
                         Text(text = "Next Question")
                     }
                 }

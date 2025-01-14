@@ -19,7 +19,7 @@ class WhoIsThatPokemonRepository {
     private suspend fun determineOptions() : WhoIsThatPokemon {
         val potentialAnswers = dataStore.getAllPokemonResults()
         val correctAnswerName = potentialAnswers.random().name
-        val correctAsnwer = dataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(correctAnswerName)
+        val correctAsnwer = dataStore.getPokemonFromMapFallBackAPI(correctAnswerName)
         val options = mutableListOf<Option>()
         options.add(Option(correctAnswerName, true))
         while (options.size < 4) {

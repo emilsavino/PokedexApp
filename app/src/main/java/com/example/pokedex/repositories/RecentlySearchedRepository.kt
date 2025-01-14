@@ -47,7 +47,7 @@ class RecentlySearchedRepository(private val context: Context) {
         val mutableList : MutableList<Pokemon> = mutableListOf()
         for (name in recentlySearchedPokemon)
         {
-            val pokemon = pokemonDataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(name)
+            val pokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(name)
             mutableList.add(pokemon)
         }
         mutableSearchFlow.emit(mutableList.toList().reversed())
@@ -101,7 +101,7 @@ class RecentlySearchedRepository(private val context: Context) {
             val result = allPokemonResults.get(index)
             if (result.name.contains(name, ignoreCase = true))
             {
-                var pokemon = pokemonDataStore.getPokemonFromMapFallBackAPIPlaygroundClassFeature(result.name)
+                var pokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(result.name)
                 var typeRelevant = false
                 for (type in filterOptions)
                 {

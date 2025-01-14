@@ -144,8 +144,11 @@ fun PokemonDetailsRow(pokemon: Pokemon) {
         Text(text = "Name: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Text(text = pokemon.name.formatPokemonName(), fontSize = 16.sp)
         Spacer(modifier = Modifier.width(Padding))
-        Text(text = "Type: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        Text(text = "Lightning", fontSize = 16.sp) // TODO: Update to display the correct type
+        Text(text = "Types: ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = pokemon.types.joinToString(", ") { it.type.name.formatPokemonName() },
+            fontSize = 16.sp
+        )
     }
 }
 
@@ -275,7 +278,7 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default),
+                painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default?: R.drawable.unknown),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize(1f)
@@ -295,7 +298,9 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
 }
 
 @Composable
-fun HomePageBox(color: Color, onClick: () -> Unit, content: @Composable () -> Unit) {
+fun HomePageBox(color: Color,
+                onClick: () -> Unit,
+                content: @Composable () -> Unit) {
     Box(
         modifier = Modifier
             .width(190.dp)

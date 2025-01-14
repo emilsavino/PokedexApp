@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
@@ -28,6 +29,8 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     var newTeamName by mutableStateOf("")
     var errorMessage by mutableStateOf<String?>(null)
     var showTeamCreationDialog by mutableStateOf(false)
+    private var previousPokemonsName = mutableListOf<String>()
+    private var currentPokemonName by mutableStateOf(name)
 
     private val _pokemon = MutableStateFlow<PokemonDetailUIState>(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon
@@ -53,7 +56,7 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         _pokemon.update {
             PokemonDetailUIState.Loading
         }
-        pokemonRepository.getPokemonDetailsByName(name)
+        pokemonRepository.getPokemonDetailsByName(currentPokemonName)
     }
 
     fun savePokemon(pokemon: Pokemon) = viewModelScope.launch {
@@ -110,6 +113,26 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         showDialog = false
         selectedTeam = ""
         errorMessage = null
+    }
+
+    fun navigateToEvo(nextName: String) {
+        if (nextName == currentPokemonName)
+        {
+            return
+        }
+        previousPokemonsName.add(currentPokemonName)
+        currentPokemonName = nextName
+        getPokemonByName()
+    }
+
+    fun navigateToPrevious(navController: NavController) {
+        if (previousPokemonsName.isNotEmpty()) {
+            currentPokemonName = previousPokemonsName[previousPokemonsName.size - 1]
+            previousPokemonsName.removeAt(previousPokemonsName.size - 1)
+            getPokemonByName()
+        } else {
+            navController.popBackStack()
+        }
     }
 
 

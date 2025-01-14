@@ -25,7 +25,11 @@ class HomeViewModel : ViewModel() {
             recentlyViewedRepository.recentlyViewedPokemonsFlow
                 .collect { pokemons ->
                     _recentlyViewedPokemons.update {
-                        RecentsUIState.Data(pokemons)
+                        if (pokemons.isEmpty()) {
+                            RecentsUIState.Empty
+                        } else {
+                            RecentsUIState.Data(pokemons)
+                        }
                     }
                 }
         }
@@ -35,18 +39,13 @@ class HomeViewModel : ViewModel() {
                 .collect { pokemon ->
                     if (pokemon == null) {
                         getPokemonOfTheDay()
-                    }
-                    else
-                    {
+                    } else {
                         _pokemonOfTheDay.update {
                             HomeUIState.Data(pokemon)
                         }
                     }
                 }
         }
-
-        getRecentlyViewedPokemons()
-        getPokemonOfTheDay()
     }
 
     fun getPokemonOfTheDay() = viewModelScope.launch {

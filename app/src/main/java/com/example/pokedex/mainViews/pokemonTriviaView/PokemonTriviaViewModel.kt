@@ -60,7 +60,9 @@ class PokemonTriviaViewModel : ViewModel() {
             } else {
                 _streakCount.update { 0 }
             }
-
+            viewModelScope.launch {
+                repository.markQuestionAsAnswered(currentState.trivia)
+            }
         }
     }
 

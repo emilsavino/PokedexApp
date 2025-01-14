@@ -79,17 +79,24 @@ class PokemonTriviaRepository {
 
     suspend fun loadRandomUnansweredQuestion() {
         val unansweredQuestions = triviaQuestions.filterNot { answeredQuestions.contains(it) }
-        val question = unansweredQuestions.randomOrNull()
-        mutableTriviaFlow.emit(question)
+
+        if (unansweredQuestions.isEmpty()) {
+            println("All questions have been answered.")
+            mutableTriviaFlow.emit(null)
+        } else {
+            val question = unansweredQuestions.random()
+            println("Loaded question: ${question.question}")
+            mutableTriviaFlow.emit(question)
+        }
     }
 
     suspend fun markQuestionAsAnswered(question: PokemonTriviaModel) {
         answeredQuestions.add(question)
-        loadRandomUnansweredQuestion()
     }
 
     suspend fun resetQuestions() {
         answeredQuestions.clear()
+        println("Questions have been reset.")
         loadRandomUnansweredQuestion()
     }
 }

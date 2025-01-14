@@ -36,7 +36,7 @@ fun PokemonGridItem(navController: NavController, pokemon: Pokemon, onLongClick:
             }
     ) {
         AsyncImage(
-            model = pokemon.sprites.front_default,
+            model = pokemon.getSprite(),
             contentDescription = "Picture of a Pokemon",
             modifier = Modifier.fillMaxSize()
         )

@@ -33,6 +33,7 @@ import com.example.pokedex.R
 import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.ProgressIndicator
+import com.example.pokedex.shared.getSprite
 
 private val Padding = 8.dp
 private val typeResources = PokemonTypeResources()
@@ -126,7 +127,7 @@ fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default),
+                painter = rememberAsyncImagePainter(model = pokemon.getSprite()),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize()
@@ -288,7 +289,7 @@ fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = pokemon.sprites.front_default?: R.drawable.unknown),
+                painter = rememberAsyncImagePainter(model = pokemon.getSprite()),
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize(1f)

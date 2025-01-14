@@ -41,34 +41,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.PokemonTriviaModel
 
-
-@Composable
-fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel) {
-    trivia.options.forEach { option ->
-        Box(
-            modifier = Modifier
-                .size(350.dp, 100.dp)
-                .clip(RoundedCornerShape(15.dp))
-                .background(viewModel.getOptionColor(option))
-                .clickable(enabled = !viewModel.hasAnswered) {
-                    viewModel.handleAnswer(option)
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = option.name,
-                modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        Spacer(modifier = Modifier.size(10.dp))
-    }
-}
-
 @Composable
 fun PokemonTriviaView(navController: NavController) {
     val viewModel: PokemonTriviaViewModel = viewModel()
@@ -149,5 +121,32 @@ fun PokemonTriviaView(navController: NavController) {
     fun PokemonTriviaViewPreview() {
         val navController = rememberNavController()
         PokemonTriviaView(navController)
+    }
+}
+
+@Composable
+fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel) {
+    trivia.options.forEach { option ->
+        Box(
+            modifier = Modifier
+                .size(350.dp, 100.dp)
+                .clip(RoundedCornerShape(15.dp))
+                .background(viewModel.getOptionColor(option))
+                .clickable(enabled = !viewModel.hasAnswered) {
+                    viewModel.handleAnswer(option)
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = option.name,
+                modifier = Modifier.padding(horizontal = 25.dp, vertical = 10.dp),
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Spacer(modifier = Modifier.size(10.dp))
     }
 }

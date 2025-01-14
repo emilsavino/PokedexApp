@@ -53,6 +53,7 @@ import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.PokemonAttributes
 import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.Team
+import com.example.pokedex.shared.getSprite
 
 val typeResources = PokemonTypeResources()
 
@@ -211,7 +212,7 @@ private fun CreatePokemonBox(pokemon: PokemonAttributes) {
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
-            model = pokemon.pokemon.sprites.front_default ?: R.drawable.unknown,
+            model = pokemon.pokemon.getSprite(),
             contentDescription = "Picture of a Pokémon",
             modifier = Modifier.fillMaxSize()
         )
@@ -430,7 +431,7 @@ private fun CreateEvoBox(
                             .clickable { viewModel.navigateToEvo(localPokemon.name) }
                     ) {
                         AsyncImage(
-                            model = localPokemon.sprites.front_default,
+                            model = localPokemon.getSprite(),
                             contentDescription = "Sprite",
                             modifier = Modifier
                                 .fillMaxSize()

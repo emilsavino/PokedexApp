@@ -1,5 +1,6 @@
 package com.example.pokedex.repositories
 
+import com.example.pokedex.R
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Ability
 import com.example.pokedex.shared.AbilityDetails
@@ -12,6 +13,7 @@ import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonAttributes
 import com.example.pokedex.shared.Type
 import com.example.pokedex.shared.Types
+import com.example.pokedex.shared.getSprite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -38,7 +40,7 @@ class PokemonRepository {
         var description = fetchPokemonDescription(name)
         val evolutionChainPokemons = fetchEvolutionChainPokemons(name)
 
-        if (pokemon.sprites.front_default == null) {
+        if (pokemon.getSprite() == R.drawable.unknown) {
             description = FlavorTextEntry("This Pokémon is so rare, that no photos have been taken!",
                 Language("en"))
         }

@@ -34,6 +34,7 @@ import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.ProgressIndicator
 import com.example.pokedex.shared.WhoIsThatPokemon
 import com.example.pokedex.shared.formatPokemonName
+import com.example.pokedex.shared.getSprite
 
 @Composable
 fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavController) {
@@ -70,7 +71,7 @@ fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavContro
 
                 AsyncImage(
                     modifier = modifier.height(250.dp),
-                    model = whoIsThatPokemon.pokemon.pokemon.sprites.front_default,
+                    model = whoIsThatPokemon.pokemon.pokemon.getSprite(),
                     contentDescription = "Blacked out image of pokemon"
                 )
 

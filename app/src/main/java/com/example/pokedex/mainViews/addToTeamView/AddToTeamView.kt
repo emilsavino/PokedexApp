@@ -42,6 +42,7 @@ import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.ProgressIndicator
+import com.example.pokedex.shared.getSprite
 
 @Composable
 fun AddToTeamView(teamName: String, modifier: Modifier = Modifier, navController: NavController) {
@@ -279,7 +280,7 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: Ad
             modifier = Modifier.fillMaxWidth()
         ) {
             AsyncImage(
-                model = pokemon.sprites.front_default,
+                model = pokemon.getSprite(),
                 contentDescription = "${pokemon.name} Image",
                 modifier = Modifier
                     .size(100.dp)

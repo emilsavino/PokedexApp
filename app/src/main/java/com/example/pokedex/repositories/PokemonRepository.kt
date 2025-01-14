@@ -79,47 +79,39 @@ class PokemonRepository {
 
     private suspend fun fetchPokemonDescription(name: String): FlavorTextEntry {
         val fallbackEntry = FlavorTextEntry("We do not have much knowledge of this mysterious Pokémon!", Language("en"))
-        return try {
-            val pokemonSpecies = dataStore.fetchPokemonSpecies(name)
-            pokemonSpecies.flavor_text_entries.firstOrNull {
-                it.language.name == "en"
-            } ?: fallbackEntry
-        } catch (e: Exception) {
-            fallbackEntry
-        }
+        val pokemonSpecies = dataStore.fetchPokemonSpecies(name)
+        return pokemonSpecies.flavor_text_entries.firstOrNull {
+            it.language.name == "en"
+        } ?: fallbackEntry
     }
 
     private suspend fun fetchEvolutionChainPokemons(name: String): List<Pokemon> {
-        return try {
-            val evolutionPokemonList = mutableListOf<Pokemon>()
+        val evolutionPokemonList = mutableListOf<Pokemon>()
 
-            val pokemonEvoChainUrl = dataStore.fetchPokemonSpecies(name)
-            val getEvoChainID = pokemonEvoChainUrl.evolution_chain.url
-            val id = getEvoChainID
-                .substringAfter("evolution-chain/")
-                .substringBefore("/")
-                .toInt()
+        val pokemonEvoChainUrl = dataStore.fetchPokemonSpecies(name)
+        val getEvoChainID = pokemonEvoChainUrl.evolution_chain.url
+        val id = getEvoChainID
+            .substringAfter("evolution-chain/")
+            .substringBefore("/")
+            .toInt()
 
-            val evoChainResult = dataStore.fetchNameFromEvoChain(id)
+        val evoChainResult = dataStore.fetchNameFromEvoChain(id)
 
-            fun extractPokemonNames(chain: EvolutionChainResult): List<String> {
-                val names = mutableListOf(chain.species.name)
-                for (evolution in chain.evolves_to) {
-                    names.addAll(extractPokemonNames(evolution))
-                }
-                return names
+        fun extractPokemonNames(chain: EvolutionChainResult): List<String> {
+            val names = mutableListOf(chain.species.name)
+            for (evolution in chain.evolves_to) {
+                names.addAll(extractPokemonNames(evolution))
             }
-
-            val pokemonNames = extractPokemonNames(evoChainResult.chain)
-
-            for (pokemonName in pokemonNames) {
-                val getPokemon = dataStore.getPokemonFromMapFallBackAPI(pokemonName)
-                evolutionPokemonList.add(getPokemon)
-            }
-
-            evolutionPokemonList
-        } catch (e: Exception) {
-            emptyList()
+            return names
         }
+
+        val pokemonNames = extractPokemonNames(evoChainResult.chain)
+
+        for (pokemonName in pokemonNames) {
+            val getPokemon = dataStore.getPokemonFromMapFallBackAPI(pokemonName)
+            evolutionPokemonList.add(getPokemon)
+        }
+
+        return evolutionPokemonList
     }
 }

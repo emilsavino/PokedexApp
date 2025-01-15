@@ -8,7 +8,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.DamageRelationsResult
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import com.example.pokedex.shared.PokemonAttributes

@@ -29,6 +29,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.R
+import com.example.pokedex.shared.NoInternetAlert
 import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.ProgressIndicator
@@ -66,7 +67,7 @@ fun HomeView(navController: NavController) {
             }
         }
 
-        GamesRow(navController = navController)
+        GamesRow(navController = navController, viewModel = viewModel)
 
         when (recentPokemons) {
             is RecentsUIState.Empty -> {
@@ -78,6 +79,10 @@ fun HomeView(navController: NavController) {
             is RecentsUIState.Data -> {
                 RecentlyViewedPokemons(recentPokemons = recentPokemons.pokemons, navController = navController)
             }
+        }
+
+        if (viewModel.showNoInternetAlert) {
+            NoInternetAlert(onDismiss = { viewModel.showNoInternetAlert = false })
         }
     }
 }
@@ -159,7 +164,7 @@ private fun PokemonDetailsRow(pokemon: Pokemon) {
 }
 
 @Composable
-private fun GamesRow(navController: NavController) {
+private fun GamesRow(navController: NavController, viewModel: HomeViewModel) {
     Text(
         text = "Pokémon Games",
         style = MaterialTheme.typography.titleMedium,
@@ -172,7 +177,7 @@ private fun GamesRow(navController: NavController) {
     ) {
         HomePageBox(
             color = MaterialTheme.colorScheme.primary,
-            onClick = { navController.navigate(Screen.WhoIsThatPokemon.route) }
+            onClick = { viewModel.onWhoIsThatPokemonClicked(navController) }
         ) {
             MakeWhosThatPokemonBox()
         }
@@ -187,9 +192,11 @@ private fun GamesRow(navController: NavController) {
 }
 
 @Composable
-private fun HomePageBox(color: Color,
-                onClick: () -> Unit,
-                content: @Composable () -> Unit) {
+private fun HomePageBox(
+    color: Color,
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
     Box(
         modifier = Modifier
             .width(190.dp)

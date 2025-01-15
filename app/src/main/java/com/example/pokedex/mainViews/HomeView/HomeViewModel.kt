@@ -1,8 +1,14 @@
 package com.example.pokedex.mainViews.HomeView
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +19,10 @@ import kotlinx.coroutines.launch
 class HomeViewModel : ViewModel() {
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
     private val pokemonOfTheDayRepository = DependencyContainer.pokemonOfTheDayRepository
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    private var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
+    var showNoInternetAlert by mutableStateOf(false)
+
 
     private val _pokemonOfTheDay = MutableStateFlow<HomeUIState>(HomeUIState.Empty)
     val pokemonOfTheDay: StateFlow<HomeUIState> = _pokemonOfTheDay.asStateFlow()
@@ -62,6 +72,14 @@ class HomeViewModel : ViewModel() {
             RecentsUIState.Loading
         }
         recentlyViewedRepository.fetchRecents()
+    }
+
+    fun onWhoIsThatPokemonClicked(navController: NavController) {
+        if (hasInternet.value == true) {
+            navController.navigate(Screen.WhoIsThatPokemon.route)
+        } else {
+            showNoInternetAlert = true
+        }
     }
 }
 

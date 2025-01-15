@@ -9,13 +9,10 @@ import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Result
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 
 private val Context.dataStore by preferencesDataStore(name = "pofd_preferences")

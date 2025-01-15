@@ -18,8 +18,11 @@ class PokemonOfTheDayRepository {
         mutablePokemonOfTheDayFlow.emit(determinePokemonOfTheDay())
     }
 
-    suspend fun determinePokemonOfTheDay(): Pokemon {
+    suspend fun determinePokemonOfTheDay(): Pokemon? {
         val pokemons = dataStore.getAllPokemonResults()
+        if (pokemons.isEmpty()) {
+            return null
+        }
         val date = LocalDate.now().dayOfMonth
         return dataStore.getPokemonFromMapFallBackAPI(pokemons[date].name)
     }

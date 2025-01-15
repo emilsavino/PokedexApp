@@ -1,11 +1,16 @@
 package com.example.pokedex.data
 
+import androidx.lifecycle.asLiveData
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.DamageRelations
 import com.example.pokedex.shared.EvolutionChain
+import com.example.pokedex.shared.EvolutionChainResult
+import com.example.pokedex.shared.EvolutionChainUrlFromSpecies
 import com.example.pokedex.shared.FlavorTextAndEvolutionChain
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.PokemonList
 import com.example.pokedex.shared.Result
+import com.example.pokedex.shared.Species
 import com.example.pokedex.shared.Type
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
@@ -14,9 +19,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class PokemonDataStore {
+    private val connectivityRepository = DependencyContainer.connectivityRepository
     private val api = RetrofitInstance.apiService
     private var allPokemonResultList = PokemonList(emptyList())
     private val pokemonMap : HashMap<String, Pokemon> = HashMap()
+    private var hasInternet = connectivityRepository.isConnected.asLiveData()
 
     init{
         CoroutineScope(Dispatchers.IO).launch {
@@ -27,12 +34,17 @@ class PokemonDataStore {
 
     fun getAllPokemonResults() : List<Result>
     {
+        if (hasInternet.value == false) {
+            return emptyList()
+        }
+
         while (allPokemonResultList.results.isEmpty()) {}
         return allPokemonResultList.results
     }
 
     suspend private fun fillUpMapFromAllPokemonResults()
     {
+        if (hasInternet.value == false) { return }
         val elementsPerBatch = 200
         val pokemonNameMatrix : MutableList<List<String>> = mutableListOf()
         var counter = 0
@@ -73,34 +85,42 @@ class PokemonDataStore {
             return pokemon
         }
 
-        pokemonMap[name] = api.getPokemon(name.lowercase())
+        if (hasInternet.value == true) {
+            pokemonMap[name] = api.getPokemon(name.lowercase())
+        }
+
         return pokemonMap[name]!!
     }
 
     private suspend fun fetchAllPokemons()
     {
+        if (hasInternet.value == false) { return }
         allPokemonResultList = fetchPokemons(10000,0)
     }
 
     private suspend fun fetchPokemons(limit: Int, offset: Int): PokemonList {
+        if (hasInternet.value == false) { return PokemonList(emptyList()) }
         return withContext(Dispatchers.IO) {
             api.getPokemons(limit,offset)
         }
     }
 
     suspend fun fetchPokemonSpecies(name: String): FlavorTextAndEvolutionChain {
+        if (hasInternet.value == false) { return FlavorTextAndEvolutionChain(EvolutionChainUrlFromSpecies(""), emptyList()) }
         return withContext(Dispatchers.IO) {
             api.getPokemonSpecies(name)
         }
     }
 
     suspend fun fetchNameFromEvoChain(id: Int): EvolutionChain {
+        if (hasInternet.value == false) { return EvolutionChain(EvolutionChainResult(Species(""), emptyList())) }
         return withContext(Dispatchers.IO) {
             api.getEvoChain(id)
         }
     }
 
     suspend fun fetchTypeInfo(types: List<Type>): List<DamageRelations> {
+        if (hasInternet.value == false) { return emptyList() }
         return withContext(Dispatchers.IO) {
             types.map { type ->
                 api.getTypeInfo(type.name)

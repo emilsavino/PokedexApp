@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {
     private val connectivityRepository = DependencyContainer.connectivityRepository
-    var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
     var email = mutableStateOf("Guest")
     var profilePictureUrl = mutableStateOf<String?>(null)
     var authError = mutableStateOf<String?>(null)
@@ -25,7 +24,7 @@ class SignInViewModel : ViewModel() {
 
 
     fun signInWithGoogle(navController: NavController) {
-        if (hasInternet.value == false) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
             failedToSignIn = true
             return
         }

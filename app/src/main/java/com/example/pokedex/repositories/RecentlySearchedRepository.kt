@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.SearchResult
 import com.example.pokedex.shared.PokemonTypeResources
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -31,8 +32,8 @@ class RecentlySearchedRepository(private val context: Context) {
     val filterOptions = PokemonTypeResources().getAllTypes()
     val sortOptions = listOf("NameASC","NameDSC", "Evolutions")
 
-    private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
-    val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()
+    private val mutableSearchFlow = MutableSharedFlow<SearchResult>()
+    val searchFlow: Flow<SearchResult> = mutableSearchFlow.asSharedFlow()
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -64,14 +65,15 @@ class RecentlySearchedRepository(private val context: Context) {
         fetchRecentlySearched()
     }
 
-    suspend fun fetchRecentlySearched() {
+    suspend fun fetchRecentlySearched(searchID : Int = -1) {
         val mutableList : MutableList<Pokemon> = mutableListOf()
         for (name in recentlySearchedPokemon)
         {
             val pokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(name)
             mutableList.add(pokemon)
         }
-        mutableSearchFlow.emit(mutableList.toList().reversed())
+        val result = SearchResult(searchID,mutableList.reversed())
+        mutableSearchFlow.emit(result)
     }
 
     suspend fun addToRecentlySearched(name: String) {
@@ -106,7 +108,7 @@ class RecentlySearchedRepository(private val context: Context) {
         return gson.fromJson(pokemonJson, Array<String>::class.java).toList()
     }
 
-    suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String)
+    suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String, searchID : Int)
     {
         var foundElements = 0
         val elementsToFind = 20
@@ -161,7 +163,8 @@ class RecentlySearchedRepository(private val context: Context) {
             }
             index++
         }
-        mutableSearchFlow.emit(mutableFilteredList)
+        val result = SearchResult(searchID,mutableFilteredList)
+        mutableSearchFlow.emit(result)
     }
 
 }

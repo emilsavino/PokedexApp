@@ -1,8 +1,10 @@
 package com.example.pokedex.repositories
 
+import com.example.pokedex.R
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Option
 import com.example.pokedex.shared.WhoIsThatPokemon
+import com.example.pokedex.shared.getSprite
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class WhoIsThatPokemonRepository {
@@ -18,8 +20,12 @@ class WhoIsThatPokemonRepository {
 
     private suspend fun determineOptions() : WhoIsThatPokemon {
         val potentialAnswers = dataStore.getAllPokemonResults()
-        val correctAnswerName = potentialAnswers.random().name
-        val correctAsnwer = dataStore.getPokemonFromMapFallBackAPI(correctAnswerName)
+        var correctAnswerName = potentialAnswers.random().name
+        var correctAnswer = dataStore.getPokemonFromMapFallBackAPI(correctAnswerName)
+        while (correctAnswer.getSprite() == R.drawable.unknown) {
+            correctAnswerName = potentialAnswers.random().name
+            correctAnswer = dataStore.getPokemonFromMapFallBackAPI(correctAnswerName)
+        }
         val options = mutableListOf<Option>()
         options.add(Option(correctAnswerName, true))
         while (options.size < 4) {
@@ -29,6 +35,6 @@ class WhoIsThatPokemonRepository {
             }
         }
         options.shuffle()
-        return WhoIsThatPokemon(correctAsnwer, options)
+        return WhoIsThatPokemon(correctAnswer, options)
     }
 }

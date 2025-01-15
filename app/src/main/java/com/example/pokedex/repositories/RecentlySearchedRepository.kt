@@ -27,7 +27,7 @@ class RecentlySearchedRepository(private val context: Context) {
     private val gson = Gson()
 
 
-    val filterOptions = mutableListOf("fire","grass","ASAP-Rocky")
+    val filterOptions = mutableListOf("bug","dark","dragon","fairy","fighting","fire","flying","ghost","grass","ground","ice","normal","poison","psychic","rock","steel","water")
     val sortOptions = mutableListOf("NameASC","NameDSC")
 
     private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()

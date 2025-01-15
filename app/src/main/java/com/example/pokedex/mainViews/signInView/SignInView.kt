@@ -34,11 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.R
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.PokemonTypeResources
@@ -111,6 +109,20 @@ fun SignInView(navController: NavController){
                 fontStyle = FontStyle.Italic
 
             )
+
+            if (viewModel.failedToSignIn) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "You need internet to sign in",
+                        color = Color.Red
+                    )
+                }
+            }
         }
     }
 }
@@ -244,52 +256,6 @@ private fun MakeSignInWithGoogleButton(viewModel: SignInViewModel, navController
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleMedium
             )
-            OutlinedButton(
-                onClick = {
-                    viewModel.signInWithGoogle(navController)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .shadow(6.dp, CircleShape),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                ),
-                shape = CircleShape
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.google),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .padding(end = 8.dp)
-                    )
-                    Text(
-                        text = "Sign in with Google",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-            }
-
-            if (viewModel.failedToSignIn) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "You need internet to sign in",
-                        color = Color.Red
-                    )
-                }
-            }
         }
     }
 }

@@ -55,6 +55,10 @@ class SignInViewModel : ViewModel() {
         enteredPassword: String,
         navController: NavController
     ) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            failedToSignIn = true
+            return
+        }
         viewModelScope.launch {
             emailAuthManager.loginWithEmail(enteredEmail, enteredPassword)
                 .collectLatest { response ->

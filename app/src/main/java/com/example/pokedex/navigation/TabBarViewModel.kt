@@ -24,7 +24,7 @@ class TabBarViewModel: ViewModel() {
         Tab(route = Screen.Saved.route, title = "Saved", icon = Icons.Outlined.FavoriteBorder),
         Tab(route = Screen.MyTeams.route, title = "Teams", icon = Icons.AutoMirrored.Outlined.List),
         Tab(route = Screen.Home.route, title = "Home", icon = Icons.Outlined.Home),
-        Tab(route = Screen.Search.route, title = "Search", icon = Icons.Outlined.Search),
+        Tab(route = Screen.Search.createRoute(""), title = "Search", icon = Icons.Outlined.Search),
         Tab(route = Screen.Profile.route, title = "Profile", icon = Icons.Outlined.Person)
     )
 }

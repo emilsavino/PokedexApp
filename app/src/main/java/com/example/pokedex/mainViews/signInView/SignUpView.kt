@@ -1,6 +1,5 @@
 package com.example.pokedex.mainViews.signInView
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,7 +41,7 @@ import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.PokemonTypeResources
 
 @Composable
-fun SignInView(
+fun SignUpView(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
@@ -100,17 +99,16 @@ fun SignInView(
             Spacer(modifier = Modifier.padding(8.dp))
 
             Text(
-                text = "Don't have an account yet?",
+                text = "Already have an account?",
                 color = Color.Black.copy(alpha = 0.8f),
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .clickable {
-                        navController.navigate(Screen.SignUp.route)
+                        navController.navigate(Screen.SignIn.route)
                     },
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic
-
             )
         }
     }
@@ -189,7 +187,7 @@ private fun MakePasswordField(viewModel: SignInViewModel) {
 private fun MakeSignUpWithEmailButton(viewModel: SignInViewModel, navController: NavController) {
     OutlinedButton(
         onClick = {
-            viewModel.signInWithEmail(
+            viewModel.signUpWithEmail(
                 viewModel.email.value,
                 viewModel.password.value,
                 navController
@@ -206,7 +204,7 @@ private fun MakeSignUpWithEmailButton(viewModel: SignInViewModel, navController:
         shape = CircleShape,
     ) {
         Text(
-            text = "Sign-in using email",
+            text = "Sign-up using email",
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleMedium
         )
@@ -241,7 +239,7 @@ private fun MakeSignInWithGoogleButton(viewModel: SignInViewModel, navController
                     .padding(end = 8.dp)
             )
             Text(
-                text = "Sign-in with Google",
+                text = "Sign-up with Google",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleMedium
             )

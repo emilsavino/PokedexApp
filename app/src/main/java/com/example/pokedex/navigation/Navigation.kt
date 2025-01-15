@@ -2,6 +2,7 @@ package com.example.pokedex.navigation
 
 import android.window.SplashScreenView
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,6 +18,7 @@ import com.example.pokedex.mainViews.WhoIsThatPokemon.WhoIsThatPokemonView
 import com.example.pokedex.mainViews.addToTeamView.AddToTeamView
 import com.example.pokedex.mainViews.pokemonTriviaView.PokemonTriviaView
 import com.example.pokedex.mainViews.signInView.SignInView
+import com.example.pokedex.mainViews.signInView.SignUpView
 import com.example.pokedex.mainViews.splashScreen.MakeSplashScreen
 
 @Composable
@@ -38,14 +40,25 @@ fun Navigation(navController: NavHostController) {
         composable(Screen.Home.route) {
             HomeView(navController = navController)
         }
-        composable(Screen.Search.route) {
-            SearchView(navController = navController)
+        composable(
+            route = Screen.Search.route,
+            arguments = listOf(
+                navArgument("filterOption") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val filterOption = backStackEntry.arguments?.getString("filterOption")
+            if (filterOption != null) {
+                SearchView(navController = navController, filterOption = filterOption)
+            }
         }
         composable(Screen.Profile.route) {
             ProfileView(navController = navController)
         }
         composable(Screen.Splash.route) {
             MakeSplashScreen(navController = navController)
+        }
+        composable(Screen.SignUp.route) {
+            SignUpView(navController = navController)
         }
         composable(
             route = Screen.AddToTeam.route,
@@ -83,10 +96,13 @@ sealed class Screen(val route: String) {
     object Saved : Screen("saved")
     object MyTeams : Screen("myTeams")
     object Home : Screen("home")
-    object Search : Screen("search")
+    object Search : Screen("search/{filterOption}"){
+        fun createRoute(filterOption: String) = "search/$filterOption"
+    }
     object Profile : Screen("profile")
     object SignIn : Screen("signIn")
     object Splash : Screen("splash")
+    object SignUp : Screen("signUp")
     object AddToTeam : Screen("addToTeam/{teamName}") {
         fun createRoute(teamName:String) = "addToTeam/$teamName"
     }

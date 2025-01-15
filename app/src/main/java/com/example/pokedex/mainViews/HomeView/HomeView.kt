@@ -41,21 +41,43 @@ private val typeResources = PokemonTypeResources()
 fun HomeView(navController: NavController) {
     val viewModel = viewModel<HomeViewModel>()
     val pokemonOfTheDay = viewModel.pokemonOfTheDay.collectAsState().value
+    val recentPokemons = viewModel.recentlyViewedPokemons.collectAsState().value
 
     LaunchedEffect(Unit) {
         viewModel.getPokemonOfTheDay()
         viewModel.getRecentlyViewedPokemons()
     }
 
-    when (pokemonOfTheDay) {
-        is HomeUIState.Empty -> {
-            Text(text = "No Pokémon found")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(PokemonTypeResources().appGradient())
+            .verticalScroll(rememberScrollState()),
+    ) {
+        when (pokemonOfTheDay) {
+            is HomeUIState.Empty -> {
+                Text(text = "No Pokémon found")
+            }
+            is HomeUIState.Loading -> {
+                ProgressIndicator()
+            }
+            is HomeUIState.Data -> {
+                PokemonOfDayView(pokemon = pokemonOfTheDay.pokemonOfTheDay, navController = navController)
+            }
         }
-        is HomeUIState.Loading -> {
-            MakeHomeLoadingScreen()
-        }
-        is HomeUIState.Data -> {
-            MakeHomeView(navController, pokemonOfTheDay.pokemonOfTheDay, viewModel)
+
+        GamesRow(navController = navController)
+
+        when (recentPokemons) {
+            is RecentsUIState.Empty -> {
+                Text(text = "No recently viewed Pokémon")
+            }
+            is RecentsUIState.Loading -> {
+                ProgressIndicator()
+            }
+            is RecentsUIState.Data -> {
+                RecentlyViewedPokemons(recentPokemons = recentPokemons.pokemons, navController = navController)
+            }
         }
     }
 }
@@ -76,36 +98,6 @@ private fun MakeHomeLoadingScreen() {
             color = Color.Blue,
             strokeWidth = 4.dp
         )
-    }
-}
-
-@Composable
-private fun MakeHomeView(
-    navController: NavController,
-    pokemon: Pokemon,
-    viewModel: HomeViewModel
-) {
-    val recentPokemons = viewModel.recentlyViewedPokemons.collectAsState().value
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(PokemonTypeResources().appGradient())
-            .verticalScroll(rememberScrollState()),
-    ) {
-        PokemonOfDayView(pokemon = pokemon, navController = navController)
-        GamesRow(navController = navController)
-
-        when (recentPokemons) {
-            is RecentsUIState.Empty -> {
-                Text(text = "No recently viewed Pokémon")
-            }
-            is RecentsUIState.Loading -> {
-                ProgressIndicator()
-            }
-            is RecentsUIState.Data -> {
-                RecentlyViewedPokemons(recentPokemons = recentPokemons.pokemons, navController = navController)
-            }
-        }
     }
 }
 

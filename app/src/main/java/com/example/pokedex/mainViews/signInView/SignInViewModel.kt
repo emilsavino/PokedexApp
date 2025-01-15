@@ -12,9 +12,10 @@ import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {
 
-    var email = mutableStateOf("Guest")
+    var email = mutableStateOf("")
     var profilePictureUrl = mutableStateOf<String?>(null)
     var authError = mutableStateOf<String?>(null)
+    var password = mutableStateOf("")
 
     val googleAuthManager = DependencyContainer.googleAuthenticationManager
     val emailAuthManager = DependencyContainer.emailAuthManager

@@ -44,7 +44,7 @@ fun MainContent() {
     val currentRoute = currentBackStackEntry?.destination?.route
 
     val showTabBar = when (currentRoute) {
-        Screen.SignIn.route, Screen.Splash.route -> false
+        Screen.SignIn.route, Screen.Splash.route, Screen.SignUp.route -> false
         else -> true
     }
 

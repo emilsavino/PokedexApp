@@ -17,6 +17,7 @@ import com.example.pokedex.mainViews.WhoIsThatPokemon.WhoIsThatPokemonView
 import com.example.pokedex.mainViews.addToTeamView.AddToTeamView
 import com.example.pokedex.mainViews.pokemonTriviaView.PokemonTriviaView
 import com.example.pokedex.mainViews.signInView.SignInView
+import com.example.pokedex.mainViews.signInView.SignUpView
 import com.example.pokedex.mainViews.splashScreen.MakeSplashScreen
 
 @Composable
@@ -46,6 +47,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable(Screen.Splash.route) {
             MakeSplashScreen(navController = navController)
+        }
+        composable(Screen.SignUp.route) {
+            SignUpView(navController = navController)
         }
         composable(
             route = Screen.AddToTeam.route,
@@ -87,6 +91,7 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object SignIn : Screen("signIn")
     object Splash : Screen("splash")
+    object SignUp : Screen("signUp")
     object AddToTeam : Screen("addToTeam/{teamName}") {
         fun createRoute(teamName:String) = "addToTeam/$teamName"
     }

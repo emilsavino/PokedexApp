@@ -24,7 +24,7 @@ class PokemonOfTheDayRepository(private val context: Context) {
     private val gson = Gson()
 
     private var pokemonOfTheDay: Pokemon? = null
-    val date = LocalDate.now().dayOfMonth + 1
+    val date = LocalDate.now().dayOfMonth
     var allPokemons = mutableListOf<Result>()
     var hasInternet = connectivityRepository.isConnected.asLiveData()
 

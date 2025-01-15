@@ -5,8 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Team
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +19,9 @@ import kotlinx.coroutines.launch
 
 class MyTeamsViewModel : ViewModel() {
     private val teamsRepository = DependencyContainer.teamsRepository
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    private var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
+    var showNoInternetAlert by mutableStateOf(false)
 
     var isShowingDialog by mutableStateOf(false)
     var isShowingDeletePokemonDialog by mutableStateOf(false)
@@ -71,6 +77,14 @@ class MyTeamsViewModel : ViewModel() {
         teamsRepository.deletePokemonFromTeam(pokemonToDelete, teamToEdit)
         fetchTeams()
         isShowingDeletePokemonDialog = false
+    }
+
+    fun onAddPokemonClicked(navController: NavController ,name: String) {
+        if (hasInternet.value == false) {
+            showNoInternetAlert = true
+            return
+        }
+        navController.navigate(Screen.AddToTeam.createRoute(name))
     }
 
 }

@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.AddToTeamGridItem
 import com.example.pokedex.shared.EmptyGridItem
+import com.example.pokedex.shared.NoInternetAlert
 
 @Composable
 fun MyTeamsView(navController: NavController) {
@@ -59,6 +60,10 @@ fun MyTeamsView(navController: NavController) {
 
         if (viewModel.isShowingDeletePokemonDialog) {
             DeletePokemonConfirmationDialog(viewModel)
+        }
+
+        if (viewModel.showNoInternetAlert) {
+            NoInternetAlert("add to a team", { viewModel.showNoInternetAlert = false })
         }
     }
 }
@@ -151,7 +156,7 @@ private fun MakeTeamsGrid(
                         val remainingSlots = 3 - chunk.size
                         repeat(remainingSlots) {
                             if (displayedPokemonCount + it == displayedPokemonCount) {
-                                AddToTeamGridItem(navController, team.name)
+                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(navController, team.name) })
                             } else {
                                 EmptyGridItem(navController)
                             }
@@ -167,7 +172,7 @@ private fun MakeTeamsGrid(
                         val remainingSlots = 3
                         for (slot in 1..remainingSlots) {
                             if (team.pokemons.size == 3 && slot == 1) {
-                                AddToTeamGridItem(navController, team.name)
+                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(navController, team.name) })
                             } else {
                                 EmptyGridItem(navController)
                             }

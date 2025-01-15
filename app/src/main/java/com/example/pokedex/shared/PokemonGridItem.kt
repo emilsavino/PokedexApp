@@ -44,13 +44,13 @@ fun PokemonGridItem(navController: NavController, pokemon: Pokemon, onLongClick:
 }
 
 @Composable
-fun AddToTeamGridItem(navController: NavController, teamName: String) {
+fun AddToTeamGridItem(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .size(110.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.Gray.copy(alpha = 0.6f))
-            .clickable {navController.navigate(Screen.AddToTeam.createRoute(teamName))}
+            .clickable { onClick() }
     ) {
         Icon(
             imageVector = Icons.Default.AddCircle,

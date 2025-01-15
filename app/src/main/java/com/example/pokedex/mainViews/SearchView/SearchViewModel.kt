@@ -38,7 +38,7 @@ class SearchViewModel: ViewModel() {
             SearchUIState.Loading
         }
 
-        if (searchText.value.isEmpty())
+        if (searchText.value.isEmpty() && selectedFilterOptionsList.value.isEmpty() && selectedSortOption.value.isEmpty())
         {
             viewModelScope.launch {
                recentlySearchedRepository.fetchRecentlySearched()

@@ -28,7 +28,7 @@ class AddToTeamViewModel(private val teamName: String) : ViewModel() {
         viewModelScope.launch {
             recentlySearchedRepository.searchFlow.collect { newPokemonList ->
                 _pokemonList.update {
-                    SearchUIState.Data(newPokemonList)
+                    SearchUIState.Data(newPokemonList.pokemons)
                 }
             }
         }
@@ -52,7 +52,8 @@ class AddToTeamViewModel(private val teamName: String) : ViewModel() {
                 searchText.value,
                 0,
                 selectedFilterOptionsList.value,
-                selectedSortOption.value
+                selectedSortOption.value,
+                0
             )
         }
     }

@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
     private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
+    private var lastSentRequest : Int = 0
 
     var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
     var selectedSortOption = mutableStateOf("")
@@ -25,8 +26,11 @@ class SearchViewModel: ViewModel() {
     init {
         viewModelScope.launch {
             recentlySearchedRepository.searchFlow.collect { newPokemonList ->
-                _pokemonList.update {
-                    SearchUIState.Data(newPokemonList)
+                if (newPokemonList.indexOfSearch == lastSentRequest || (newPokemonList.indexOfSearch == -1 && lastSentRequest <= 1))
+                {
+                    _pokemonList.update {
+                        SearchUIState.Data(newPokemonList.pokemons)
+                    }
                 }
             }
         }
@@ -41,13 +45,13 @@ class SearchViewModel: ViewModel() {
         if (searchText.value.isEmpty())
         {
             viewModelScope.launch {
-               recentlySearchedRepository.fetchRecentlySearched()
+               recentlySearchedRepository.fetchRecentlySearched(++lastSentRequest)
             }
             return
         }
 
         viewModelScope.launch {
-            recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value)
+            recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value,++lastSentRequest)
         }
     }
 

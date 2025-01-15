@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 class AddToTeamViewModel(private val teamName: String) : ViewModel() {
     private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
     private val teamsRepository = DependencyContainer.teamsRepository
+    private var lastSentRequest : Int = 0
 
     var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
     var selectedSortOption = mutableStateOf("")
@@ -27,8 +28,11 @@ class AddToTeamViewModel(private val teamName: String) : ViewModel() {
     init {
         viewModelScope.launch {
             recentlySearchedRepository.searchFlow.collect { newPokemonList ->
-                _pokemonList.update {
-                    SearchUIState.Data(newPokemonList)
+                if (newPokemonList.indexOfSearch == lastSentRequest || (newPokemonList.indexOfSearch == -1))
+                {
+                    _pokemonList.update {
+                        SearchUIState.Data(newPokemonList.pokemons)
+                    }
                 }
             }
         }
@@ -42,7 +46,7 @@ class AddToTeamViewModel(private val teamName: String) : ViewModel() {
 
         if (searchText.value.isEmpty()) {
             viewModelScope.launch {
-                recentlySearchedRepository.fetchRecentlySearched()
+                recentlySearchedRepository.fetchRecentlySearched(++lastSentRequest)
             }
             return
         }
@@ -52,7 +56,8 @@ class AddToTeamViewModel(private val teamName: String) : ViewModel() {
                 searchText.value,
                 0,
                 selectedFilterOptionsList.value,
-                selectedSortOption.value
+                selectedSortOption.value,
+                ++lastSentRequest
             )
         }
     }

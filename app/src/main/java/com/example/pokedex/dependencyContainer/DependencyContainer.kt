@@ -45,7 +45,7 @@ object DependencyContainer {
     }
 
     val pokemonDataStore : PokemonDataStore by lazy {
-        PokemonDataStore()
+        PokemonDataStore(application.applicationContext)
     }
 
     val teamsRepository: TeamsRepository by lazy {

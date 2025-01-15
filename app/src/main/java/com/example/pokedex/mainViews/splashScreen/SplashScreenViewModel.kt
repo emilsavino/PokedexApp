@@ -17,7 +17,7 @@ class SplashScreenViewModel : ViewModel(){
     private var hasInternet = connectivityRepository.isConnected.asLiveData()
 
     fun onAppear (navController: NavController) {
-        if (hasInternet.value == false && dataStore.getAllPokemonResults().size > 1000) {
+        if (hasInternet.value == false && dataStore.getAllPokemonResults().size < 1000) {
             navController.navigate(Screen.Home.route)
             return
         }

@@ -38,7 +38,9 @@ class HomeViewModel : ViewModel() {
             pokemonOfTheDayRepository.pokemonOfTheDayFlow
                 .collect { pokemon ->
                     if (pokemon == null) {
-                        getPokemonOfTheDay()
+                        _pokemonOfTheDay.update {
+                            HomeUIState.Empty
+                        }
                     } else {
                         _pokemonOfTheDay.update {
                             HomeUIState.Data(pokemon)

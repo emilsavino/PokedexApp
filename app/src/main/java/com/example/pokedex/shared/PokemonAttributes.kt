@@ -90,7 +90,7 @@ data class Sprites(
 )
 
 data class PokemonList (
-    val results: List<Result>
+    val results: List<Result> = emptyList()
 )
 
 data class Result (

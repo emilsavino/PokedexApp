@@ -3,11 +3,11 @@ package com.example.pokedex.shared
 import com.example.pokedex.R
 
 data class Pokemon(
-    val id: Int,
-    var name: String,
-    var sprites: Sprites,
-    val types: List<TypeObject>,
-    val abilities: List<Ability>
+    val id: Int = 0,
+    var name: String = "",
+    var sprites: Sprites = Sprites(""),
+    val types: List<TypeObject> = emptyList(),
+    val abilities: List<Ability> = emptyList()
 )
 
 fun Pokemon.getSprite(): Comparable<*> {

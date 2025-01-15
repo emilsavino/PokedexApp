@@ -29,14 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.pokedex.R
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.Pokemon
@@ -88,7 +85,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
 }
 
 @Composable
-fun MakeSearchTools(viewModel: SearchViewModel) {
+private fun MakeSearchTools(viewModel: SearchViewModel) {
     MakeSearchBar(viewModel)
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -111,7 +108,7 @@ fun MakeSearchTools(viewModel: SearchViewModel) {
 }
 
 @Composable
-fun MakeSearchBar(viewModel: SearchViewModel) {
+private fun MakeSearchBar(viewModel: SearchViewModel) {
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
@@ -143,7 +140,52 @@ fun MakeSearchBar(viewModel: SearchViewModel) {
 }
 
 @Composable
-fun MakeSortButton(viewModel: SearchViewModel,
+private fun MakeFilterButton(viewModel: SearchViewModel,
+                     textColor: Color,
+                     selectedColor: Color,
+                     unselectedColor: Color)
+{
+    var filterExpanded = remember { mutableStateOf(false) }
+    Button(
+        onClick = { filterExpanded.value = true},
+        colors = buttonColors(containerColor = Color.White),
+        modifier = Modifier.shadow(2.dp, CircleShape)
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Icon(
+                imageVector = Icons.Filled.List,
+                contentDescription = "Filter",
+                tint = textColor
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+
+            Text(
+                text = "Filter",
+                color = Color.Black
+            )
+        }
+
+        DropdownMenu(
+            expanded = filterExpanded.value,
+            onDismissRequest = { filterExpanded.value = false }
+        ) {
+            for (option in viewModel.getAllFilterOptions())
+            {
+                DropdownMenuItem(
+                    text = { Text(option.capitalize(Locale.current), color = textColor) },
+                    modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
+                    onClick = { viewModel.selectFilterOption(option) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MakeSortButton(viewModel: SearchViewModel,
                    textColor: Color,
                    selectedColor: Color,
                    unselectedColor: Color)
@@ -191,52 +233,7 @@ fun MakeSortButton(viewModel: SearchViewModel,
 }
 
 @Composable
-fun MakeFilterButton(viewModel: SearchViewModel,
-                     textColor: Color,
-                     selectedColor: Color,
-                     unselectedColor: Color)
-{
-    var filterExpanded = remember { mutableStateOf(false) }
-    Button(
-        onClick = { filterExpanded.value = true},
-        colors = buttonColors(containerColor = Color.White),
-        modifier = Modifier.shadow(2.dp, CircleShape)
-    ) {
-        Row (
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Icon(
-                imageVector = Icons.Filled.List,
-                contentDescription = "Filter",
-                tint = textColor
-            )
-            Spacer(modifier = Modifier.padding(2.dp))
-
-            Text(
-                text = "Filter",
-                color = Color.Black
-            )
-        }
-
-        DropdownMenu(
-            expanded = filterExpanded.value,
-            onDismissRequest = { filterExpanded.value = false }
-        ) {
-            for (option in viewModel.getAllFilterOptions())
-            {
-                DropdownMenuItem(
-                    text = { Text(option.capitalize(Locale.current), color = textColor) },
-                    modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
-                    onClick = { viewModel.selectFilterOption(option) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController, viewModel: SearchViewModel) {
+private fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController, viewModel: SearchViewModel) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -248,7 +245,7 @@ fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController, viewMo
 }
 
 @Composable
-fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: SearchViewModel) {
+private fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: SearchViewModel) {
     Button(
         onClick = {
             viewModel.addPokemonToRecentlySearched(pokemon.name)
@@ -282,11 +279,4 @@ fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: Se
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SearchViewPreview() {
-    val navController = rememberNavController()
-    SearchView(navController = navController)
 }

@@ -47,7 +47,6 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
-import com.example.pokedex.R
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.PokemonAttributes
@@ -221,7 +220,6 @@ private fun CreatePokemonBox(pokemon: PokemonAttributes) {
 
 @Composable
 private fun CreateDescBox(pokemon: PokemonAttributes) {
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -390,7 +388,6 @@ private fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
                 }
             }
         }
-
     }
 }
 

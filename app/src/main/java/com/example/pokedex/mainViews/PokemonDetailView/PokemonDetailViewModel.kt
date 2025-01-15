@@ -25,7 +25,6 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
     private val connectivityRepository = DependencyContainer.connectivityRepository
 
-    var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
     var isFavorited by mutableStateOf(false)
     var showDialog by mutableStateOf(false)
     var selectedTeam by mutableStateOf("")
@@ -59,7 +58,7 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         _pokemon.update {
             PokemonDetailUIState.Loading
         }
-        if (hasInternet.value == false) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
             getCachedPokemon()
         } else {
             pokemonRepository.getPokemonDetailsByName(currentPokemonName)

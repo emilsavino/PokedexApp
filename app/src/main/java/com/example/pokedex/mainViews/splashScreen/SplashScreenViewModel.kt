@@ -14,10 +14,9 @@ class SplashScreenViewModel : ViewModel(){
     private val dataStore = DependencyContainer.pokemonDataStore
 
     private var isSignedIn = authManager.fetchSignedIn()
-    private var hasInternet = connectivityRepository.isConnected.asLiveData()
 
     fun onAppear (navController: NavController) {
-        if (hasInternet.value == false && dataStore.getAllPokemonResults().size < 1000) {
+        if (connectivityRepository.isConnected.asLiveData().value == false && dataStore.getAllPokemonResults().size < 1000) {
             navController.navigate(Screen.Home.route)
             return
         }

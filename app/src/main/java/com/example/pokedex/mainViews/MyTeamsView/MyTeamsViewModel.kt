@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 class MyTeamsViewModel : ViewModel() {
     private val teamsRepository = DependencyContainer.teamsRepository
     private val connectivityRepository = DependencyContainer.connectivityRepository
-    private var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
     var showNoInternetAlert by mutableStateOf(false)
 
     var isShowingDialog by mutableStateOf(false)
@@ -80,7 +79,7 @@ class MyTeamsViewModel : ViewModel() {
     }
 
     fun onAddPokemonClicked(navController: NavController ,name: String) {
-        if (hasInternet.value == false) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
             showNoInternetAlert = true
             return
         }

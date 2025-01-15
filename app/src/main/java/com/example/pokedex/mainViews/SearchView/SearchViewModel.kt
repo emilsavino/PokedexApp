@@ -16,8 +16,7 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
     private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
-    private val connectivityRepository = DependencyContainer.connectivityRepository
-    var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
+    val connectivityRepository = DependencyContainer.connectivityRepository
 
     var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
     var selectedSortOption = mutableStateOf("")
@@ -38,7 +37,7 @@ class SearchViewModel: ViewModel() {
     }
 
     fun searchPokemonList() {
-        if (!hasInternet.value!!) {
+        if (!connectivityRepository.isConnected.asLiveData().value!!) {
             _pokemonList.update {
                 SearchUIState.NoInternet
             }

@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 class ProfileViewModel : ViewModel() {
     private val googleAuthManager = DependencyContainer.googleAuthenticationManager
     private val connectivityRepository = DependencyContainer.connectivityRepository
-    private var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
     var showNoInternetAlert by mutableStateOf(false)
 
     var email = mutableStateOf("Guest")
@@ -44,7 +43,7 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun deleteAccount(navController: NavController) {
-        if (hasInternet.value == false) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
             showNoInternetAlert = true
         }
         viewModelScope.launch {

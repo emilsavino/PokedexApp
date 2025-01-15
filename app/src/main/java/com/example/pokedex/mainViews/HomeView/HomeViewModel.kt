@@ -20,7 +20,6 @@ class HomeViewModel : ViewModel() {
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
     private val pokemonOfTheDayRepository = DependencyContainer.pokemonOfTheDayRepository
     private val connectivityRepository = DependencyContainer.connectivityRepository
-    private var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
     var showNoInternetAlert by mutableStateOf(false)
 
 
@@ -75,7 +74,7 @@ class HomeViewModel : ViewModel() {
     }
 
     fun onWhoIsThatPokemonClicked(navController: NavController) {
-        if (hasInternet.value == true) {
+        if (connectivityRepository.isConnected.asLiveData().value == true) {
             navController.navigate(Screen.WhoIsThatPokemon.route)
         } else {
             showNoInternetAlert = true

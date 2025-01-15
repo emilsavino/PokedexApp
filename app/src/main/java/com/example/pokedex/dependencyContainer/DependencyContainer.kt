@@ -37,7 +37,7 @@ object DependencyContainer {
     }
 
     val pokemonOfTheDayRepository: PokemonOfTheDayRepository by lazy {
-        PokemonOfTheDayRepository()
+        PokemonOfTheDayRepository(application.applicationContext)
     }
 
     val recentlyViewedRepository: RecentlyViewedRepository by lazy {

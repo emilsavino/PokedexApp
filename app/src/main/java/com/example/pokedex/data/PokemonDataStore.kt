@@ -58,11 +58,11 @@ class PokemonDataStore(private val context: Context) {
 
     fun getAllPokemonResults() : List<Result>
     {
-        if (hasInternet.value == false) {
-            return emptyList()
+        while (allPokemonResultList.results.isEmpty()) {
+            if (hasInternet.value == false) {
+                return emptyList()
+            }
         }
-
-        while (allPokemonResultList.results.isEmpty()) {}
         return allPokemonResultList.results
     }
 

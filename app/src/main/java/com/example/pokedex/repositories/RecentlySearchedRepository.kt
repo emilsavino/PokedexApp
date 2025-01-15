@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "recently_searched_preferences")
 
 class RecentlySearchedRepository(private val context: Context) {
+    private val databaseService = DatabaseService("recentlySearched", Pokemon::class.java)
     private val recentlySearchedPokemon = mutableListOf<String>()
     private val pokemonDataStore = DependencyContainer.pokemonDataStore
     private val RECENTLY_SEARCHED_KEY = stringPreferencesKey("recently_searched")
@@ -32,7 +35,24 @@ class RecentlySearchedRepository(private val context: Context) {
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            initializeCache()
+            initializeDataBase()
+            if (recentlySearchedPokemon.isEmpty())
+            {
+                initializeCache()
+            }
+            fetchRecentlySearched()
+        }
+    }
+
+    private suspend fun initializeDataBase() {
+        databaseService.addListenerForList { recentlySearched ->
+            if (recentlySearched != null) {
+                recentlySearchedPokemon.clear()
+                for (pokemon in recentlySearched)
+                {
+                    recentlySearchedPokemon.add(pokemon.name)
+                }
+            }
         }
     }
 
@@ -63,6 +83,12 @@ class RecentlySearchedRepository(private val context: Context) {
         }
 
         recentlySearchedPokemon.add(name)
+        val list = mutableListOf<Pokemon>()
+        for (name in recentlySearchedPokemon)
+        {
+            list.add(pokemonDataStore.getPokemonFromMapFallBackAPI(name))
+        }
+        databaseService.storeList(list)
         updateDataStore()
     }
 

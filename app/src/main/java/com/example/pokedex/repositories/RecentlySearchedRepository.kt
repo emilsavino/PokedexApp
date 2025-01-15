@@ -29,7 +29,7 @@ class RecentlySearchedRepository(private val context: Context) {
 
 
     val filterOptions = PokemonTypeResources().getAllTypes()
-    val sortOptions = listOf("NameASC","NameDSC")
+    val sortOptions = listOf("NameASC","NameDSC", "Evolutions")
 
     private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
     val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()

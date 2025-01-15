@@ -80,6 +80,21 @@ data class VarietiesResult(
 data class VarietiesPokemon(
     val url: String
 )
+
+//Hitpoints and its data classes
+data class StatsResponse(
+    val stats: List<Stat>
+)
+
+data class Stat(
+    val base_stat: Int,
+    val stat: StatInfo
+)
+
+data class StatInfo(
+    val name: String
+)
+
 //------------MISC.----------------
 data class TypeObject(
     val type: Type

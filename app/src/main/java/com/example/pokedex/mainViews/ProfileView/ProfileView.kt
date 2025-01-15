@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.pokedex.shared.NoInternetAlert
 import com.example.pokedex.shared.PokemonTypeResources
 
 
@@ -44,14 +45,8 @@ fun ProfileView(
         contentAlignment = Alignment.Center
     ) {
         SignedInContent(
-            email = viewModel.email.value,
-            profilePictureUrl = viewModel.profilePictureUrl.value,
-            onSignOut = {
-                viewModel.signOut(navController)
-            },
-            onDeleteAccount = {
-                viewModel.deleteAccount(navController)
-            }
+            viewModel = viewModel,
+            navController = navController
         )
 
     }
@@ -59,10 +54,8 @@ fun ProfileView(
 
 @Composable
 private fun SignedInContent(
-    email: String,
-    profilePictureUrl: String?,
-    onSignOut: () -> Unit,
-    onDeleteAccount: () -> Unit
+    viewModel: ProfileViewModel,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -72,7 +65,7 @@ private fun SignedInContent(
         verticalArrangement = Arrangement.Center
     ) {
         AsyncImage(
-            model = profilePictureUrl,
+            model = viewModel.profilePictureUrl.value,
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(100.dp)
@@ -81,13 +74,17 @@ private fun SignedInContent(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = email, color = Color.Black)
+        Text(text = viewModel.email.value, color = Color.Black)
 
         Spacer(modifier = Modifier.height(8.dp))
-        ProfileButton(text = "Sign Out", onClick = onSignOut)
+        ProfileButton(text = "Sign Out", onClick = { viewModel.signOut(navController) })
 
         Spacer(modifier = Modifier.height(8.dp))
-        ProfileButton(text = "Delete Account", onClick = onDeleteAccount)
+        ProfileButton(text = "Delete Account", onClick = { viewModel.deleteAccount(navController) })
+
+        if (viewModel.showNoInternetAlert) {
+            NoInternetAlert(tryingToDo = "delete your account", onDismiss = { viewModel.showNoInternetAlert = false })
+        }
     }
 }
 

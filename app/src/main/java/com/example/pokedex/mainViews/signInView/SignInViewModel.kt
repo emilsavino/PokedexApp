@@ -1,7 +1,10 @@
 package com.example.pokedex.mainViews.signInView
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
@@ -11,15 +14,21 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {
-
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
     var email = mutableStateOf("Guest")
     var profilePictureUrl = mutableStateOf<String?>(null)
     var authError = mutableStateOf<String?>(null)
+    var failedToSignIn by mutableStateOf(false)
 
     val googleAuthManager = DependencyContainer.googleAuthenticationManager
 
 
     fun signInWithGoogle(navController: NavController) {
+        if (hasInternet.value == false) {
+            failedToSignIn = true
+            return
+        }
         viewModelScope.launch {
             googleAuthManager.signInWithGoogle().collectLatest { response ->
                 when (response) {
@@ -29,6 +38,7 @@ class SignInViewModel : ViewModel() {
                         profilePictureUrl.value = currentUser?.photoUrl?.toString()
                         authError.value = null
                         navController.navigate(Screen.Home.route)
+                        failedToSignIn = false
                     }
                     is AuthResponse.Error -> {
                         authError.value = response.message

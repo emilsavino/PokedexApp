@@ -26,17 +26,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.R
 import com.example.pokedex.shared.PokemonTypeResources
 
 @Composable
-fun SignInView(
-    modifier: Modifier = Modifier,
-    navController: NavController
-) {
+fun SignInView(navController: NavController){
     val viewModel = viewModel<SignInViewModel>()
     val gradientColor = PokemonTypeResources().getTypeGradient("dark")
 
@@ -101,6 +100,20 @@ fun SignInView(
                         text = "Sign in with Google",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
+
+            if (viewModel.failedToSignIn) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "You need internet to sign in",
+                        color = Color.Red
                     )
                 }
             }

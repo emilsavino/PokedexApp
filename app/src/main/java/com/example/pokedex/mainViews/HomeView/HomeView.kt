@@ -82,7 +82,10 @@ fun HomeView(navController: NavController) {
         }
 
         if (viewModel.showNoInternetAlert) {
-            NoInternetAlert(onDismiss = { viewModel.showNoInternetAlert = false })
+            NoInternetAlert(
+                tryingToDo = "play this game",
+                onDismiss = { viewModel.showNoInternetAlert = false }
+            )
         }
     }
 }

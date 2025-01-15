@@ -6,11 +6,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun NoInternetAlert(onDismiss: () -> Unit) {
+fun NoInternetAlert(tryingToDo: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onDismiss()},
         title = { Text("No Internet Connection") },
-        text = { Text("You need connection to the internet in order to access this content") },
+        text = { Text("You need connection to the internet in order to ${tryingToDo}.") },
         confirmButton = {
             Button(
                 onClick = { onDismiss() },

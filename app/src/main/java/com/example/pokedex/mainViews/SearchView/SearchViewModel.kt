@@ -26,7 +26,7 @@ class SearchViewModel: ViewModel() {
     init {
         viewModelScope.launch {
             recentlySearchedRepository.searchFlow.collect { newPokemonList ->
-                if (newPokemonList.indexOfSearch == lastSentRequest || (newPokemonList.indexOfSearch == -1 && lastSentRequest <= 1))
+                if (newPokemonList.indexOfSearch == lastSentRequest || (newPokemonList.indexOfSearch == -1))
                 {
                     _pokemonList.update {
                         SearchUIState.Data(newPokemonList.pokemons)

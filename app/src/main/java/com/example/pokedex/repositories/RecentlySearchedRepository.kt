@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
+import com.example.pokedex.shared.PokemonTypeResources
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,8 +28,8 @@ class RecentlySearchedRepository(private val context: Context) {
     private val gson = Gson()
 
 
-    val filterOptions = mutableListOf("bug","dark","dragon","fairy","fighting","fire","flying","ghost","grass","ground","ice","normal","poison","psychic","rock","steel","water")
-    val sortOptions = mutableListOf("NameASC","NameDSC")
+    val filterOptions = PokemonTypeResources().getAllTypes()
+    val sortOptions = listOf("NameASC","NameDSC", "Evolutions")
 
     private val mutableSearchFlow = MutableSharedFlow<List<Pokemon>>()
     val searchFlow: Flow<List<Pokemon>> = mutableSearchFlow.asSharedFlow()

@@ -64,4 +64,8 @@ class PokemonTypeResources {
         val primaryType = pokemonOfTheDay?.types?.firstOrNull()?.type?.name ?: "normal"
         return getTypeGradient(primaryType)
     }
+
+    fun getAllTypes(): List<String> {
+        return typeResources.keys.toList()
+    }
 }

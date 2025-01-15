@@ -39,6 +39,14 @@ class PokemonDataStore(private val context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             initilizeCache()
         }
+
+        hasInternet.observeForever { isConnected ->
+            if (isConnected == true) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    initilizeCache()
+                }
+            }
+        }
     }
 
     private suspend fun initilizeCache() {

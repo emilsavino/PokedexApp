@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,6 +50,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
     LaunchedEffect(Unit) {
         viewModel.searchPokemonList()
     }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -77,7 +79,16 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
                 }
 
                 is SearchUIState.Data -> {
-                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
+                    if (viewModel.hasInternet.value == false) {
+                        NoInternetView()
+                    } else {
+                        MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
+                    }
+
+                }
+
+                is SearchUIState.NoInternet -> {
+                    NoInternetView()
                 }
             }
         }
@@ -140,11 +151,12 @@ private fun MakeSearchBar(viewModel: SearchViewModel) {
 }
 
 @Composable
-private fun MakeFilterButton(viewModel: SearchViewModel,
-                     textColor: Color,
-                     selectedColor: Color,
-                     unselectedColor: Color)
-{
+private fun MakeFilterButton(
+    viewModel: SearchViewModel,
+    textColor: Color,
+    selectedColor: Color,
+    unselectedColor: Color
+) {
     var filterExpanded = remember { mutableStateOf(false) }
     Button(
         onClick = { filterExpanded.value = true},
@@ -185,11 +197,12 @@ private fun MakeFilterButton(viewModel: SearchViewModel,
 }
 
 @Composable
-private fun MakeSortButton(viewModel: SearchViewModel,
-                   textColor: Color,
-                   selectedColor: Color,
-                   unselectedColor: Color)
-{
+private fun MakeSortButton(
+    viewModel: SearchViewModel,
+    textColor: Color,
+    selectedColor: Color,
+    unselectedColor: Color
+) {
     var sortExpanded = remember { mutableStateOf(false) }
     Button(
         onClick = { sortExpanded.value = true },
@@ -278,5 +291,19 @@ private fun SearchListItem(pokemon: Pokemon, navController: NavController, viewM
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Composable
+private fun NoInternetView() {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "No Internet Connection",
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center
+        )
     }
 }

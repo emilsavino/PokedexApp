@@ -48,7 +48,10 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
     val pokemons = viewModel.pokemonList.collectAsState().value
     LaunchedEffect(Unit) {
         viewModel.searchPokemonList()
-        
+        if (!filterOption.isEmpty())
+        {
+            viewModel.selectSortOption(filterOption)
+        }
     }
     Box(
         modifier = modifier

@@ -92,8 +92,8 @@ sealed class Screen(val route: String) {
     object Saved : Screen("saved")
     object MyTeams : Screen("myTeams")
     object Home : Screen("home")
-    object Search : Screen("search/{sortOption}"){
-        fun createRoute(sortOption: String) = "search/$sortOption"
+    object Search : Screen("search/{filterOption}"){
+        fun createRoute(filterOption: String) = "search/$filterOption"
     }
     object Profile : Screen("profile")
     object SignIn : Screen("signIn")

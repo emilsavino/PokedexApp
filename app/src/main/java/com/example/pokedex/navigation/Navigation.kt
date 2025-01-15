@@ -2,6 +2,7 @@ package com.example.pokedex.navigation
 
 import android.window.SplashScreenView
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,8 +39,16 @@ fun Navigation(navController: NavHostController) {
         composable(Screen.Home.route) {
             HomeView(navController = navController)
         }
-        composable(Screen.Search.route) {
-            SearchView(navController = navController)
+        composable(
+            route = Screen.Search.route,
+            arguments = listOf(
+                navArgument("filterOption") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val filterOption = backStackEntry.arguments?.getString("filterOption")
+            if (filterOption != null) {
+                SearchView(navController = navController, filterOption = filterOption)
+            }
         }
         composable(Screen.Profile.route) {
             ProfileView(navController = navController)
@@ -83,7 +92,9 @@ sealed class Screen(val route: String) {
     object Saved : Screen("saved")
     object MyTeams : Screen("myTeams")
     object Home : Screen("home")
-    object Search : Screen("search")
+    object Search : Screen("search/{sortOption}"){
+        fun createRoute(sortOption: String) = "search/$sortOption"
+    }
     object Profile : Screen("profile")
     object SignIn : Screen("signIn")
     object Splash : Screen("splash")

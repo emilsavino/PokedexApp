@@ -42,7 +42,7 @@ import com.example.pokedex.shared.ProgressIndicator
 import com.example.pokedex.shared.getSprite
 
 @Composable
-fun SearchView(modifier: Modifier = Modifier, navController: NavController) {
+fun SearchView(modifier: Modifier = Modifier, navController: NavController, filterOption: String) {
     val viewModel = viewModel<SearchViewModel>()
 
     val pokemons = viewModel.pokemonList.collectAsState().value

@@ -26,9 +26,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.R
 import com.example.pokedex.shared.PokemonTypeResources
 
@@ -106,4 +108,10 @@ fun SignInView(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SignInViewPreview() {
+    SignInView(navController = rememberNavController())
 }

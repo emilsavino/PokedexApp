@@ -17,6 +17,7 @@ class SignInViewModel : ViewModel() {
     var authError = mutableStateOf<String?>(null)
 
     val googleAuthManager = DependencyContainer.googleAuthenticationManager
+    val emailAuthManager = DependencyContainer.emailAuthManager
 
 
     fun signInWithGoogle(navController: NavController) {
@@ -30,11 +31,61 @@ class SignInViewModel : ViewModel() {
                         authError.value = null
                         navController.navigate(Screen.Home.route)
                     }
+
                     is AuthResponse.Error -> {
                         authError.value = response.message
                     }
                 }
             }
+        }
+    }
+
+    fun signInWithEmail(
+        enteredEmail: String,
+        enteredPassword: String,
+        navController: NavController
+    ) {
+        viewModelScope.launch {
+            emailAuthManager.loginWithEmail(enteredEmail, enteredPassword)
+                .collectLatest { response ->
+                    when (response) {
+                        is AuthResponse.Success -> {
+                            email.value = enteredEmail
+                            profilePictureUrl.value = null
+                            authError.value = null
+                            navController.navigate(Screen.Home.route)
+                        }
+
+                        is AuthResponse.Error -> {
+                            authError.value = response.message
+                        }
+                    }
+                }
+        }
+    }
+
+    fun signUpWithEmail(
+        enteredEmail: String,
+        enteredPassword: String,
+        navController: NavController
+    ) {
+        viewModelScope.launch {
+            emailAuthManager.createAccountWithEmail(enteredEmail, enteredPassword)
+                .collectLatest { response ->
+                    when (response) {
+                        is AuthResponse.Success -> {
+                            email.value = enteredEmail
+                            profilePictureUrl.value = null
+                            authError.value = null
+                            navController.navigate(Screen.Home.route)
+                        }
+
+                        is AuthResponse.Error -> {
+                            authError.value = response.message
+                        }
+                    }
+                }
+
         }
     }
 }

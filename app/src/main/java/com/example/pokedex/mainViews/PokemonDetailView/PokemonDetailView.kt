@@ -47,6 +47,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.PokemonAttributes
@@ -125,7 +126,7 @@ private fun PokemonDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateTypeWeaknessBox(pokemon)
+        CreateTypeWeaknessBox(pokemon,navController)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -242,7 +243,7 @@ private fun CreateDescBox(pokemon: PokemonAttributes) {
 }
 
 @Composable
-private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
+private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -252,19 +253,19 @@ private fun CreateTypeWeaknessBox(pokemon: PokemonAttributes) {
         Box(
             modifier = Modifier.weight(1f)
         ) {
-            CreateTypeBox(pokemon)
+            CreateTypeBox(pokemon, navController)
         }
 
         Box(
             modifier = Modifier.weight(1f)
         ) {
-            CreateWeaknessBox(pokemon)
+            CreateWeaknessBox(pokemon, navController)
         }
     }
 }
 
 @Composable
-private fun CreateTypeBox(pokemon: PokemonAttributes) {
+private fun CreateTypeBox(pokemon: PokemonAttributes, navController: NavController) {
     Box(
         modifier = Modifier
             .padding(end = 8.dp)
@@ -290,6 +291,7 @@ private fun CreateTypeBox(pokemon: PokemonAttributes) {
                         painter = typeImage,
                         contentDescription = "${type.name} type image",
                         modifier = Modifier
+                            .clickable { navController.navigate(Screen.Search.createRoute(type.name)) }
                             .size(60.dp)
                             .padding(4.dp)
                     )
@@ -300,7 +302,7 @@ private fun CreateTypeBox(pokemon: PokemonAttributes) {
 }
 
 @Composable
-private fun CreateWeaknessBox(pokemon: PokemonAttributes) {
+private fun CreateWeaknessBox(pokemon: PokemonAttributes, navController: NavController) {
     Box(
         modifier = Modifier
             .padding(start = 8.dp)
@@ -326,6 +328,7 @@ private fun CreateWeaknessBox(pokemon: PokemonAttributes) {
                         painter = weaknessImage,
                         contentDescription = "${weakness.name} weakness image",
                         modifier = Modifier
+                            .clickable { navController.navigate(Screen.Search.createRoute(weakness.name)) }
                             .size(60.dp)
                             .padding(4.dp)
                     )

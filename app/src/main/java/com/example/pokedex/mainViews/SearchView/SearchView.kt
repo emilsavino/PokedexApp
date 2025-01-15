@@ -50,7 +50,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
         viewModel.searchPokemonList()
         if (!filterOption.isEmpty())
         {
-            viewModel.selectSortOption(filterOption)
+            viewModel.selectFilterOption(filterOption)
         }
     }
     Box(

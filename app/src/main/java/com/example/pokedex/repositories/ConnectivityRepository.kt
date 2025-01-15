@@ -12,7 +12,6 @@ class ConnectivityRepository(context: Context) {
     val isConnected: Flow<Boolean> = _isConnected
 
     init {
-        // Observe network connectivity changes
         connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: android.net.Network) {
                 _isConnected.value = true

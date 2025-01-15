@@ -144,25 +144,27 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     private fun getCachedPokemon() {
         var pokemon = recentlyViewedRepository.getCachedPokemon(currentPokemonName)
         if (pokemon != null) {
-            _pokemon.update {
-                PokemonDetailUIState.Data(pokemon!!.getOfflinePokemonAttributes())
-            }
+            gotPokemonFromCach(pokemon)
             return
         }
         pokemon = teamsRepository.getCachedPokemon(currentPokemonName)
         if (pokemon != null) {
-            _pokemon.update {
-                PokemonDetailUIState.Data(pokemon!!.getOfflinePokemonAttributes())
-            }
+            gotPokemonFromCach(pokemon)
             return
         }
         pokemon = favouritesRepository.getCachedPokemon(currentPokemonName)
         if (pokemon != null) {
-            _pokemon.update {
-                PokemonDetailUIState.Data(pokemon.getOfflinePokemonAttributes())
-            }
+            gotPokemonFromCach(pokemon)
+            return
         }
         _pokemon.update { PokemonDetailUIState.Empty }
+    }
+
+    private fun gotPokemonFromCach(pokemon: Pokemon) = viewModelScope.launch {
+        _pokemon.update {
+            PokemonDetailUIState.Data(pokemon.getOfflinePokemonAttributes())
+        }
+        recentlyViewedRepository.addToRecents(pokemon)
     }
 }
 

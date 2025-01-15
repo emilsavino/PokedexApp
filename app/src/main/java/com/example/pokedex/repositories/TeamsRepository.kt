@@ -118,6 +118,17 @@ class TeamsRepository(private val context: Context) {
         return if (index in pokemonTeams.indices) pokemonTeams[index] else null
     }
 
+    fun getCachedPokemon(name: String): Pokemon? {
+        for (team in pokemonTeams) {
+            for (pokemon in team.pokemons) {
+                if (pokemon.name == name) {
+                    return pokemon
+                }
+            }
+        }
+        return null
+    }
+
     private suspend fun updateDataStore() {
         val teamsJson = gson.toJson(pokemonTeams)
         context.dataStore.edit { preferences ->

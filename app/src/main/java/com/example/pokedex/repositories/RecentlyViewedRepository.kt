@@ -46,6 +46,10 @@ class RecentlyViewedRepository(private val context: Context) {
         }
     }
 
+    fun getCachedPokemon(name: String): Pokemon? {
+        return recentlyViewedPokemons.find { it.name == name }
+    }
+
     suspend fun initializeCache() {
         val savedPokemons = fetchRecentsFromDataStore()
         recentlyViewedPokemons.clear()

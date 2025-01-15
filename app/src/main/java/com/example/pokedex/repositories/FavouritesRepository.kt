@@ -87,4 +87,8 @@ class FavouritesRepository(private val context: Context) {
         val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"
         return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()
     }
+
+    fun getCachedPokemon(name: String): Pokemon? {
+        return favouritePokemons.find { it.name == name }
+    }
 }

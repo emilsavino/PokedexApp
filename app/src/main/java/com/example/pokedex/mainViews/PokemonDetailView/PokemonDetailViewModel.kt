@@ -4,9 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.shared.DamageRelationsResult
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import com.example.pokedex.shared.PokemonAttributes
@@ -22,7 +24,9 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     private val favouritesRepository = DependencyContainer.favouritesRepository
     private val teamsRepository = DependencyContainer.teamsRepository
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
+    private val connectivityRepository = DependencyContainer.connectivityRepository
 
+    var hasInternet by mutableStateOf(connectivityRepository.isConnected.asLiveData())
     var isFavorited by mutableStateOf(false)
     var showDialog by mutableStateOf(false)
     var selectedTeam by mutableStateOf("")
@@ -56,7 +60,11 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         _pokemon.update {
             PokemonDetailUIState.Loading
         }
-        pokemonRepository.getPokemonDetailsByName(currentPokemonName)
+        if (hasInternet.value == false) {
+            getCachedPokemon()
+        } else {
+            pokemonRepository.getPokemonDetailsByName(currentPokemonName)
+        }
     }
 
     fun savePokemon(pokemon: Pokemon) = viewModelScope.launch {
@@ -133,6 +141,30 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         } else {
             navController.popBackStack()
         }
+    }
+
+    private fun getCachedPokemon() {
+        var pokemon = recentlyViewedRepository.getCachedPokemon(currentPokemonName)
+        if (pokemon != null) {
+            _pokemon.update {
+                PokemonDetailUIState.Data(pokemon!!.getOfflinePokemonAttributes())
+            }
+            return
+        }
+        pokemon = teamsRepository.getCachedPokemon(currentPokemonName)
+        if (pokemon != null) {
+            _pokemon.update {
+                PokemonDetailUIState.Data(pokemon!!.getOfflinePokemonAttributes())
+            }
+            return
+        }
+        pokemon = favouritesRepository.getCachedPokemon(currentPokemonName)
+        if (pokemon != null) {
+            _pokemon.update {
+                PokemonDetailUIState.Data(pokemon.getOfflinePokemonAttributes())
+            }
+        }
+        _pokemon.update { PokemonDetailUIState.Empty }
     }
 }
 

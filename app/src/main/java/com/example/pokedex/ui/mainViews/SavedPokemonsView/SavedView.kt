@@ -53,12 +53,7 @@ fun SavedView(navController: NavController) {
             }
 
             is SavedUIState.Data -> {
-                if (savedState.saved.isEmpty()) {
-                    Text(text = "No saved pokemons")
-                    viewModel.savedIsEmpty()
-                } else {
-                    SavedList(navController, savedState.saved)
-                }
+                SavedList(navController, savedState.saved)
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.example.pokedex.mainViews.MyTeamsView
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,10 +26,21 @@ class MyTeamsViewModel : ViewModel() {
     var teamToEdit by mutableStateOf("")
     var pokemonToDelete by mutableStateOf("")
 
-    private val _teamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Loading)
+    private val _teamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Empty)
     val teamsState: StateFlow<TeamsUIState> = _teamsState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            teamsRepository.teamsFlow.collect { teams ->
+                _teamsState.update {
+                    if (teams.isEmpty()) {
+                        TeamsUIState.Empty
+                    } else {
+                        TeamsUIState.Data(teams)
+                    }
+                }
+            }
+        }
         fetchTeams()
     }
 
@@ -38,19 +48,7 @@ class MyTeamsViewModel : ViewModel() {
         _teamsState.update {
             TeamsUIState.Loading
         }
-
-        teamsRepository.teamsFlow.collect { teams ->
-            if (teams.isEmpty()) {
-                _teamsState.update {
-                    TeamsUIState.Empty
-                }
-            } else {
-                Log.d("MyTeamsViewModel", "Teams Updated: ${teams.size} teams")
-                _teamsState.update {
-                    TeamsUIState.Data(teams)
-                }
-            }
-        }
+        teamsRepository.fetchTeams()
     }
 
     fun onDeleteTeamClicked(teamName: String) {
@@ -61,7 +59,6 @@ class MyTeamsViewModel : ViewModel() {
     fun deleteTeam(teamName: String) {
         viewModelScope.launch {
             teamsRepository.deleteTeam(teamName)
-            fetchTeams()
         }
         isShowingDialog = false
     }
@@ -74,7 +71,6 @@ class MyTeamsViewModel : ViewModel() {
 
     fun deletePokemonFromTeam() = viewModelScope.launch {
         teamsRepository.deletePokemonFromTeam(pokemonToDelete, teamToEdit)
-        fetchTeams()
         isShowingDeletePokemonDialog = false
     }
 

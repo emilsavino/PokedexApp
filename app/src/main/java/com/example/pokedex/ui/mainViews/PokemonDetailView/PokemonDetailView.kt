@@ -523,9 +523,11 @@ private fun TeamSelectionAndCreationDialogs(
     pokemon: Pokemon,
     viewModel: PokemonDetailViewModel,
 ) {
+    val teams = viewModel.teams.collectAsState().value
+
     if (viewModel.showDialog) {
         TeamSelectionDialog(
-            teams = viewModel.teams.collectAsState().value,
+            teams = teams,
             viewModel = viewModel,
             onTeamSelected = { teamName -> viewModel.addToTeam(pokemon, teamName) },
             onCreateNewTeam = { viewModel.onCreateNewTeam() },

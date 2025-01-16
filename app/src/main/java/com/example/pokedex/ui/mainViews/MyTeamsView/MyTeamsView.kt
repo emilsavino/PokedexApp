@@ -35,6 +35,7 @@ import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.ui.shared.AddToTeamGridItem
 import com.example.pokedex.ui.shared.EmptyGridItem
 import com.example.pokedex.ui.shared.NoInternetAlert
+import com.example.pokedex.ui.shared.ProgressIndicator
 
 @Composable
 fun MyTeamsView(navController: NavController) {
@@ -87,7 +88,7 @@ private fun MakeContent(navController: NavController, viewModel: MyTeamsViewMode
         }
 
         is TeamsUIState.Loading -> {
-            Text(text = "Loading...")
+            ProgressIndicator()
         }
 
         is TeamsUIState.Data -> {

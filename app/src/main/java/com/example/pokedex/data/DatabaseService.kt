@@ -1,5 +1,7 @@
 package com.example.pokedex.data
 
+import androidx.lifecycle.asLiveData
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -9,11 +11,14 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.tasks.await
 
 class DatabaseService<T : Any>(private val key: String, private val clazz: Class<T>) {
-
+    private val connectivityRepository = DependencyContainer.connectivityRepository
     private val db = FirebaseFirestore.getInstance()
     private val gson = Gson()
 
     suspend fun storeList(objects: List<T>): Boolean {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            return false
+        }
         var succesful = false
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return false
         val docRef = db.collection("users").document(userId).collection("userData")

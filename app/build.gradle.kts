@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.play.services.auth)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
 
     // Compose preview support (optional)
     debugImplementation(libs.androidx.compose.ui.tooling)

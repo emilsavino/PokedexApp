@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.Team
+import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.Team
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +22,9 @@ private val Context.dataStore by preferencesDataStore(name = "team_preferences")
 
 class TeamsRepository(private val context: Context) {
     private val databaseService = DatabaseService("teams", Team::class.java)
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    private var hasInternet = connectivityRepository.isConnected.asLiveData()
+    private var wasOffline = false
 
     private val pokemonTeams = mutableListOf<Team>()
     private val TEAMS_KEY = stringPreferencesKey("teams")
@@ -35,6 +40,17 @@ class TeamsRepository(private val context: Context) {
                 initializeCache()
             }
             mutableTeamsFlow.emit(pokemonTeams)
+        }
+
+        hasInternet.observeForever { isConnected ->
+            if (isConnected == true && wasOffline) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    databaseService.storeList(pokemonTeams)
+                }
+                wasOffline = false
+            } else if (isConnected == false) {
+                wasOffline = true
+            }
         }
     }
 
@@ -116,6 +132,17 @@ class TeamsRepository(private val context: Context) {
 
     fun getTeam(teamName: String): Team?{
         return pokemonTeams.firstOrNull { it.name == teamName }
+    }
+
+    fun getCachedPokemon(name: String): Pokemon? {
+        for (team in pokemonTeams) {
+            for (pokemon in team.pokemons) {
+                if (pokemon.name == name) {
+                    return pokemon
+                }
+            }
+        }
+        return null
     }
 
     private suspend fun updateDataStore() {

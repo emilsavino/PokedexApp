@@ -1,5 +1,5 @@
-import com.example.pokedex.shared.Option
-import com.example.pokedex.shared.PokemonTriviaModel
+import com.example.pokedex.dataClasses.Option
+import com.example.pokedex.dataClasses.PokemonTriviaModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

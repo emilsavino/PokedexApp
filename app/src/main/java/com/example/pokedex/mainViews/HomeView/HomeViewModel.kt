@@ -1,8 +1,14 @@
 package com.example.pokedex.mainViews.HomeView
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +19,9 @@ import kotlinx.coroutines.launch
 class HomeViewModel : ViewModel() {
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
     private val pokemonOfTheDayRepository = DependencyContainer.pokemonOfTheDayRepository
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    var showNoInternetAlert by mutableStateOf(false)
+
 
     private val _pokemonOfTheDay = MutableStateFlow<HomeUIState>(HomeUIState.Empty)
     val pokemonOfTheDay: StateFlow<HomeUIState> = _pokemonOfTheDay.asStateFlow()
@@ -38,7 +47,9 @@ class HomeViewModel : ViewModel() {
             pokemonOfTheDayRepository.pokemonOfTheDayFlow
                 .collect { pokemon ->
                     if (pokemon == null) {
-                        getPokemonOfTheDay()
+                        _pokemonOfTheDay.update {
+                            HomeUIState.Empty
+                        }
                     } else {
                         _pokemonOfTheDay.update {
                             HomeUIState.Data(pokemon)
@@ -60,6 +71,14 @@ class HomeViewModel : ViewModel() {
             RecentsUIState.Loading
         }
         recentlyViewedRepository.fetchRecents()
+    }
+
+    fun onWhoIsThatPokemonClicked(navController: NavController) {
+        if (connectivityRepository.isConnected.asLiveData().value == true) {
+            navController.navigate(Screen.WhoIsThatPokemon.route)
+        } else {
+            showNoInternetAlert = true
+        }
     }
 }
 

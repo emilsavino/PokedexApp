@@ -2,19 +2,20 @@ package com.example.pokedex.mainViews.SearchView
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
     private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
     private var lastSentRequest : Int = 0
+    val connectivityRepository = DependencyContainer.connectivityRepository
 
     var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
     var selectedSortOption = mutableStateOf("")
@@ -38,6 +39,13 @@ class SearchViewModel: ViewModel() {
     }
 
     fun searchPokemonList() {
+        if (!connectivityRepository.isConnected.asLiveData().value!!) {
+            _pokemonList.update {
+                SearchUIState.NoInternet
+            }
+            return
+        }
+
         _pokemonList.update {
             SearchUIState.Loading
         }
@@ -107,4 +115,5 @@ sealed class SearchUIState {
     data class Data(val pokemonList: List<Pokemon>) : SearchUIState()
     object Loading : SearchUIState()
     object Empty : SearchUIState()
+    object NoInternet : SearchUIState()
 }

@@ -4,6 +4,7 @@ import PokemonTriviaRepository
 import android.app.Application
 import com.example.pokedex.manager.GoogleAuthenticationManager
 import com.example.pokedex.data.PokemonDataStore
+import com.example.pokedex.repositories.ConnectivityRepository
 import com.example.pokedex.manager.EmailAuthManager
 import com.example.pokedex.repositories.PokemonRepository
 import com.example.pokedex.repositories.WhoIsThatPokemonRepository
@@ -37,7 +38,7 @@ object DependencyContainer {
     }
 
     val pokemonOfTheDayRepository: PokemonOfTheDayRepository by lazy {
-        PokemonOfTheDayRepository()
+        PokemonOfTheDayRepository(application.applicationContext)
     }
 
     val recentlyViewedRepository: RecentlyViewedRepository by lazy {
@@ -45,7 +46,7 @@ object DependencyContainer {
     }
 
     val pokemonDataStore : PokemonDataStore by lazy {
-        PokemonDataStore()
+        PokemonDataStore(application.applicationContext)
     }
 
     val teamsRepository: TeamsRepository by lazy {
@@ -63,5 +64,9 @@ object DependencyContainer {
 
     val recentlySearchedRepository : RecentlySearchedRepository by lazy {
         RecentlySearchedRepository(application.applicationContext)
+    }
+
+    val connectivityRepository: ConnectivityRepository by lazy {
+        ConnectivityRepository(application.applicationContext)
     }
 }

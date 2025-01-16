@@ -1,5 +1,8 @@
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
@@ -8,6 +11,8 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
     private val googleAuthManager = DependencyContainer.googleAuthenticationManager
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    var showNoInternetAlert by mutableStateOf(false)
 
     var email = mutableStateOf("Guest")
     var profilePictureUrl = mutableStateOf<String?>(null)
@@ -38,6 +43,9 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun deleteAccount(navController: NavController) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            showNoInternetAlert = true
+        }
         viewModelScope.launch {
             googleAuthManager.auth.currentUser?.delete()?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {

@@ -29,6 +29,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.R
+import com.example.pokedex.shared.NoInternetAlert
 import com.example.pokedex.shared.PokemonTypeResources
 import com.example.pokedex.shared.formatPokemonName
 import com.example.pokedex.shared.ProgressIndicator
@@ -41,21 +42,50 @@ private val typeResources = PokemonTypeResources()
 fun HomeView(navController: NavController) {
     val viewModel = viewModel<HomeViewModel>()
     val pokemonOfTheDay = viewModel.pokemonOfTheDay.collectAsState().value
+    val recentPokemons = viewModel.recentlyViewedPokemons.collectAsState().value
 
     LaunchedEffect(Unit) {
         viewModel.getPokemonOfTheDay()
         viewModel.getRecentlyViewedPokemons()
     }
 
-    when (pokemonOfTheDay) {
-        is HomeUIState.Empty -> {
-            Text(text = "No Pokémon found")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(PokemonTypeResources().appGradient())
+            .verticalScroll(rememberScrollState()),
+    ) {
+        when (pokemonOfTheDay) {
+            is HomeUIState.Empty -> {
+                Text(text = "No Pokémon found")
+            }
+            is HomeUIState.Loading -> {
+                ProgressIndicator()
+            }
+            is HomeUIState.Data -> {
+                PokemonOfDayView(pokemon = pokemonOfTheDay.pokemonOfTheDay, navController = navController)
+            }
         }
-        is HomeUIState.Loading -> {
-            MakeHomeLoadingScreen()
+
+        GamesRow(navController = navController, viewModel = viewModel)
+
+        when (recentPokemons) {
+            is RecentsUIState.Empty -> {
+                Text(text = "No recently viewed Pokémon")
+            }
+            is RecentsUIState.Loading -> {
+                ProgressIndicator()
+            }
+            is RecentsUIState.Data -> {
+                RecentlyViewedPokemons(recentPokemons = recentPokemons.pokemons, navController = navController)
+            }
         }
-        is HomeUIState.Data -> {
-            MakeHomeView(navController, pokemonOfTheDay.pokemonOfTheDay, viewModel)
+
+        if (viewModel.showNoInternetAlert) {
+            NoInternetAlert(
+                tryingToDo = "play this game",
+                onDismiss = { viewModel.showNoInternetAlert = false }
+            )
         }
     }
 }
@@ -76,36 +106,6 @@ private fun MakeHomeLoadingScreen() {
             color = Color.Blue,
             strokeWidth = 4.dp
         )
-    }
-}
-
-@Composable
-private fun MakeHomeView(
-    navController: NavController,
-    pokemon: Pokemon,
-    viewModel: HomeViewModel
-) {
-    val recentPokemons = viewModel.recentlyViewedPokemons.collectAsState().value
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(PokemonTypeResources().appGradient())
-            .verticalScroll(rememberScrollState()),
-    ) {
-        PokemonOfDayView(pokemon = pokemon, navController = navController)
-        GamesRow(navController = navController)
-
-        when (recentPokemons) {
-            is RecentsUIState.Empty -> {
-                Text(text = "No recently viewed Pokémon")
-            }
-            is RecentsUIState.Loading -> {
-                ProgressIndicator()
-            }
-            is RecentsUIState.Data -> {
-                RecentlyViewedPokemons(recentPokemons = recentPokemons.pokemons, navController = navController)
-            }
-        }
     }
 }
 
@@ -167,7 +167,7 @@ private fun PokemonDetailsRow(pokemon: Pokemon) {
 }
 
 @Composable
-private fun GamesRow(navController: NavController) {
+private fun GamesRow(navController: NavController, viewModel: HomeViewModel) {
     Text(
         text = "Pokémon Games",
         style = MaterialTheme.typography.titleMedium,
@@ -180,7 +180,7 @@ private fun GamesRow(navController: NavController) {
     ) {
         HomePageBox(
             color = MaterialTheme.colorScheme.primary,
-            onClick = { navController.navigate(Screen.WhoIsThatPokemon.route) }
+            onClick = { viewModel.onWhoIsThatPokemonClicked(navController) }
         ) {
             MakeWhosThatPokemonBox()
         }
@@ -195,9 +195,11 @@ private fun GamesRow(navController: NavController) {
 }
 
 @Composable
-private fun HomePageBox(color: Color,
-                onClick: () -> Unit,
-                content: @Composable () -> Unit) {
+private fun HomePageBox(
+    color: Color,
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
     Box(
         modifier = Modifier
             .width(190.dp)

@@ -61,7 +61,7 @@ class PokemonTypeResources {
 
     fun appGradient(): Brush {
         val pokemonOfTheDay = runBlocking {  pokemonOfTheDayRepository.determinePokemonOfTheDay() }
-        val primaryType = pokemonOfTheDay.types.firstOrNull()?.type?.name ?: "normal"
+        val primaryType = pokemonOfTheDay?.types?.firstOrNull()?.type?.name ?: "normal"
         return getTypeGradient(primaryType)
     }
 

@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
@@ -22,6 +23,7 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     private val favouritesRepository = DependencyContainer.favouritesRepository
     private val teamsRepository = DependencyContainer.teamsRepository
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
+    private val connectivityRepository = DependencyContainer.connectivityRepository
 
     var isFavorited by mutableStateOf(false)
     var showDialog by mutableStateOf(false)
@@ -56,7 +58,11 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         _pokemon.update {
             PokemonDetailUIState.Loading
         }
-        pokemonRepository.getPokemonDetailsByName(currentPokemonName)
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            getCachedPokemon()
+        } else {
+            pokemonRepository.getPokemonDetailsByName(currentPokemonName)
+        }
     }
 
     fun savePokemon(pokemon: Pokemon) = viewModelScope.launch {
@@ -133,6 +139,32 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         } else {
             navController.popBackStack()
         }
+    }
+
+    private fun getCachedPokemon() {
+        var pokemon = recentlyViewedRepository.getCachedPokemon(currentPokemonName)
+        if (pokemon != null) {
+            gotPokemonFromCach(pokemon)
+            return
+        }
+        pokemon = teamsRepository.getCachedPokemon(currentPokemonName)
+        if (pokemon != null) {
+            gotPokemonFromCach(pokemon)
+            return
+        }
+        pokemon = favouritesRepository.getCachedPokemon(currentPokemonName)
+        if (pokemon != null) {
+            gotPokemonFromCach(pokemon)
+            return
+        }
+        _pokemon.update { PokemonDetailUIState.Empty }
+    }
+
+    private fun gotPokemonFromCach(pokemon: Pokemon) = viewModelScope.launch {
+        _pokemon.update {
+            PokemonDetailUIState.Data(pokemon.getOfflinePokemonAttributes())
+        }
+        recentlyViewedRepository.addToRecents(pokemon)
     }
 }
 

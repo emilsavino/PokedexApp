@@ -1,7 +1,10 @@
 package com.example.pokedex.mainViews.signInView
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
@@ -11,10 +14,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {
-
+    private val connectivityRepository = DependencyContainer.connectivityRepository
     var email = mutableStateOf("")
     var profilePictureUrl = mutableStateOf<String?>(null)
     var authError = mutableStateOf<String?>(null)
+    var failedToSignIn by mutableStateOf(false)
     var password = mutableStateOf("")
 
     val googleAuthManager = DependencyContainer.googleAuthenticationManager
@@ -22,6 +26,10 @@ class SignInViewModel : ViewModel() {
 
 
     fun signInWithGoogle(navController: NavController) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            failedToSignIn = true
+            return
+        }
         viewModelScope.launch {
             googleAuthManager.signInWithGoogle().collectLatest { response ->
                 when (response) {
@@ -31,6 +39,7 @@ class SignInViewModel : ViewModel() {
                         profilePictureUrl.value = currentUser?.photoUrl?.toString()
                         authError.value = null
                         navController.navigate(Screen.Home.route)
+                        failedToSignIn = false
                     }
 
                     is AuthResponse.Error -> {
@@ -46,6 +55,10 @@ class SignInViewModel : ViewModel() {
         enteredPassword: String,
         navController: NavController
     ) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            failedToSignIn = true
+            return
+        }
         viewModelScope.launch {
             emailAuthManager.loginWithEmail(enteredEmail, enteredPassword)
                 .collectLatest { response ->

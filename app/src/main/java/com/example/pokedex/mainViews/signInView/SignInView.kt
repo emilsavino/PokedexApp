@@ -42,10 +42,7 @@ import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.PokemonTypeResources
 
 @Composable
-fun SignInView(
-    modifier: Modifier = Modifier,
-    navController: NavController
-) {
+fun SignInView(navController: NavController){
     val viewModel = viewModel<SignInViewModel>()
     val gradientColor = PokemonTypeResources().getTypeGradient("dark")
 
@@ -112,6 +109,20 @@ fun SignInView(
                 fontStyle = FontStyle.Italic
 
             )
+
+            if (viewModel.failedToSignIn) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "You need internet to sign in",
+                        color = Color.Red
+                    )
+                }
+            }
         }
     }
 }

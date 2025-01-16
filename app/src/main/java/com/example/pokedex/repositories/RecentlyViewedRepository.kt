@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +21,10 @@ private val Context.dataStore by preferencesDataStore(name = "recently_viewed_pr
 
 class RecentlyViewedRepository(private val context: Context) {
     private val databaseService = DatabaseService("recentlyViewed", Pokemon::class.java)
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    private var hasInternet = connectivityRepository.isConnected.asLiveData()
+    private var wasOffline = false
+
     private val recentlyViewedPokemons = mutableListOf<Pokemon>()
     private val RECENTLY_VIEWED_KEY = stringPreferencesKey("recently_viewed")
     private val gson = Gson()
@@ -35,6 +41,17 @@ class RecentlyViewedRepository(private val context: Context) {
             }
             mutableRecentlyViewedPokemonsFlow.emit(recentlyViewedPokemons)
         }
+
+        hasInternet.observeForever { isConnected ->
+            if (isConnected == true && wasOffline) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    databaseService.storeList(recentlyViewedPokemons)
+                }
+                wasOffline = false
+            } else if (isConnected == false) {
+                wasOffline = true
+            }
+        }
     }
 
     private suspend fun initializeDatabase() {
@@ -44,6 +61,10 @@ class RecentlyViewedRepository(private val context: Context) {
                 recentlyViewedPokemons.addAll(recentlyViewed)
             }
         }
+    }
+
+    fun getCachedPokemon(name: String): Pokemon? {
+        return recentlyViewedPokemons.find { it.name == name }
     }
 
     suspend fun initializeCache() {

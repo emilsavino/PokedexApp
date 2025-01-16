@@ -99,6 +99,10 @@ class RecentlySearchedRepository(private val context: Context) {
             recentlySearchedPokemon.remove(name)
         }
 
+        if (recentlySearchedPokemon.size >= 20) {
+            recentlySearchedPokemon.removeAt(0)
+        }
+
         recentlySearchedPokemon.add(name)
         val list = mutableListOf<Pokemon>()
         for (name in recentlySearchedPokemon)

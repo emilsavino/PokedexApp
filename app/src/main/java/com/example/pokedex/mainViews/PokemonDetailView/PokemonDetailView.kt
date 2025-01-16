@@ -44,9 +44,17 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.BottomStart
+import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.example.pokedex.navigation.Screen
 import com.example.pokedex.shared.BackButton
 import com.example.pokedex.shared.formatPokemonName
@@ -216,7 +224,53 @@ private fun CreatePokemonBox(pokemon: PokemonAttributes) {
             contentDescription = "Picture of a Pokémon",
             modifier = Modifier.fillMaxSize()
         )
+
+        Column(
+            modifier = Modifier
+                .align(TopStart)
+                .padding(2.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            CreateStatsText("hp",pokemon)
+            CreateStatsText("speed", pokemon)
+        }
+
+        Column(
+            modifier = Modifier
+                .align(BottomEnd)
+                .padding(2.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            CreateStatsText("attack", pokemon)
+            CreateStatsText("defense", pokemon)
+        }
     }
+}
+
+@Composable
+private fun CreateStatsText(nameOfStat: String, pokemon: PokemonAttributes) {
+    Text(
+        text = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                append("${nameOfStat.uppercase()}: ")
+            }
+            withStyle(style = SpanStyle(fontStyle = FontStyle.Italic, fontSize = 16.sp)) {
+                append("${pokemon.pokemon.stats.firstOrNull { it.stat.name == nameOfStat.lowercase() }?.base_stat}")
+            }
+        },
+        style = TextStyle(
+            color = Color.Black,
+            shadow = androidx.compose.ui.graphics.Shadow(
+                color = Color.White,
+                offset = Offset(1f, 1f),
+                blurRadius = 4f
+            ),
+        ),
+        modifier = Modifier
+            .padding(2.dp)
+    )
 }
 
 @Composable
@@ -413,43 +467,51 @@ private fun CreateEvoBox(
             )
             Spacer(modifier = Modifier.padding(2.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-            ) {
-                pokemon.pokemons.forEachIndexed {index, localPokemon ->
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .background(
-                                color = Color.White.copy(alpha = 0f),
-                                shape = RoundedCornerShape(8.dp)
+            if (pokemon.pokemons.isEmpty()) {
+                Text(
+                    text = "This Pokémon evolves in mysterious ways, we have yet to discover its Evolution Chain!",
+                    color = Color.Black,
+                    fontStyle = FontStyle.Italic
+                )
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    pokemon.pokemons.forEachIndexed {index, localPokemon ->
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .background(
+                                    color = Color.White.copy(alpha = 0f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .clickable { viewModel.navigateToEvo(localPokemon.name) }
+                        ) {
+                            AsyncImage(
+                                model = localPokemon.getSprite(),
+                                contentDescription = "Sprite",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .scale(1.2f),
+                                contentScale = ContentScale.Fit
                             )
-                            .clickable { viewModel.navigateToEvo(localPokemon.name) }
-                    ) {
-                        AsyncImage(
-                            model = localPokemon.getSprite(),
-                            contentDescription = "Sprite",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(8.dp))
-                                .scale(1.2f),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
+                        }
 
-                    if (index < pokemon.pokemons.size - 1) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Arrow",
-                            tint = Color.Black.copy(alpha = 0.6f),
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp)
-                                .size(14.dp)
-                        )
+                        if (index < pokemon.pokemons.size - 1) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Arrow",
+                                tint = Color.Black.copy(alpha = 0.6f),
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .size(14.dp)
+                            )
+                        }
                     }
                 }
             }

@@ -7,7 +7,8 @@ data class Pokemon(
     var name: String = "",
     var sprites: Sprites = Sprites(""),
     val types: List<TypeObject> = emptyList(),
-    val abilities: List<Ability> = emptyList()
+    val abilities: List<Ability> = emptyList(),
+    val stats: List<Stat>
 ) {
     fun getOfflinePokemonAttributes(): PokemonAttributes {
         return PokemonAttributes(
@@ -21,7 +22,6 @@ data class Pokemon(
         )
     }
 }
-
 fun Pokemon.getSprite(): Comparable<*> {
     return this.sprites.front_default ?: R.drawable.unknown
 }

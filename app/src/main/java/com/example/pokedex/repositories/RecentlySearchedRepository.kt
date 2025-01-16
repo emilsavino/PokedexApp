@@ -10,6 +10,7 @@ import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.SearchResult
 import com.example.pokedex.dataClasses.PokemonTypeResources
+import com.example.pokedex.dataClasses.Result
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,7 @@ class RecentlySearchedRepository(private val context: Context) {
 
 
     val filterOptions = PokemonTypeResources().getAllTypes()
-    val sortOptions = listOf("NameASC","NameDSC", "Evolutions")
+    val sortOptions = listOf("NameASC","NameDSC", "Evolutions","HP","Speed","Attack","Defense")
 
     private val mutableSearchFlow = MutableSharedFlow<SearchResult>()
     val searchFlow: Flow<SearchResult> = mutableSearchFlow.asSharedFlow()
@@ -143,6 +144,50 @@ class RecentlySearchedRepository(private val context: Context) {
         {
             allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
             allPokemonResults = allPokemonResults.reversed()
+        }
+        else if (sortOption != "Evolutions")
+        {
+            val newList = mutableListOf<Result>()
+
+            for (pokemon in allPokemonResults)
+            {
+                var highestValueFound = Int.MIN_VALUE
+                var bestPokemonSoFar : Result = Result("","")
+                for (innerPokemon in allPokemonResults)
+                {
+                    var toContinue : Boolean = false
+                    for (item in newList)
+                    {
+                        if (item.name == innerPokemon.name)
+                        {
+                            toContinue = true
+                        }
+                    }
+                    if (pokemon == innerPokemon || toContinue)
+                    {
+                        continue
+                    }
+                    val operationPokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(innerPokemon.name)
+                    for (stat in operationPokemon.stats)
+                    {
+                        if (stat.stat.name == sortOption.lowercase())
+                        {
+                            if (stat.base_stat > highestValueFound)
+                            {
+                                highestValueFound = stat.base_stat
+                                bestPokemonSoFar = Result(innerPokemon.name,innerPokemon.url)
+                                break
+                            }
+                        }
+                    }
+                }
+                newList.add(bestPokemonSoFar)
+                if (newList.size == elementsToFind)
+                {
+                    break
+                }
+            }
+            allPokemonResults = newList.toList()
         }
 
         while (index < allPokemonResults.size && foundElements < elementsToFind)

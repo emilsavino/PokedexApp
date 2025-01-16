@@ -99,10 +99,6 @@ class RecentlySearchedRepository(private val context: Context) {
             recentlySearchedPokemon.remove(name)
         }
 
-        if (recentlySearchedPokemon.size >= 10) {
-            recentlySearchedPokemon.removeAt(0)
-        }
-
         recentlySearchedPokemon.add(name)
         val list = mutableListOf<Pokemon>()
         for (name in recentlySearchedPokemon)
@@ -129,7 +125,9 @@ class RecentlySearchedRepository(private val context: Context) {
     suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String, searchID : Int)
     {
         var foundElements = 0
-        val elementsToFind = 20
+        // Below is not optimal, but an easy way to guarantee the correct amount of pokemons :)
+        // Also, searching is very fast as our pokemons should be in memory at this point, so not that bad.
+        val elementsToFind = 20 + offset
         var mutableFilteredList = mutableListOf<Pokemon>()
         var index = offset
         var allPokemonResults = DependencyContainer.pokemonDataStore.getAllPokemonResults()

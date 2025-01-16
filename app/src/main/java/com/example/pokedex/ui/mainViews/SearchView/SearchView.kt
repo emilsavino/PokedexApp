@@ -1,14 +1,17 @@
 package com.example.pokedex.mainViews.SearchView
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
@@ -49,7 +52,7 @@ import com.example.pokedex.dataClasses.getSprite
 @Composable
 fun SearchView(modifier: Modifier = Modifier, navController: NavController, filterOption: String) {
     val viewModel = viewModel<SearchViewModel>()
-
+    val scrollState : ScrollState = rememberScrollState()
     val pokemons = viewModel.pokemonList.collectAsState().value
     LaunchedEffect(Unit) {
         viewModel.searchPokemonList()
@@ -57,6 +60,18 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
         {
             viewModel.selectFilterOption(filterOption)
         }
+    }
+    var atBottom by remember { mutableStateOf(false) }
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.value }
+            .collect { currentScrollPosition ->
+                val isAtBottom = currentScrollPosition >= scrollState.maxValue
+                atBottom = isAtBottom
+            }
+    }
+    if (atBottom) {
+        viewModel.searchOffset += 20
+        viewModel.searchPokemonList()
     }
 
     Box(
@@ -69,6 +84,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
+                .verticalScroll(scrollState)
         ) {
             MakeSearchTools(viewModel = viewModel)
 
@@ -270,12 +286,13 @@ private fun MakeSortButton(
 
 @Composable
 private fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController, viewModel: SearchViewModel) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .padding(vertical = 8.dp),
     ) {
-        items(pokemons) { pokemon ->
-            SearchListItem(pokemon = pokemon, navController = navController,viewModel)
+        for (pokemon in pokemons)
+        {
+            SearchListItem(pokemon = pokemon, navController = navController, viewModel)
         }
     }
 }

@@ -152,26 +152,15 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         }
     }
 
-    private fun getCachedPokemon() {
-        var pokemon = recentlyViewedRepository.getCachedPokemon(currentPokemonName)
-        if (pokemon != null) {
-            gotPokemonFromCach(pokemon)
-            return
-        }
-        pokemon = teamsRepository.getCachedPokemon(currentPokemonName)
-        if (pokemon != null) {
-            gotPokemonFromCach(pokemon)
-            return
-        }
-        pokemon = favouritesRepository.getCachedPokemon(currentPokemonName)
-        if (pokemon != null) {
-            gotPokemonFromCach(pokemon)
-            return
-        }
-        _pokemon.update { PokemonDetailUIState.Empty }
+    private fun getCachedPokemon() = viewModelScope.launch {
+        val dataStore = DependencyContainer.pokemonDataStore
+        val pokemon = dataStore.getPokemonFromMapFallBackAPI(currentPokemonName)
+        if (pokemon.name != "") {
+            gotPokemonFromCache(pokemon)
+        } else _pokemon.update { PokemonDetailUIState.Empty }
     }
 
-    private fun gotPokemonFromCach(pokemon: Pokemon) = viewModelScope.launch {
+    private fun gotPokemonFromCache(pokemon: Pokemon) = viewModelScope.launch {
         _pokemon.update {
             PokemonDetailUIState.Data(pokemon.getOfflinePokemonAttributes())
         }

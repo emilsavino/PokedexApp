@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -88,16 +87,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
                 }
 
                 is SearchUIState.Data -> {
-                    if (viewModel.connectivityRepository.isConnected.asLiveData().value == false) {
-                        NoInternetView()
-                    } else {
-                        MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
-                    }
-
-                }
-
-                is SearchUIState.NoInternet -> {
-                    NoInternetView()
+                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
                 }
             }
         }

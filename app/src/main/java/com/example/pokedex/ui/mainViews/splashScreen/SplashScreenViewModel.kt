@@ -16,7 +16,7 @@ class SplashScreenViewModel : ViewModel(){
     private var isSignedIn = authManager.fetchSignedIn()
 
     fun onAppear (navController: NavController) {
-        if (connectivityRepository.isConnected.asLiveData().value == false && dataStore.getAllPokemonResults().size < 1000) {
+        if (connectivityRepository.isConnected.asLiveData().value == false && dataStore.getAllPokemonResults().size > 1000) {
             navController.navigate(Screen.Home.route)
             return
         }

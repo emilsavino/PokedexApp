@@ -1,6 +1,5 @@
 package com.example.pokedex.mainViews.SavedPokemonsView
 
-import SavedViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,10 +35,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pokedex.dataClasses.Pokemon
-import com.example.pokedex.ui.shared.PokemonGridItem
 import com.example.pokedex.dataClasses.PokemonTypeResources
-import com.example.pokedex.mainViews.SearchView.SearchViewModel
+import com.example.pokedex.ui.shared.PokemonGridItem
 import com.example.pokedex.ui.shared.ProgressIndicator
+import com.example.pokedex.mainViews.SavedPokemonsView.SavedViewModel.SavedUIState
 
 @Composable
 fun SavedView(navController: NavController) {
@@ -77,12 +76,14 @@ fun SavedView(navController: NavController) {
                 } else {
                     MakeFilterButton(viewModel, Color.Black, Color(0x636363FF), Color(0x00FF00FF))
                     MakeSortButton(viewModel, Color.Black, Color(0x636363FF), Color(0x00FF00FF))
+
                     SavedList(navController, savedState.saved)
                 }
             }
         }
     }
 }
+
 @Composable
 private fun MakeFilterButton(
     viewModel: SavedViewModel,
@@ -92,14 +93,14 @@ private fun MakeFilterButton(
 ) {
     var filterExpanded = remember { mutableStateOf(false) }
     Button(
-        onClick = { filterExpanded.value = true},
+        onClick = { filterExpanded.value = true },
         colors = buttonColors(containerColor = Color.White),
         modifier = Modifier.shadow(2.dp, CircleShape)
     ) {
-        Row (
+        Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Icon(
                 imageVector = Icons.Filled.List,
                 contentDescription = "Filter",
@@ -113,16 +114,19 @@ private fun MakeFilterButton(
             )
         }
 
+        // Dropdown menu for filter options
         DropdownMenu(
             expanded = filterExpanded.value,
             onDismissRequest = { filterExpanded.value = false }
         ) {
-            for (option in viewModel.getAllFilterOptions())
-            {
+            for (option in viewModel.getAllFilterOptions()) {
                 DropdownMenuItem(
                     text = { Text(option.capitalize(Locale.current), color = textColor) },
                     modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
-                    onClick = { viewModel.selectFilterOption(option) }
+                    onClick = {
+                        viewModel.selectFilterOption(option)
+                        filterExpanded.value = false
+                    }
                 )
             }
         }
@@ -163,24 +167,24 @@ private fun MakeSortButton(
             expanded = sortExpanded.value,
             onDismissRequest = { sortExpanded.value = false }
         ) {
-            for (option in viewModel.getAllSortOptions())
-            {
+            for (option in viewModel.getAllSortOptions()) {
                 DropdownMenuItem(
                     text = { Text(option, color = textColor) },
                     modifier = Modifier.background(color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor),
                     onClick = {
-                        sortExpanded.value = false
                         viewModel.selectSortOption(option)
+                        sortExpanded.value = false
                     }
                 )
             }
         }
     }
 }
+
 @Composable
-private fun SavedList (navController: NavController, savedPokemons: List<Pokemon>) {
+private fun SavedList(navController: NavController, savedPokemons: List<Pokemon>) {
     val pokemonsChunked = savedPokemons.chunked(3)
-    LazyColumn (
+    LazyColumn(
         modifier = Modifier,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
@@ -191,8 +195,8 @@ private fun SavedList (navController: NavController, savedPokemons: List<Pokemon
 }
 
 @Composable
-private fun SavedRow(modifier: Modifier = Modifier, pokemons : List<Pokemon>, navController: NavController) {
-    Row (
+private fun SavedRow(modifier: Modifier = Modifier, pokemons: List<Pokemon>, navController: NavController) {
+    Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(19.dp)
     ) {

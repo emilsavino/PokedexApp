@@ -6,8 +6,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.asLiveData
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.Result
+import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.Result
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

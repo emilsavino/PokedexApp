@@ -2,9 +2,9 @@ package com.example.pokedex.repositories
 
 import com.example.pokedex.R
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.Option
-import com.example.pokedex.shared.WhoIsThatPokemon
-import com.example.pokedex.shared.getSprite
+import com.example.pokedex.dataClasses.Option
+import com.example.pokedex.dataClasses.WhoIsThatPokemon
+import com.example.pokedex.dataClasses.getSprite
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class WhoIsThatPokemonRepository {

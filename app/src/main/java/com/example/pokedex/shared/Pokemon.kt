@@ -7,7 +7,8 @@ data class Pokemon(
     var name: String,
     var sprites: Sprites,
     val types: List<TypeObject>,
-    val abilities: List<Ability>
+    val abilities: List<Ability>,
+    val stats: List<Stat>
 )
 
 fun Pokemon.getSprite(): Comparable<*> {

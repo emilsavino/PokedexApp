@@ -21,17 +21,15 @@ class SavedViewModel : ViewModel() {
             favouritesRepository.savedPokemonsFlow
                 .collect { saved ->
                     mutableStateFlow.update {
-                        SavedUIState.Data(saved)
+                        if (saved.isEmpty()) {
+                            SavedUIState.Empty
+                        } else {
+                            SavedUIState.Data(saved)
+                        }
                     }
                 }
         }
         fetchSaved()
-    }
-
-    fun savedIsEmpty() {
-        mutableStateFlow.update {
-            SavedUIState.Empty
-        }
     }
 
     private fun fetchSaved() = viewModelScope.launch {

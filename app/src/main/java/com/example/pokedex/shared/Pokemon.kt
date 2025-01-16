@@ -8,7 +8,7 @@ data class Pokemon(
     var sprites: Sprites = Sprites(""),
     val types: List<TypeObject> = emptyList(),
     val abilities: List<Ability> = emptyList(),
-    val stats: List<Stat>
+    val stats: List<Stat> = emptyList()
 ) {
     fun getOfflinePokemonAttributes(): PokemonAttributes {
         return PokemonAttributes(

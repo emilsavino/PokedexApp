@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.dataClasses.Pokemon
@@ -22,6 +23,9 @@ private val Context.dataStore by preferencesDataStore(name = "recently_searched_
 
 class RecentlySearchedRepository(private val context: Context) {
     private val databaseService = DatabaseService("recentlySearched", Pokemon::class.java)
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    private var hasInternet = connectivityRepository.isConnected.asLiveData()
+    private var wasOffline = false
     private val recentlySearchedPokemon = mutableListOf<String>()
     private val pokemonDataStore = DependencyContainer.pokemonDataStore
     private val RECENTLY_SEARCHED_KEY = stringPreferencesKey("recently_searched")
@@ -42,6 +46,21 @@ class RecentlySearchedRepository(private val context: Context) {
                 initializeCache()
             }
             fetchRecentlySearched()
+        }
+
+        hasInternet.observeForever { isConnected ->
+            if (isConnected == true && wasOffline) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val list = mutableListOf<Pokemon>()
+                    for (name in recentlySearchedPokemon) {
+                        list.add(pokemonDataStore.getPokemonFromMapFallBackAPI(name))
+                    }
+                    databaseService.storeList(list)
+                }
+                wasOffline = false
+            } else if (isConnected == false) {
+                wasOffline = true
+            }
         }
     }
 
@@ -165,5 +184,4 @@ class RecentlySearchedRepository(private val context: Context) {
         val result = SearchResult(searchID,mutableFilteredList)
         mutableSearchFlow.emit(result)
     }
-
 }

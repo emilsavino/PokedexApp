@@ -230,7 +230,7 @@ private fun MakeSortButton(
     unselectedColor: Color
 ) {
     var sortExpanded = remember { mutableStateOf(false) }
-    val maxVisibleItems = 5
+    val maxVisibleItems = 3
     Button(
         onClick = { sortExpanded.value = true },
         colors = buttonColors(containerColor = Color.White),

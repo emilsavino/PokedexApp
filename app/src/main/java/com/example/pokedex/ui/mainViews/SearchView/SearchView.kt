@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.SearchView
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -202,7 +203,7 @@ private fun MakeFilterButton(
                 DropdownMenuItem(
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
+                            Image(
                                 painter = typeResources.getTypeImage(option),
                                 contentDescription = "${option.capitalize()} type icon",
                                 modifier = Modifier.size(24.dp).padding(end = 8.dp)

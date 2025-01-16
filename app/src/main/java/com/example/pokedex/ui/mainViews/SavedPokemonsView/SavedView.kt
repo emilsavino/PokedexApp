@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -62,6 +64,7 @@ fun SavedView(navController: NavController) {
 
         when (savedState) {
             is SavedUIState.Empty -> {
+                MakeSavedTools(viewModel)
                 Text(text = "No saved pokemons")
             }
 
@@ -73,15 +76,47 @@ fun SavedView(navController: NavController) {
                 if (savedState.saved.isEmpty()) {
                     Text(text = "No saved pokemons")
                     viewModel.savedIsEmpty()
+                    MakeSavedTools(viewModel)
                 } else {
-                    MakeFilterButton(viewModel, Color.Black, Color(0x636363FF), Color(0x00FF00FF))
-                    MakeSortButton(viewModel, Color.Black, Color(0x636363FF), Color(0x00FF00FF))
-
+                    MakeSavedTools(viewModel)
                     SavedList(navController, savedState.saved)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun MakeSavedTools(
+    viewModel: SavedViewModel,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val selectedColor = Color(0x636363FF)
+        val unselectedColor = Color(0x00FF00FF)
+        val textColor = Color.Black
+
+        MakeFilterButton(
+            viewModel,
+            textColor,
+            selectedColor,
+            unselectedColor
+        )
+
+        Spacer(modifier = Modifier.padding(10.dp))
+
+        MakeSortButton(
+            viewModel,
+            textColor,
+            selectedColor,
+            unselectedColor
+        )
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Composable

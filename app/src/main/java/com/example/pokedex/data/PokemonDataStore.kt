@@ -6,16 +6,16 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.asLiveData
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.DamageRelations
-import com.example.pokedex.shared.EvolutionChain
-import com.example.pokedex.shared.EvolutionChainResult
-import com.example.pokedex.shared.EvolutionChainUrlFromSpecies
-import com.example.pokedex.shared.FlavorTextAndEvolutionChain
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.PokemonList
-import com.example.pokedex.shared.Result
-import com.example.pokedex.shared.Species
-import com.example.pokedex.shared.Type
+import com.example.pokedex.dataClasses.DamageRelations
+import com.example.pokedex.dataClasses.EvolutionChain
+import com.example.pokedex.dataClasses.EvolutionChainResult
+import com.example.pokedex.dataClasses.EvolutionChainUrlFromSpecies
+import com.example.pokedex.dataClasses.FlavorTextAndEvolutionChain
+import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.PokemonList
+import com.example.pokedex.dataClasses.Result
+import com.example.pokedex.dataClasses.Species
+import com.example.pokedex.dataClasses.Type
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
@@ -140,7 +140,8 @@ class PokemonDataStore(private val context: Context) {
     }
 
     suspend fun fetchPokemonSpecies(name: String): FlavorTextAndEvolutionChain {
-        if (hasInternet.value == false) { return FlavorTextAndEvolutionChain(EvolutionChainUrlFromSpecies(""), emptyList()) }
+        if (hasInternet.value == false) { return FlavorTextAndEvolutionChain(
+            EvolutionChainUrlFromSpecies(""), emptyList()) }
         return withContext(Dispatchers.IO) {
             api.getPokemonSpecies(name)
         }

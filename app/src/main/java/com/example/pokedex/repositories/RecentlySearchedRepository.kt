@@ -6,13 +6,12 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.SearchResult
-import com.example.pokedex.shared.PokemonTypeResources
+import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.SearchResult
+import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

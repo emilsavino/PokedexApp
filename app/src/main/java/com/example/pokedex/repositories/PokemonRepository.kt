@@ -2,18 +2,18 @@ package com.example.pokedex.repositories
 
 import com.example.pokedex.R
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.Ability
-import com.example.pokedex.shared.AbilityDetails
-import com.example.pokedex.shared.DamageRelations
-import com.example.pokedex.shared.DamageRelationsResult
-import com.example.pokedex.shared.EvolutionChainResult
-import com.example.pokedex.shared.FlavorTextEntry
-import com.example.pokedex.shared.Language
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.PokemonAttributes
-import com.example.pokedex.shared.Type
-import com.example.pokedex.shared.Types
-import com.example.pokedex.shared.getSprite
+import com.example.pokedex.dataClasses.Ability
+import com.example.pokedex.dataClasses.AbilityDetails
+import com.example.pokedex.dataClasses.DamageRelations
+import com.example.pokedex.dataClasses.DamageRelationsResult
+import com.example.pokedex.dataClasses.EvolutionChainResult
+import com.example.pokedex.dataClasses.FlavorTextEntry
+import com.example.pokedex.dataClasses.Language
+import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.PokemonAttributes
+import com.example.pokedex.dataClasses.Type
+import com.example.pokedex.dataClasses.Types
+import com.example.pokedex.dataClasses.getSprite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -42,7 +42,8 @@ class PokemonRepository {
 
         if (pokemon.getSprite() == R.drawable.unknown) {
             description = FlavorTextEntry("This Pokémon is so rare, that no photos have been taken!",
-                Language("en"))
+                Language("en")
+            )
         }
 
         val pokemonAttributes = PokemonAttributes(

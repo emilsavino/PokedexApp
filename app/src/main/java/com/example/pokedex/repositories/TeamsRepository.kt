@@ -7,8 +7,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.Team
+import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.Team
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

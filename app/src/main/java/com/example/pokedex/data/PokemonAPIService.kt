@@ -1,10 +1,10 @@
 package com.example.pokedex.data
 
-import com.example.pokedex.shared.DamageRelations
-import com.example.pokedex.shared.EvolutionChain
-import com.example.pokedex.shared.FlavorTextAndEvolutionChain
-import com.example.pokedex.shared.Pokemon
-import com.example.pokedex.shared.PokemonList
+import com.example.pokedex.dataClasses.DamageRelations
+import com.example.pokedex.dataClasses.EvolutionChain
+import com.example.pokedex.dataClasses.FlavorTextAndEvolutionChain
+import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.PokemonList
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

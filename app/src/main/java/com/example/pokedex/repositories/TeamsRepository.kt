@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.example.pokedex.shared.Team
 import com.google.gson.Gson
@@ -20,6 +22,9 @@ private val Context.dataStore by preferencesDataStore(name = "team_preferences")
 
 class TeamsRepository(private val context: Context) {
     private val databaseService = DatabaseService("teams", Team::class.java)
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    private var hasInternet = connectivityRepository.isConnected.asLiveData()
+    private var wasOffline = false
 
     private val pokemonTeams = mutableListOf<Team>()
     private val TEAMS_KEY = stringPreferencesKey("teams")
@@ -35,6 +40,17 @@ class TeamsRepository(private val context: Context) {
                 initializeCache()
             }
             mutableTeamsFlow.emit(pokemonTeams)
+        }
+
+        hasInternet.observeForever { isConnected ->
+            if (isConnected == true && wasOffline) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    databaseService.storeList(pokemonTeams)
+                }
+                wasOffline = false
+            } else if (isConnected == false) {
+                wasOffline = true
+            }
         }
     }
 

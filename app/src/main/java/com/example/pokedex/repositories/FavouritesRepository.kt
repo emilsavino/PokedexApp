@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.shared.Pokemon
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +21,9 @@ private val Context.dataStore by preferencesDataStore(name = "pokemon_preference
 
 class FavouritesRepository(private val context: Context) {
     private val databaseService = DatabaseService("favorites", Pokemon::class.java)
+    private val connectivityRepository = DependencyContainer.connectivityRepository
+    private var hasInternet = connectivityRepository.isConnected.asLiveData()
+    private var wasOffline = false
     private val favouritePokemons = mutableListOf<Pokemon>()
     private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
     private val gson = Gson()
@@ -33,6 +38,17 @@ class FavouritesRepository(private val context: Context) {
                 initializeCache()
             }
             mutableSavedPokemonsFlow.emit(favouritePokemons)
+        }
+
+        hasInternet.observeForever { isConnected ->
+            if (isConnected == true && wasOffline) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    databaseService.storeList(favouritePokemons)
+                }
+                wasOffline = false
+            } else if (isConnected == false) {
+                wasOffline = true
+            }
         }
     }
 

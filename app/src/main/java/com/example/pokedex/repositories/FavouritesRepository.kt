@@ -130,13 +130,11 @@ class FavouritesRepository(private val context: Context) {
             }
         }.toMutableList()
 
-        if (sortOption == "NameASC") {
-            mutableFilteredList.sortBy { it.name }
-        } else if (sortOption == "NameDSC") {
-            mutableFilteredList.sortByDescending { it.name }
+        when (sortOption) {
+            "NameASC" -> mutableFilteredList.sortBy { it.name }
+            "NameDSC" -> mutableFilteredList.sortByDescending { it.name }
         }
 
-        val result = mutableFilteredList
-        mutableSavedPokemonsFlow.emit(result)
+        mutableSavedPokemonsFlow.emit(mutableFilteredList)
     }
 }

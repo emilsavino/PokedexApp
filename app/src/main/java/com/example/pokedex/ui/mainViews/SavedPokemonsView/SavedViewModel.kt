@@ -23,8 +23,12 @@ class SavedViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             favouritesRepository.savedPokemonsFlow.collect { saved ->
-                mutableStateFlow.update {
-                    SavedUIState.Data(applyFilterAndSort(saved))
+                if (saved.isNotEmpty()) {
+                    mutableStateFlow.update {
+                        SavedUIState.Data(saved)
+                    }
+                } else {
+                    mutableStateFlow.update { SavedUIState.Empty }
                 }
             }
         }
@@ -32,29 +36,19 @@ class SavedViewModel : ViewModel() {
     }
 
     fun savedIsEmpty() {
-        mutableStateFlow.update {
-            SavedUIState.Empty
-        }
+        mutableStateFlow.update { SavedUIState.Empty }
     }
 
     private fun fetchSaved() = viewModelScope.launch {
-        mutableStateFlow.update {
-            SavedUIState.Loading
-        }
+        mutableStateFlow.update { SavedUIState.Loading }
         favouritesRepository.fetchSaved()
     }
 
     fun selectFilterOption(option: String) {
-        if (selectedFilterOptionsList.value.contains(option)) {
-            selectedFilterOptionsList.value =
-                selectedFilterOptionsList.value.toMutableList().apply {
-                    remove(option)
-                }
+        selectedFilterOptionsList.value = if (selectedFilterOptionsList.value.contains(option)) {
+            selectedFilterOptionsList.value - option
         } else {
-            selectedFilterOptionsList.value =
-                selectedFilterOptionsList.value.toMutableList().apply {
-                    add(option)
-                }
+            selectedFilterOptionsList.value + option
         }
         refreshSavedList()
     }
@@ -64,29 +58,16 @@ class SavedViewModel : ViewModel() {
         refreshSavedList()
     }
 
-    fun getAllFilterOptions(): List<String> {
-        return favouritesRepository.filterOptions
-    }
+    fun getAllFilterOptions(): List<String> = favouritesRepository.filterOptions
 
-    fun getAllSortOptions(): List<String> {
-        return favouritesRepository.sortOptions
-    }
+    fun getAllSortOptions(): List<String> = favouritesRepository.sortOptions
 
-    private fun refreshSavedList() {
-        val currentState = savedState.value
-        if (currentState is SavedUIState.Data) {
-            val updatedList = applyFilterAndSort(currentState.saved)
-            mutableStateFlow.update { SavedUIState.Data(updatedList) }
-        }
-    }
-
-    private suspend fun applyFilterAndSort() {
-        if (selectedFilterOptionsList.value.isNotEmpty() || selectedSortOption.value.isNotEmpty()) {
-            favouritesRepository.savedPokemonByNameAndFilterWithSort(
-                selectedFilterOptionsList.value,
-                selectedSortOption.value
-            )
-        }
+    private fun refreshSavedList() = viewModelScope.launch {
+        mutableStateFlow.update { SavedUIState.Loading }
+        favouritesRepository.savedPokemonByNameAndFilterWithSort(
+            selectedFilterOptionsList.value,
+            selectedSortOption.value,
+        )
     }
 
     sealed class SavedUIState {
@@ -94,3 +75,4 @@ class SavedViewModel : ViewModel() {
         object Loading : SavedUIState()
         object Empty : SavedUIState()
     }
+}

@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.SavedPokemonsView
 
+import SavedViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

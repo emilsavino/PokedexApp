@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,9 @@ class FavouritesRepository(private val context: Context) {
     private val favouritePokemons = mutableListOf<Pokemon>()
     private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
     private val gson = Gson()
+
+    val filterOptions = PokemonTypeResources().getAllTypes()
+    val sortOptions = listOf("NameASC","NameDSC", "Evolutions")
 
     private val mutableSavedPokemonsFlow = MutableSharedFlow<List<Pokemon>>()
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
@@ -106,5 +110,33 @@ class FavouritesRepository(private val context: Context) {
 
     fun getCachedPokemon(name: String): Pokemon? {
         return favouritePokemons.find { it.name == name }
+    }
+
+    suspend fun savedPokemonByNameAndFilterWithSort(
+        filterOptions: List<String>,
+        sortOption: String,
+    ) {
+        var mutableFilteredList = mutableListOf<Pokemon>()
+
+        val allSavedPokemons = favouritePokemons
+
+        mutableFilteredList = allSavedPokemons.filter { pokemon ->
+            if (filterOptions.isEmpty()) {
+                return@filter true
+            }
+
+            pokemon.types.any { type ->
+                filterOptions.contains(type.type.name)
+            }
+        }.toMutableList()
+
+        if (sortOption == "NameASC") {
+            mutableFilteredList.sortBy { it.name }
+        } else if (sortOption == "NameDSC") {
+            mutableFilteredList.sortByDescending { it.name }
+        }
+
+        val result = mutableFilteredList
+        mutableSavedPokemonsFlow.emit(result)
     }
 }

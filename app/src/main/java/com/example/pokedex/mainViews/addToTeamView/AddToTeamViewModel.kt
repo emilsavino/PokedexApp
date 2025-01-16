@@ -46,7 +46,7 @@ class AddToTeamViewModel(private val teamName: String) : ViewModel() {
 
         if (searchText.value.isEmpty()) {
             viewModelScope.launch {
-                recentlySearchedRepository.fetchRecentlySearched(++lastSentRequest)
+                recentlySearchedRepository.fetchTeamSuggestions(teamName)
             }
             return
         }

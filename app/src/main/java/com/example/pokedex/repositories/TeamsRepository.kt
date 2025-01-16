@@ -114,8 +114,8 @@ class TeamsRepository(private val context: Context) {
         }
     }
 
-    fun getTeam(index: Int): Team?{
-        return if (index in pokemonTeams.indices) pokemonTeams[index] else null
+    fun getTeam(teamName: String): Team?{
+        return pokemonTeams.firstOrNull { it.name == teamName }
     }
 
     private suspend fun updateDataStore() {

@@ -467,43 +467,51 @@ private fun CreateEvoBox(
             )
             Spacer(modifier = Modifier.padding(2.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-            ) {
-                pokemon.pokemons.forEachIndexed {index, localPokemon ->
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .background(
-                                color = Color.White.copy(alpha = 0f),
-                                shape = RoundedCornerShape(8.dp)
+            if (pokemon.pokemons.isEmpty()) {
+                Text(
+                    text = "This Pokémon evolves in mysterious ways, we have yet to discover its Evolution Chain!",
+                    color = Color.Black,
+                    fontStyle = FontStyle.Italic
+                )
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    pokemon.pokemons.forEachIndexed {index, localPokemon ->
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .background(
+                                    color = Color.White.copy(alpha = 0f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .clickable { viewModel.navigateToEvo(localPokemon.name) }
+                        ) {
+                            AsyncImage(
+                                model = localPokemon.getSprite(),
+                                contentDescription = "Sprite",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .scale(1.2f),
+                                contentScale = ContentScale.Fit
                             )
-                            .clickable { viewModel.navigateToEvo(localPokemon.name) }
-                    ) {
-                        AsyncImage(
-                            model = localPokemon.getSprite(),
-                            contentDescription = "Sprite",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(8.dp))
-                                .scale(1.2f),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
+                        }
 
-                    if (index < pokemon.pokemons.size - 1) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Arrow",
-                            tint = Color.Black.copy(alpha = 0.6f),
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp)
-                                .size(14.dp)
-                        )
+                        if (index < pokemon.pokemons.size - 1) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Arrow",
+                                tint = Color.Black.copy(alpha = 0.6f),
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .size(14.dp)
+                            )
+                        }
                     }
                 }
             }

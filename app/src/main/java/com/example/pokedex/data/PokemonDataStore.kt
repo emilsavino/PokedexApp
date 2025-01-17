@@ -22,6 +22,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -36,6 +39,9 @@ class PokemonDataStore(private val context: Context) {
     private var doneFetchingFromCache = false
     private val ALL_POKEMONS_KEY = stringPreferencesKey("all_pokemons")
     private val POKEMON_MAP_KEY = stringPreferencesKey("pokemon_map")
+
+    private val pokemonMapSizeMutableSharedFlow : MutableSharedFlow<Int> = MutableSharedFlow()
+    val pokemonMapSizeFlow : Flow<Int> = pokemonMapSizeMutableSharedFlow.asSharedFlow()
 
     private val gson = Gson()
 
@@ -80,6 +86,7 @@ class PokemonDataStore(private val context: Context) {
             fillUpMapFromAllPokemonResults()
         }
         doneFetchingFromCache = true
+        fetchMapSize()
     }
 
 
@@ -221,4 +228,10 @@ class PokemonDataStore(private val context: Context) {
         }
         return fetchedPokemonMap
     }
+
+    suspend fun fetchMapSize()
+    {
+        pokemonMapSizeMutableSharedFlow.emit(pokemonMap.size)
+    }
+
 }

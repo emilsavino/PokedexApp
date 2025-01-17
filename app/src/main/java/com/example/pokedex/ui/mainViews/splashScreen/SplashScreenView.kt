@@ -20,10 +20,11 @@ import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun MakeSplashScreen(navController: NavController) {
-    val viewModel = viewModel<SplashScreenViewModel>()
+    val viewModel : SplashScreenViewModel = SplashScreenViewModel(navController)
 
     LaunchedEffect(Dispatchers.IO) {
         viewModel.onAppear(navController)
     }
+
     ProgressIndicator()
 }

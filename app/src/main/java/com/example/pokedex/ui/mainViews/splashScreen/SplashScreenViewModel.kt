@@ -12,6 +12,7 @@ class SplashScreenViewModel : ViewModel(){
     private val authManager = DependencyContainer.googleAuthenticationManager
     private val connectivityRepository = DependencyContainer.connectivityRepository
     private val dataStore = DependencyContainer.pokemonDataStore
+    private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
 
     private var isSignedIn = authManager.fetchSignedIn()
 

@@ -1,6 +1,7 @@
 package com.example.pokedex.repositories
 
 import android.content.Context
+import androidx.compose.animation.defaultDecayAnimationSpec
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -230,5 +231,16 @@ class RecentlySearchedRepository(private val context: Context) {
         }
         val result = SearchResult(searchID,mutableFilteredList)
         mutableSearchFlow.emit(result)
+    }
+
+    suspend fun searchShuffledPokemons() {
+        val allPokemons = pokemonDataStore.getAllPokemonResults()
+        allPokemons.shuffled()
+
+        val shuffledListToReturn = mutableListOf<Pokemon>()
+        for (pokemonResult in allPokemons) {
+            val pokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(pokemonResult.name)
+        }
+
     }
 }

@@ -145,8 +145,8 @@ private fun MakeTeamsGrid(
             modifier = Modifier.padding(start = 16.dp)
         ) {
             val totalGridItems = 6
-            val pokemonChunks = team.pokemons.chunked(3)
-            val displayedPokemonCount = team.pokemons.size
+            val pokemonChunks = team.getPokemons().chunked(3)
+            val displayedPokemonCount = team.getPokemons().size
 
             for ((index, chunk) in pokemonChunks.withIndex()) {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -176,7 +176,7 @@ private fun MakeTeamsGrid(
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         val remainingSlots = 3
                         for (slot in 1..remainingSlots) {
-                            if (team.pokemons.size == 3 && slot == 1) {
+                            if (team.getPokemons().size == 3 && slot == 1) {
                                 AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(team.name) })
                             } else {
                                 EmptyGridItem(navController)

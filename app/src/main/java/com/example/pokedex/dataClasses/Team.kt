@@ -37,6 +37,17 @@ data class Team (
             val damageRelations = DependencyContainer.pokemonDataStore.fetchTypeInfo(types)
             for (damageRelation in damageRelations)
             {
+                for (strong in damageRelation.damage_relations.double_damage_to)
+                {
+                    if (map.containsKey(strong.name))
+                    {
+                        map[strong.name] = map[strong.name]!! + 1
+                    }
+                    else
+                    {
+                        map[strong.name] = 1
+                    }
+                }
                 for (strong in damageRelation.damage_relations.half_damage_from)
                 {
                     if (map.containsKey(strong.name))
@@ -46,6 +57,17 @@ data class Team (
                     else
                     {
                         map[strong.name] = 1
+                    }
+                }
+                for (weak in damageRelation.damage_relations.half_damage_to)
+                {
+                    if (map.containsKey(weak.name))
+                    {
+                        map[weak.name] = map[weak.name]!! - 1
+                    }
+                    else
+                    {
+                        map[weak.name] = -1
                     }
                 }
                 for (weak in damageRelation.damage_relations.double_damage_from)

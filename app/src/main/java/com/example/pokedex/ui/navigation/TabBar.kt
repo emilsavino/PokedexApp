@@ -36,7 +36,7 @@ fun TabBar(navController: NavController) {
                 selected = index == viewModel.selectedTabIndex,
                 onClick = {
                     viewModel.selectedTabIndex = index
-                        navController.navigate(tab.route)
+                    navController.navigate(tab.route)
                 },
                 icon = {
                     if (tab.title == "Home") {

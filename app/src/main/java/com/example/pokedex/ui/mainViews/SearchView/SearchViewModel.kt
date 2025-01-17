@@ -28,8 +28,17 @@ class SearchViewModel: ViewModel() {
             recentlySearchedRepository.searchFlow.collect { newPokemonList ->
                 if (newPokemonList.indexOfSearch == lastSentRequest || (newPokemonList.indexOfSearch == -1))
                 {
-                    _pokemonList.update {
-                        SearchUIState.Data(newPokemonList.pokemons)
+                    if (newPokemonList.pokemons.isEmpty())
+                    {
+                        _pokemonList.update {
+                            SearchUIState.Empty
+                        }
+                    }
+                    else
+                    {
+                        _pokemonList.update {
+                            SearchUIState.Data(newPokemonList.pokemons)
+                        }
                     }
                 }
             }

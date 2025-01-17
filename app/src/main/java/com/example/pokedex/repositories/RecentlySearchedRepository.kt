@@ -134,7 +134,7 @@ class RecentlySearchedRepository(private val context: Context) {
         // Also, searching is very fast as our pokemons should be in memory at this point, so not that bad.
         val elementsToFind = 20 + offset
         var mutableFilteredList = mutableListOf<Pokemon>()
-        var index = offset
+        var index = 0
         var allPokemonResults = DependencyContainer.pokemonDataStore.getAllPokemonResults()
         if (sortOption == "NameASC")
         {
@@ -145,7 +145,7 @@ class RecentlySearchedRepository(private val context: Context) {
             allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
             allPokemonResults = allPokemonResults.reversed()
         }
-        else if (sortOption != "Evolutions")
+        else if (sortOption != "Evolutions" && sortOption != "")
         {
             val newList = mutableListOf<Result>()
 

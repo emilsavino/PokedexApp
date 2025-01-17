@@ -105,8 +105,7 @@ class TeamsRepository(private val context: Context) {
             return false
         }
         team.addPokemon(pokemon)
-        val updatedTeam = team.copy(pokemons = team.getPokemons().toMutableList())
-        pokemonTeams[teamIndex] = updatedTeam
+        pokemonTeams[teamIndex] = team
         databaseService.storeList(pokemonTeams)
         updateDataStore()
         return true
@@ -119,12 +118,12 @@ class TeamsRepository(private val context: Context) {
         for (pokemon in team.getPokemons()) {
             if (pokemon.name == name) {
                 team.removePokemon(pokemon)
-                val updatedTeam = team.copy(pokemons = team.getPokemons().toMutableList())
-                if (updatedTeam.getPokemons().isEmpty()) {
+
+                if (team.getPokemons().isEmpty()) {
                     deleteTeam(teamName)
                     return
                 }
-                pokemonTeams[teamIndex] = updatedTeam
+                pokemonTeams[teamIndex] = team
                 updateDataStore()
                 break
             }
@@ -134,17 +133,6 @@ class TeamsRepository(private val context: Context) {
 
     fun getTeam(index: Int): Team?{
         return if (index in pokemonTeams.indices) pokemonTeams[index] else null
-    }
-
-    fun getCachedPokemon(name: String): Pokemon? {
-        for (team in pokemonTeams) {
-            for (pokemon in team.getPokemons()) {
-                if (pokemon.name == name) {
-                    return pokemon
-                }
-            }
-        }
-        return null
     }
 
     private suspend fun updateDataStore() {

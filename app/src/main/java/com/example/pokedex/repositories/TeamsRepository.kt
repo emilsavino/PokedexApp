@@ -158,7 +158,7 @@ class TeamsRepository(private val context: Context) {
         val missingTypes = mutableListOf<String>()
 
         if (team != null) {
-            for (pokemon in team.pokemons) {
+            for (pokemon in team.getPokemons()) {
                 for (types in pokemon.types) {
                     teamTypes.add(types.type.name)
                 }
@@ -170,7 +170,7 @@ class TeamsRepository(private val context: Context) {
             }
         }
 
-        recentlySearchedRepository.searchPokemonByNameAndFilterWithSort("",0, missingTypes, "", -1)
+        recentlySearchedRepository.searchShuffledPokemons(missingTypes)
     }
 
 }

@@ -181,7 +181,8 @@ class TeamsRepository(private val context: Context) {
             }
         }
 
-        recentlySearchedRepository.searchPokemonByNameAndFilterWithSort("",0, missingTypes, "", -1)
+        val randomOffset = (0..250).random()
+        recentlySearchedRepository.searchPokemonByNameAndFilterWithSort("",randomOffset, missingTypes, "", -1)
     }
 
 }

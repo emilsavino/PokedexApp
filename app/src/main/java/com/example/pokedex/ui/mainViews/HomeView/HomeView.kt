@@ -114,8 +114,7 @@ private fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Padding)
-            .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
+            .padding(Padding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -134,17 +133,18 @@ private fun PokemonOfDayView(pokemon: Pokemon, navController: NavController) {
                 contentDescription = pokemon.name,
                 modifier = Modifier
                     .fillMaxSize()
-                    .aspectRatio(1f),
+                    .aspectRatio(1f)
+                    .clickable { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) },
                 contentScale = ContentScale.Fit
             )
         }
 
-        PokemonDetailsRow(pokemon)
+        PokemonDetailsRow(pokemon, navController)
     }
 }
 
 @Composable
-private fun PokemonDetailsRow(pokemon: Pokemon) {
+private fun PokemonDetailsRow(pokemon: Pokemon, navController: NavController) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -161,6 +161,7 @@ private fun PokemonDetailsRow(pokemon: Pokemon) {
                 modifier = Modifier
                     .size(40.dp)
                     .padding(4.dp)
+                    .clickable { navController.navigate(Screen.Search.createRoute(type.type.name)) }
             )
         }
     }

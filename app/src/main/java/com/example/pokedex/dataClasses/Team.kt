@@ -1,6 +1,7 @@
 package com.example.pokedex.dataClasses
 
 import com.example.pokedex.dependencyContainer.DependencyContainer
+import kotlinx.coroutines.runBlocking
 
 data class Team (
     val name: String,
@@ -11,11 +12,13 @@ data class Team (
     fun addPokemon(pokemon: Pokemon)
     {
         pokemons.add(pokemon)
+        updateWeakAndStrongness()
     }
 
     fun removePokemon(pokemon: Pokemon)
     {
         pokemons.remove(pokemon)
+        updateWeakAndStrongness()
     }
 
     fun getPokemons(): List<Pokemon>
@@ -23,8 +26,7 @@ data class Team (
         return pokemons
     }
 
-    private suspend fun updateWeakAndStrongness()
-    {
+    private fun updateWeakAndStrongness() = runBlocking {
         var map : HashMap<String,Int> = HashMap()
         strongAgainst.clear()
         weakAgainst.clear()
@@ -60,9 +62,31 @@ data class Team (
             }
         }
 
-        val tempList = map.toList()
-        tempList.sortedBy { it.second }
-        print(tempList)
+        var tempList = map.toList()
+        tempList = tempList.sortedBy { it.second }
+        var index = 0
+        for (value in tempList)
+        {
+            if (index == 2 || value.second > -1)
+            {
+                break
+            }
+            weakAgainst.add(value.first)
+            index++
+        }
+        index = 0
+        for (value in tempList.reversed())
+        {
+            if (index == 2 || value.second < 1)
+            {
+                break
+            }
+            strongAgainst.add(value.first)
+            index++
+        }
+        println(tempList)
+        println(weakAgainst)
+        println(strongAgainst)
     }
 
 }

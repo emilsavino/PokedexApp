@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.SearchView
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -31,11 +33,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.pokedex.R
 import com.example.pokedex.ui.navigation.Screen
 import com.example.pokedex.dataClasses.formatPokemonName
 import com.example.pokedex.dataClasses.Pokemon
@@ -84,16 +87,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
                 }
 
                 is SearchUIState.Data -> {
-                    if (viewModel.connectivityRepository.isConnected.asLiveData().value == false) {
-                        NoInternetView()
-                    } else {
-                        MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
-                    }
-
-                }
-
-                is SearchUIState.NoInternet -> {
-                    NoInternetView()
+                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
                 }
             }
         }
@@ -162,7 +156,9 @@ private fun MakeFilterButton(
     selectedColor: Color,
     unselectedColor: Color
 ) {
+    val typeResources = PokemonTypeResources()
     var filterExpanded = remember { mutableStateOf(false) }
+    var maxVisibleItems = 5
     Button(
         onClick = { filterExpanded.value = true},
         colors = buttonColors(containerColor = Color.White),
@@ -187,14 +183,30 @@ private fun MakeFilterButton(
 
         DropdownMenu(
             expanded = filterExpanded.value,
-            onDismissRequest = { filterExpanded.value = false }
+            onDismissRequest = { filterExpanded.value = false },
+            modifier = Modifier
+                .height((maxVisibleItems * 48).dp)
+                .background(Color.White)
         ) {
-            for (option in viewModel.getAllFilterOptions())
-            {
+            val allFilterOptions = viewModel.getAllFilterOptions()
+            for (option in allFilterOptions) {
                 DropdownMenuItem(
-                    text = { Text(option.capitalize(Locale.current), color = textColor) },
-                    modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
-                    onClick = { viewModel.selectFilterOption(option) }
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = typeResources.getTypeImage(option),
+                                contentDescription = "${option.capitalize()} type icon",
+                                modifier = Modifier.size(24.dp).padding(end = 8.dp)
+                            )
+                            Text(option.capitalize(), color = textColor)
+                        }
+                    },
+                    modifier = Modifier.background(
+                        color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor
+                    ),
+                    onClick = {
+                        viewModel.selectFilterOption(option)
+                    }
                 )
             }
         }
@@ -209,6 +221,7 @@ private fun MakeSortButton(
     unselectedColor: Color
 ) {
     var sortExpanded = remember { mutableStateOf(false) }
+    val maxVisibleItems = 3
     Button(
         onClick = { sortExpanded.value = true },
         colors = buttonColors(containerColor = Color.White),
@@ -233,13 +246,18 @@ private fun MakeSortButton(
 
         DropdownMenu(
             expanded = sortExpanded.value,
-            onDismissRequest = { sortExpanded.value = false }
+            onDismissRequest = { sortExpanded.value = false },
+            modifier = Modifier
+                .height((maxVisibleItems * 48).dp)
+                .background(Color.White)
         ) {
-            for (option in viewModel.getAllSortOptions())
-            {
+            val allSortOptions = viewModel.getAllSortOptions()
+            for (option in allSortOptions) {
                 DropdownMenuItem(
                     text = { Text(option, color = textColor) },
-                    modifier = Modifier.background(color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor),
+                    modifier = Modifier.background(
+                        color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
+                    ),
                     onClick = {
                         sortExpanded.value = false
                         viewModel.selectSortOption(option)

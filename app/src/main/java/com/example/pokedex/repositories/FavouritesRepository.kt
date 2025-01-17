@@ -89,6 +89,7 @@ class FavouritesRepository(private val context: Context) {
             databaseService.storeList(favouritePokemons)
             updateDataStore()
         }
+        mutableSavedPokemonsFlow.emit(favouritePokemons)
     }
 
     fun pokemonIsFavourite(pokemon: Pokemon): Boolean {

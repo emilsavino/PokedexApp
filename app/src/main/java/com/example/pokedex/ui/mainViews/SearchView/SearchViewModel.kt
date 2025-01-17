@@ -2,7 +2,6 @@ package com.example.pokedex.mainViews.SearchView
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.dataClasses.Pokemon
@@ -39,13 +38,6 @@ class SearchViewModel: ViewModel() {
     }
 
     fun searchPokemonList() {
-        if (!connectivityRepository.isConnected.asLiveData().value!!) {
-            _pokemonList.update {
-                SearchUIState.NoInternet
-            }
-            return
-        }
-
         _pokemonList.update {
             SearchUIState.Loading
         }
@@ -115,5 +107,4 @@ sealed class SearchUIState {
     data class Data(val pokemonList: List<Pokemon>) : SearchUIState()
     object Loading : SearchUIState()
     object Empty : SearchUIState()
-    object NoInternet : SearchUIState()
 }

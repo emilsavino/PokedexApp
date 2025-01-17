@@ -31,26 +31,22 @@ class PokemonOfTheDayRepository(private val context: Context) {
     private val mutablePokemonOfTheDayFlow = MutableSharedFlow<Pokemon?>()
     val pokemonOfTheDayFlow: Flow<Pokemon?> = mutablePokemonOfTheDayFlow.asSharedFlow()
 
-    init {
-        allPokemons.addAll(dataStore.getAllPokemonResults())
-    }
-
     suspend fun getPokemonOfTheDayByName(){
         mutablePokemonOfTheDayFlow.emit(pokemonOfTheDay)
     }
 
     suspend fun determinePokemonOfTheDay(): Pokemon? {
+        allPokemons.addAll(dataStore.getAllPokemonResults())
         if (allPokemons.isEmpty()) {
             return null
         }
-
-        val cachedPokemon = fetchPokemonOfTheDayFromDataStore()
-        if (cachedPokemon != null && (cachedPokemon.name == allPokemons[date].name || !hasInternet.value!!)) {
-            pokemonOfTheDay = cachedPokemon
+        pokemonOfTheDay = dataStore.getPokemonFromMapFallBackAPI(allPokemons[date].name)
+        if (pokemonOfTheDay!!.name.isBlank()) {
+            pokemonOfTheDay = fetchPokemonOfTheDayFromDataStore()
         } else {
-            pokemonOfTheDay = dataStore.getPokemonFromMapFallBackAPI(allPokemons[date].name)
             updateDataStore()
         }
+
         mutablePokemonOfTheDayFlow.emit(pokemonOfTheDay)
         return pokemonOfTheDay
     }

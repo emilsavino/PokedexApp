@@ -38,9 +38,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.PokemonTypeResources
+import com.example.pokedex.mainViews.SavedPokemonsView.SavedViewModel.SavedUIState
 import com.example.pokedex.ui.shared.PokemonGridItem
 import com.example.pokedex.ui.shared.ProgressIndicator
-import com.example.pokedex.mainViews.SavedPokemonsView.SavedViewModel.SavedUIState
 
 @Composable
 fun SavedView(navController: NavController) {

@@ -17,6 +17,7 @@ import com.example.pokedex.dataClasses.Result
 import com.example.pokedex.dataClasses.Species
 import com.example.pokedex.dataClasses.Type
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,10 @@ class PokemonDataStore(private val context: Context) {
     private var allPokemonResultList = PokemonList(emptyList())
     private val pokemonMap : HashMap<String, Pokemon> = HashMap()
     private var hasInternet = connectivityRepository.isConnected.asLiveData()
+    private var doneFetchingFromCache = false
     private val ALL_POKEMONS_KEY = stringPreferencesKey("all_pokemons")
+    private val POKEMON_MAP_KEY = stringPreferencesKey("pokemon_map")
+
     private val gson = Gson()
 
     init{
@@ -51,63 +55,75 @@ class PokemonDataStore(private val context: Context) {
 
     private suspend fun initilizeCache() {
         val cachedPokemons = fetchSavedPokemonsFromDataStore()
+        val cachedPokemonMap = fetchSavedPokemonMapFromDataStore()
+
         if (cachedPokemons.results.isEmpty()) {
             fetchAllPokemons()
             fillUpMapFromAllPokemonResults()
+            doneFetchingFromCache = true
             return
         }
 
         allPokemonResultList = cachedPokemons
+        if (cachedPokemonMap.isEmpty()) {
+            fillUpMapFromAllPokemonResults()
+            doneFetchingFromCache = true
+            return
+        }
+
+        pokemonMap.putAll(cachedPokemonMap)
         if (cachedPokemons.results.size < 1000) {
             fetchAllPokemons()
+        }
+
+        if (cachedPokemonMap.size < 1000) {
             fillUpMapFromAllPokemonResults()
         }
+        doneFetchingFromCache = true
     }
+
 
     fun getAllPokemonResults() : List<Result>
     {
         while (allPokemonResultList.results.isEmpty()) {
-            if (hasInternet.value == false) {
+            if (doneFetchingFromCache) {
                 return emptyList()
             }
         }
         return allPokemonResultList.results
     }
 
-    private fun fillUpMapFromAllPokemonResults()
-    {
+    private fun fillUpMapFromAllPokemonResults() {
         if (hasInternet.value == false) { return }
         val elementsPerBatch = 200
-        val pokemonNameMatrix : MutableList<List<String>> = mutableListOf()
+        val pokemonNameMatrix: MutableList<List<String>> = mutableListOf()
         var counter = 0
         var pokemonNameRow = mutableListOf<String>()
-        while (counter < allPokemonResultList.results.size)
-        {
-            if (counter % elementsPerBatch == 0 && counter != 0 || counter == allPokemonResultList.results.size - 1)
-            {
+
+        while (counter < allPokemonResultList.results.size) {
+            if (counter % elementsPerBatch == 0 && counter != 0 || counter == allPokemonResultList.results.size - 1) {
                 pokemonNameMatrix.add(pokemonNameRow.toList())
                 pokemonNameRow = mutableListOf()
                 pokemonNameRow.clear()
             }
-            pokemonNameRow.add(allPokemonResultList.results.get(counter).name)
+            pokemonNameRow.add(allPokemonResultList.results[counter].name)
             counter++
         }
 
-        for (i in 0 until pokemonNameMatrix.size)
-        {
-            CoroutineScope(Dispatchers.IO).async{
-                for (name in pokemonNameMatrix[i])
-                {
-                    if (pokemonMap[name] == null)
-                    {
+        for (i in pokemonNameMatrix.indices) {
+            CoroutineScope(Dispatchers.IO).async {
+                for (name in pokemonNameMatrix[i]) {
+                    if (pokemonMap[name] == null) {
                         pokemonMap[name] = api.getPokemon(name)
                     }
                 }
+                updatePokemonMapInDataStore()
                 println("DONE FETCHING BATCH $i")
             }
         }
         println("DONE STARTING ALL BATCH JOBS FOR FETCHING POKEMONS")
     }
+
 
     suspend fun getPokemonFromMapFallBackAPI(name: String) : Pokemon
     {
@@ -170,9 +186,39 @@ class PokemonDataStore(private val context: Context) {
         }
     }
 
+    private suspend fun updatePokemonMapInDataStore() {
+        val pokemonMapJson = gson.toJson(convertPokemonMapToPokemonList())
+        context.dataStore.edit { preferences ->
+            preferences[POKEMON_MAP_KEY] = pokemonMapJson
+        }
+    }
+
+    private suspend fun fetchSavedPokemonMapFromDataStore(): HashMap<String, Pokemon> {
+        val preferences = context.dataStore.data.first()
+        val pokemonMapJson = preferences[POKEMON_MAP_KEY] ?: "{}"
+        return try {
+            val mapAsList = gson.fromJson(pokemonMapJson, Array<Pokemon>::class.java)
+            convertPokemonListToPokemonMap(mapAsList.toList())
+        } catch (e: JsonSyntaxException) {
+            HashMap()
+        }
+    }
+
     private suspend fun fetchSavedPokemonsFromDataStore(): PokemonList {
         val preferences = context.dataStore.data.first()
         val pokemonJson = preferences[ALL_POKEMONS_KEY] ?: "{}"
         return gson.fromJson(pokemonJson, PokemonList::class.java)
+    }
+
+    private fun convertPokemonMapToPokemonList(): List<Pokemon> {
+        return pokemonMap.values.toList()
+    }
+
+    private fun convertPokemonListToPokemonMap(pokemonList: List<Pokemon>): HashMap<String, Pokemon> {
+        val fetchedPokemonMap = HashMap<String, Pokemon>()
+        pokemonList.forEach { pokemon ->
+            fetchedPokemonMap[pokemon.name] = pokemon
+        }
+        return fetchedPokemonMap
     }
 }

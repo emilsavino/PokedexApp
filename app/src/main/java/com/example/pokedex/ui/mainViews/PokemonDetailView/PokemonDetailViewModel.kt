@@ -12,9 +12,8 @@ import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.Team
 import com.example.pokedex.dataClasses.PokemonAttributes
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -37,8 +36,8 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     private val _pokemon = MutableStateFlow<PokemonDetailUIState>(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon
 
-    val teams: StateFlow<List<Team>> =
-        teamsRepository.teamsFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    private val _teams = MutableStateFlow<List<Team>>(emptyList())
+    val teams: StateFlow<List<Team>> = _teams.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -51,6 +50,14 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
             }
         }
 
+        viewModelScope.launch {
+            teamsRepository.teamsFlow.collect { teams ->
+                _teams.update {
+                    teams
+                }
+            }
+        }
+        getTeams()
         getPokemonByName()
     }
 
@@ -63,6 +70,10 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         } else {
             pokemonRepository.getPokemonDetailsByName(currentPokemonName)
         }
+    }
+
+    private fun getTeams() = viewModelScope.launch {
+        teamsRepository.fetchTeams()
     }
 
     fun savePokemon(pokemon: Pokemon) = viewModelScope.launch {
@@ -141,26 +152,15 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         }
     }
 
-    private fun getCachedPokemon() {
-        var pokemon = recentlyViewedRepository.getCachedPokemon(currentPokemonName)
-        if (pokemon != null) {
-            gotPokemonFromCach(pokemon)
-            return
-        }
-        pokemon = teamsRepository.getCachedPokemon(currentPokemonName)
-        if (pokemon != null) {
-            gotPokemonFromCach(pokemon)
-            return
-        }
-        pokemon = favouritesRepository.getCachedPokemon(currentPokemonName)
-        if (pokemon != null) {
-            gotPokemonFromCach(pokemon)
-            return
-        }
-        _pokemon.update { PokemonDetailUIState.Empty }
+    private fun getCachedPokemon() = viewModelScope.launch {
+        val dataStore = DependencyContainer.pokemonDataStore
+        val pokemon = dataStore.getPokemonFromMapFallBackAPI(currentPokemonName)
+        if (pokemon.name != "") {
+            gotPokemonFromCache(pokemon)
+        } else _pokemon.update { PokemonDetailUIState.Empty }
     }
 
-    private fun gotPokemonFromCach(pokemon: Pokemon) = viewModelScope.launch {
+    private fun gotPokemonFromCache(pokemon: Pokemon) = viewModelScope.launch {
         _pokemon.update {
             PokemonDetailUIState.Data(pokemon.getOfflinePokemonAttributes())
         }

@@ -9,6 +9,7 @@ import com.example.pokedex.ui.navigation.Screen
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel : ViewModel(){
+    private val pokemonDataStore = DependencyContainer.pokemonDataStore
     private val authManager = DependencyContainer.googleAuthenticationManager
     private val connectivityRepository = DependencyContainer.connectivityRepository
     private val dataStore = DependencyContainer.pokemonDataStore
@@ -16,10 +17,6 @@ class SplashScreenViewModel : ViewModel(){
     private var isSignedIn = authManager.fetchSignedIn()
 
     fun onAppear (navController: NavController) {
-        if (connectivityRepository.isConnected.asLiveData().value == false && dataStore.getAllPokemonResults().size > 1000) {
-            navController.navigate(Screen.Home.route)
-            return
-        }
 
         viewModelScope.launch{
             if(isSignedIn){

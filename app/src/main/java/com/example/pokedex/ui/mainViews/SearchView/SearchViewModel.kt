@@ -15,7 +15,7 @@ class SearchViewModel: ViewModel() {
     private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
     private var lastSentRequest : Int = 0
     val connectivityRepository = DependencyContainer.connectivityRepository
-
+    var searchOffset = 0
     var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
     var selectedSortOption = mutableStateOf("")
     var searchText = mutableStateOf("")
@@ -28,8 +28,17 @@ class SearchViewModel: ViewModel() {
             recentlySearchedRepository.searchFlow.collect { newPokemonList ->
                 if (newPokemonList.indexOfSearch == lastSentRequest || (newPokemonList.indexOfSearch == -1))
                 {
-                    _pokemonList.update {
-                        SearchUIState.Data(newPokemonList.pokemons)
+                    if (newPokemonList.pokemons.isEmpty())
+                    {
+                        _pokemonList.update {
+                            SearchUIState.Empty
+                        }
+                    }
+                    else
+                    {
+                        _pokemonList.update {
+                            SearchUIState.Data(newPokemonList.pokemons)
+                        }
                     }
                 }
             }
@@ -51,7 +60,7 @@ class SearchViewModel: ViewModel() {
         }
 
         viewModelScope.launch {
-            recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value,++lastSentRequest)
+            recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,searchOffset, selectedFilterOptionsList.value, selectedSortOption.value,++lastSentRequest)
         }
     }
 
@@ -69,6 +78,7 @@ class SearchViewModel: ViewModel() {
                 add(option)
             }
         }
+        searchOffset = 0
         searchPokemonList()
     }
 
@@ -92,6 +102,7 @@ class SearchViewModel: ViewModel() {
         {
             selectedSortOption.value = option
         }
+        searchOffset = 0
         searchPokemonList()
     }
 

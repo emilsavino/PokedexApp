@@ -185,6 +185,10 @@ class RecentlySearchedRepository(private val context: Context) {
                             continue
                         }
                         val operationPokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(innerPokemon.name)
+                        if (!pokemonIsTypeRelevant(operationPokemon,filterOptions))
+                        {
+                            continue
+                        }
                         for (stat in operationPokemon.stats)
                         {
                             if (stat.stat.name == localSortOption.lowercase())
@@ -229,6 +233,10 @@ class RecentlySearchedRepository(private val context: Context) {
                             continue
                         }
                         val operationPokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(innerPokemon.name)
+                        if (!pokemonIsTypeRelevant(operationPokemon,filterOptions))
+                        {
+                            continue
+                        }
                         for (stat in operationPokemon.stats)
                         {
                             if (stat.stat.name == localSortOption.lowercase())
@@ -260,26 +268,7 @@ class RecentlySearchedRepository(private val context: Context) {
             if (result.name.contains(name, ignoreCase = true))
             {
                 var pokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(result.name)
-                var typeRelevant = false
-                for (type in filterOptions)
-                {
-                    for (innerType in pokemon.types)
-                    {
-                        if (type == innerType.type.name)
-                        {
-                            typeRelevant = true
-                            break
-                        }
-                        if (typeRelevant)
-                        {
-                            break
-                        }
-                    }
-                }
-                if (filterOptions.isEmpty())
-                {
-                    typeRelevant = true
-                }
+                val typeRelevant = pokemonIsTypeRelevant(pokemon,filterOptions)
 
                 if (!typeRelevant)
                 {
@@ -294,5 +283,23 @@ class RecentlySearchedRepository(private val context: Context) {
         }
         val result = SearchResult(searchID,mutableFilteredList)
         mutableSearchFlow.emit(result)
+    }
+
+    private fun pokemonIsTypeRelevant(pokemon : Pokemon, filterOptions : List<String>) : Boolean {
+        for (type in filterOptions)
+        {
+            for (innerType in pokemon.types)
+            {
+                if (type == innerType.type.name)
+                {
+                    return true
+                }
+            }
+        }
+        if (filterOptions.isEmpty())
+        {
+            return true
+        }
+        return false
     }
 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.dataClasses.PokemonTypeResources
+import com.example.pokedex.mainViews.SearchView.SearchView
 import com.example.pokedex.ui.shared.AddToTeamGridItem
 import com.example.pokedex.ui.shared.EmptyGridItem
 import com.example.pokedex.ui.shared.NoInternetAlert
@@ -40,29 +41,38 @@ import com.example.pokedex.ui.shared.ProgressIndicator
 @Composable
 fun MyTeamsView(navController: NavController) {
     val viewModel = viewModel<MyTeamsViewModel>()
-    Column(
-        modifier = Modifier
-            .background(PokemonTypeResources().appGradient())
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        MakeHeader()
 
-        MakeContent(navController, viewModel)
+    if (viewModel.isShowingAddPokemon) {
+        SearchView(
+            navController = navController,
+            filterOption = "",
+            viewModel = viewModel.addToTeamViewModel!!
+        )
+    } else {
+        Column(
+            modifier = Modifier
+                .background(PokemonTypeResources().appGradient())
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            MakeHeader()
 
-        Spacer(modifier = Modifier.padding(10.dp))
+            MakeContent(navController, viewModel)
 
-        if (viewModel.isShowingDialog) {
-            DeleteTeamConfirmationDialog(viewModel.teamToEdit, viewModel)
-        }
+            Spacer(modifier = Modifier.padding(10.dp))
 
-        if (viewModel.isShowingDeletePokemonDialog) {
-            DeletePokemonConfirmationDialog(viewModel)
-        }
+            if (viewModel.isShowingDialog) {
+                DeleteTeamConfirmationDialog(viewModel.teamToEdit, viewModel)
+            }
 
-        if (viewModel.showNoInternetAlert) {
-            NoInternetAlert("add to a team", { viewModel.showNoInternetAlert = false })
+            if (viewModel.isShowingDeletePokemonDialog) {
+                DeletePokemonConfirmationDialog(viewModel)
+            }
+
+            if (viewModel.showNoInternetAlert) {
+                NoInternetAlert("add to a team", { viewModel.showNoInternetAlert = false })
+            }
         }
     }
 }
@@ -151,7 +161,7 @@ private fun MakeTeamsGrid(
                         val remainingSlots = 3 - chunk.size
                         repeat(remainingSlots) {
                             if (displayedPokemonCount + it == displayedPokemonCount) {
-                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(navController, team.name) })
+                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(team.name) })
                             } else {
                                 EmptyGridItem(navController)
                             }
@@ -167,7 +177,7 @@ private fun MakeTeamsGrid(
                         val remainingSlots = 3
                         for (slot in 1..remainingSlots) {
                             if (team.pokemons.size == 3 && slot == 1) {
-                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(navController, team.name) })
+                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(team.name) })
                             } else {
                                 EmptyGridItem(navController)
                             }

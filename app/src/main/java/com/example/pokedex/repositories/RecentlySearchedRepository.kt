@@ -314,9 +314,11 @@ class RecentlySearchedRepository(private val context: Context) {
                 shuffledListToReturn.add(pokemon)
             }
         }
+        val limit = shuffledListToReturn.take(20)
+        limit.shuffled()
         val searchResult = SearchResult(
             indexOfSearch = -1,
-            pokemons = shuffledListToReturn
+            pokemons = limit
         )
         mutableSearchFlow.emit(searchResult)
     }

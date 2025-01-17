@@ -231,29 +231,4 @@ class RecentlySearchedRepository(private val context: Context) {
         val result = SearchResult(searchID,mutableFilteredList)
         mutableSearchFlow.emit(result)
     }
-
-    suspend fun fetchTeamSuggestions(teamName: String) {
-        val teamsRepository = DependencyContainer.teamsRepository
-        val team = teamsRepository.getTeam(teamName)
-
-        val teamTypes = mutableListOf<String>()
-        val allTypes = PokemonTypeResources().getAllTypes()
-        val missingTypes = mutableListOf<String>()
-
-        if (team != null) {
-            for (pokemon in team.pokemons) {
-                for (types in pokemon.types) {
-                    teamTypes.add(types.type.name)
-                }
-            }
-        }
-        for (type in allTypes) {
-            if (!teamTypes.contains(type)) {
-                missingTypes.add(type)
-            }
-        }
-
-        searchPokemonByNameAndFilterWithSort("",0, missingTypes, "", 0)
-    }
-
 }

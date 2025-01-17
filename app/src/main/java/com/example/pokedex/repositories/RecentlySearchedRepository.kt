@@ -1,7 +1,6 @@
 package com.example.pokedex.repositories
 
 import android.content.Context
-import androidx.compose.animation.defaultDecayAnimationSpec
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -33,9 +32,11 @@ class RecentlySearchedRepository(private val context: Context) {
     private val RECENTLY_SEARCHED_KEY = stringPreferencesKey("recently_searched")
     private val gson = Gson()
 
+    private var sortingMap : HashMap<String, List<Result>> = HashMap()
+
 
     val filterOptions = PokemonTypeResources().getAllTypes()
-    val sortOptions = listOf("NameASC","NameDSC", "Evolutions","HP","Speed","Attack","Defense")
+    val sortOptions = listOf("NameASC","NameDSC", "Evolutions","HPASC","HPDSC","SpeedASC","SpeedDSC","AttackASC","AttackDSC","DefenseASC","DefenseDSC")
 
     private val mutableSearchFlow = MutableSharedFlow<SearchResult>()
     val searchFlow: Flow<SearchResult> = mutableSearchFlow.asSharedFlow()
@@ -130,6 +131,7 @@ class RecentlySearchedRepository(private val context: Context) {
 
     suspend fun searchPokemonByNameAndFilterWithSort(name : String, offset : Int, filterOptions : List<String>, sortOption : String, searchID : Int)
     {
+        var localSortOption : String = sortOption
         var foundElements = 0
         // Below is not optimal, but an easy way to guarantee the correct amount of pokemons :)
         // Also, searching is very fast as our pokemons should be in memory at this point, so not that bad.
@@ -146,50 +148,119 @@ class RecentlySearchedRepository(private val context: Context) {
             allPokemonResults = allPokemonResults.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }).toMutableList()
             allPokemonResults = allPokemonResults.reversed()
         }
-        else if (sortOption != "Evolutions" && sortOption != "")
+        else if (sortOption == "Evolutions" || sortOption == "")
         {
-            val newList = mutableListOf<Result>()
+        }
+        else
+        {
 
-            for (pokemon in allPokemonResults)
+            var newList = mutableListOf<Result>()
+
+            if (sortingMap.containsKey(sortOption))
             {
-                var highestValueFound = Int.MIN_VALUE
-                var bestPokemonSoFar : Result = Result("","")
-                for (innerPokemon in allPokemonResults)
+                newList = sortingMap[sortOption]!!.toMutableList()
+            }
+
+            if (sortOption.contains("DSC"))
+            {
+                localSortOption = sortOption.removeSuffix("DSC")
+
+
+                for (pokemon in allPokemonResults)
                 {
-                    var toContinue : Boolean = false
-                    for (item in newList)
+                    var highestValueFound = Int.MIN_VALUE
+                    var bestPokemonSoFar : Result = Result("","")
+                    for (innerPokemon in allPokemonResults)
                     {
-                        if (item.name == innerPokemon.name)
+                        var toContinue : Boolean = false
+                        for (item in newList)
                         {
-                            toContinue = true
-                        }
-                    }
-                    if (pokemon == innerPokemon || toContinue)
-                    {
-                        continue
-                    }
-                    val operationPokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(innerPokemon.name)
-                    for (stat in operationPokemon.stats)
-                    {
-                        if (stat.stat.name == sortOption.lowercase())
-                        {
-                            if (stat.base_stat > highestValueFound)
+                            if (item.name == innerPokemon.name)
                             {
-                                highestValueFound = stat.base_stat
-                                bestPokemonSoFar = Result(innerPokemon.name,innerPokemon.url)
-                                break
+                                toContinue = true
+                            }
+                        }
+                        if (pokemon == innerPokemon || toContinue)
+                        {
+                            continue
+                        }
+                        val operationPokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(innerPokemon.name)
+                        if (!pokemonIsTypeRelevant(operationPokemon,filterOptions))
+                        {
+                            continue
+                        }
+                        for (stat in operationPokemon.stats)
+                        {
+                            if (stat.stat.name == localSortOption.lowercase())
+                            {
+                                if (stat.base_stat > highestValueFound)
+                                {
+                                    highestValueFound = stat.base_stat
+                                    bestPokemonSoFar = Result(innerPokemon.name,innerPokemon.url)
+                                    break
+                                }
                             }
                         }
                     }
+                    newList.add(bestPokemonSoFar)
+                    if (newList.size == elementsToFind)
+                    {
+                        break
+                    }
                 }
-                newList.add(bestPokemonSoFar)
-                if (newList.size == elementsToFind)
-                {
-                    break
-                }
+                allPokemonResults = newList.toList()
             }
-            allPokemonResults = newList.toList()
+            else if (sortOption.contains("ASC"))
+            {
+                localSortOption = sortOption.removeSuffix("ASC")
+
+                for (pokemon in allPokemonResults)
+                {
+                    var highestValueFound = Int.MAX_VALUE
+                    var bestPokemonSoFar : Result = Result("","")
+                    for (innerPokemon in allPokemonResults)
+                    {
+                        var toContinue : Boolean = false
+                        for (item in newList)
+                        {
+                            if (item.name == innerPokemon.name)
+                            {
+                                toContinue = true
+                            }
+                        }
+                        if (pokemon == innerPokemon || toContinue)
+                        {
+                            continue
+                        }
+                        val operationPokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(innerPokemon.name)
+                        if (!pokemonIsTypeRelevant(operationPokemon,filterOptions))
+                        {
+                            continue
+                        }
+                        for (stat in operationPokemon.stats)
+                        {
+                            if (stat.stat.name == localSortOption.lowercase())
+                            {
+                                if (stat.base_stat < highestValueFound)
+                                {
+                                    highestValueFound = stat.base_stat
+                                    bestPokemonSoFar = Result(innerPokemon.name,innerPokemon.url)
+                                    break
+                                }
+                            }
+                        }
+                    }
+                    newList.add(bestPokemonSoFar)
+                    if (newList.size == elementsToFind)
+                    {
+                        break
+                    }
+                }
+                allPokemonResults = newList.toList()
+            }
+            sortingMap.put(sortOption,allPokemonResults)
         }
+
 
         while (index < allPokemonResults.size && foundElements < elementsToFind)
         {
@@ -197,26 +268,7 @@ class RecentlySearchedRepository(private val context: Context) {
             if (result.name.contains(name, ignoreCase = true))
             {
                 var pokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(result.name)
-                var typeRelevant = false
-                for (type in filterOptions)
-                {
-                    for (innerType in pokemon.types)
-                    {
-                        if (type == innerType.type.name)
-                        {
-                            typeRelevant = true
-                            break
-                        }
-                        if (typeRelevant)
-                        {
-                            break
-                        }
-                    }
-                }
-                if (filterOptions.isEmpty())
-                {
-                    typeRelevant = true
-                }
+                val typeRelevant = pokemonIsTypeRelevant(pokemon,filterOptions)
 
                 if (!typeRelevant)
                 {
@@ -231,6 +283,24 @@ class RecentlySearchedRepository(private val context: Context) {
         }
         val result = SearchResult(searchID,mutableFilteredList)
         mutableSearchFlow.emit(result)
+    }
+
+    private fun pokemonIsTypeRelevant(pokemon : Pokemon, filterOptions : List<String>) : Boolean {
+        for (type in filterOptions)
+        {
+            for (innerType in pokemon.types)
+            {
+                if (type == innerType.type.name)
+                {
+                    return true
+                }
+            }
+        }
+        if (filterOptions.isEmpty())
+        {
+            return true
+        }
+        return false
     }
 
     suspend fun searchShuffledPokemons() {

@@ -2,26 +2,27 @@ package com.example.pokedex.mainViews.SearchView
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.ui.navigation.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SearchViewModel: ViewModel() {
-    private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
-    private var lastSentRequest : Int = 0
+open class SearchViewModel: ViewModel() {
+    protected val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
+    protected var lastSentRequest : Int = 0
     val connectivityRepository = DependencyContainer.connectivityRepository
-
+    var searchOffset = 0
     var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
     var selectedSortOption = mutableStateOf("")
     var searchText = mutableStateOf("")
 
-    private val _pokemonList: MutableStateFlow<SearchUIState> = MutableStateFlow(SearchUIState.Empty)
+    protected val _pokemonList: MutableStateFlow<SearchUIState> = MutableStateFlow(SearchUIState.Empty)
     val pokemonList: StateFlow<SearchUIState> = _pokemonList.asStateFlow()
 
     init {
@@ -29,8 +30,17 @@ class SearchViewModel: ViewModel() {
             recentlySearchedRepository.searchFlow.collect { newPokemonList ->
                 if (newPokemonList.indexOfSearch == lastSentRequest || (newPokemonList.indexOfSearch == -1))
                 {
-                    _pokemonList.update {
-                        SearchUIState.Data(newPokemonList.pokemons)
+                    if (newPokemonList.pokemons.isEmpty())
+                    {
+                        _pokemonList.update {
+                            SearchUIState.Empty
+                        }
+                    }
+                    else
+                    {
+                        _pokemonList.update {
+                            SearchUIState.Data(newPokemonList.pokemons)
+                        }
                     }
                 }
             }
@@ -38,14 +48,7 @@ class SearchViewModel: ViewModel() {
         searchPokemonList()
     }
 
-    fun searchPokemonList() {
-        if (!connectivityRepository.isConnected.asLiveData().value!!) {
-            _pokemonList.update {
-                SearchUIState.NoInternet
-            }
-            return
-        }
-
+    open fun searchPokemonList() {
         _pokemonList.update {
             SearchUIState.Loading
         }
@@ -59,7 +62,7 @@ class SearchViewModel: ViewModel() {
         }
 
         viewModelScope.launch {
-            recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,0, selectedFilterOptionsList.value, selectedSortOption.value,++lastSentRequest)
+            recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,searchOffset, selectedFilterOptionsList.value, selectedSortOption.value,++lastSentRequest)
         }
     }
 
@@ -77,6 +80,7 @@ class SearchViewModel: ViewModel() {
                 add(option)
             }
         }
+        searchOffset = 0
         searchPokemonList()
     }
 
@@ -100,6 +104,7 @@ class SearchViewModel: ViewModel() {
         {
             selectedSortOption.value = option
         }
+        searchOffset = 0
         searchPokemonList()
     }
 
@@ -109,11 +114,19 @@ class SearchViewModel: ViewModel() {
             recentlySearchedRepository.addToRecentlySearched(name)
         }
     }
+
+    open fun onPokemonClicked(pokemon: Pokemon, navController: NavController) {
+        addPokemonToRecentlySearched(pokemon.name)
+        navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name))
+    }
+
+    open fun onLongClick(pokemon: Pokemon, navController: NavController) {
+        onPokemonClicked(pokemon, navController)
+    }
 }
 
 sealed class SearchUIState {
     data class Data(val pokemonList: List<Pokemon>) : SearchUIState()
     object Loading : SearchUIState()
     object Empty : SearchUIState()
-    object NoInternet : SearchUIState()
 }

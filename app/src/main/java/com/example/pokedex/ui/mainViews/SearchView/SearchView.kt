@@ -1,14 +1,18 @@
 package com.example.pokedex.mainViews.SearchView
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
@@ -25,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -48,9 +52,13 @@ import com.example.pokedex.ui.shared.ProgressIndicator
 import com.example.pokedex.dataClasses.getSprite
 
 @Composable
-fun SearchView(modifier: Modifier = Modifier, navController: NavController, filterOption: String) {
-    val viewModel = viewModel<SearchViewModel>()
-
+fun SearchView(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    filterOption: String,
+    viewModel: SearchViewModel = viewModel()
+) {
+    val scrollState : ScrollState = rememberScrollState()
     val pokemons = viewModel.pokemonList.collectAsState().value
     LaunchedEffect(Unit) {
         viewModel.searchPokemonList()
@@ -58,6 +66,14 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
         {
             viewModel.selectFilterOption(filterOption)
         }
+    }
+    var atBottom by remember { mutableStateOf(false) }
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.value }
+            .collect { currentScrollPosition ->
+                val isAtBottom = currentScrollPosition >= scrollState.maxValue
+                atBottom = isAtBottom
+            }
     }
 
     Box(
@@ -70,6 +86,7 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
+                .verticalScroll(scrollState)
         ) {
             MakeSearchTools(viewModel = viewModel)
 
@@ -88,16 +105,12 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
                 }
 
                 is SearchUIState.Data -> {
-                    if (viewModel.connectivityRepository.isConnected.asLiveData().value == false) {
-                        NoInternetView()
-                    } else {
-                        MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
+                    MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
+                    if (atBottom && (viewModel.searchText.value != "" || viewModel.selectedSortOption.value.isNotEmpty() || viewModel.selectedFilterOptionsList.value.isNotEmpty())) {
+                        viewModel.searchOffset += 20
+                        viewModel.searchPokemonList()
+                        atBottom = false
                     }
-
-                }
-
-                is SearchUIState.NoInternet -> {
-                    NoInternetView()
                 }
             }
         }
@@ -280,50 +293,48 @@ private fun MakeSortButton(
 
 @Composable
 private fun MakeSearchList(pokemons: List<Pokemon>, navController: NavController, viewModel: SearchViewModel) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(pokemons) { pokemon ->
-            SearchListItem(pokemon = pokemon, navController = navController,viewModel)
+        for (pokemon in pokemons)
+        {
+            SearchListItem(pokemon = pokemon, navController = navController, viewModel)
         }
     }
 }
 
 @Composable
 private fun SearchListItem(pokemon: Pokemon, navController: NavController, viewModel: SearchViewModel) {
-    Button(
-        onClick = {
-            viewModel.addPokemonToRecentlySearched(pokemon.name)
-            navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name))
-        },
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .shadow(3.dp, RoundedCornerShape(24.dp)),
-        shape = RoundedCornerShape(24.dp),
-        colors = buttonColors(
-            containerColor = Color.White
-        )
+            .shadow(3.dp, RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(24.dp))
+            .background(shape = RoundedCornerShape(24.dp), color = Color.White)
+            .padding(4.dp)
+            .pointerInput(Unit) {
+                detectTapGestures (
+                    onLongPress = { viewModel.onLongClick(pokemon, navController) },
+                    onTap = { viewModel.onPokemonClicked(pokemon, navController) }
+                )
+            }
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            AsyncImage(
-                model = pokemon.getSprite(),
-                contentDescription = "${pokemon.name} Image",
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(end = 2.dp)
-            )
-            Text(
-                text = pokemon.name.formatPokemonName(),
-                color = Color.Black,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        AsyncImage(
+            model = pokemon.getSprite(),
+            contentDescription = "${pokemon.name} Image",
+            modifier = Modifier
+                .size(100.dp)
+                .padding(end = 2.dp)
+        )
+        Text(
+            text = pokemon.name.formatPokemonName(),
+            color = Color.Black,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 

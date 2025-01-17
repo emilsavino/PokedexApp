@@ -12,8 +12,9 @@ import com.example.pokedex.dataClasses.Team
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -30,8 +31,8 @@ class TeamsRepository(private val context: Context) {
     private val TEAMS_KEY = stringPreferencesKey("teams")
     private val gson = Gson()
 
-    private val mutableTeamsFlow = MutableStateFlow<List<Team>>(emptyList())
-    val teamsFlow: StateFlow<List<Team>> = mutableTeamsFlow
+    private val mutableTeamsFlow = MutableSharedFlow<List<Team>>()
+    val teamsFlow: Flow<List<Team>> = mutableTeamsFlow.asSharedFlow()
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -89,6 +90,7 @@ class TeamsRepository(private val context: Context) {
         pokemonTeams.removeAll { it.name == teamName }
         databaseService.storeList(pokemonTeams)
         updateDataStore()
+        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     suspend fun addToTeam(pokemon: Pokemon, teamName: String): Boolean {
@@ -107,7 +109,6 @@ class TeamsRepository(private val context: Context) {
         pokemonTeams[teamIndex] = updatedTeam
         databaseService.storeList(pokemonTeams)
         updateDataStore()
-        mutableTeamsFlow.emit(pokemonTeams)
         return true
     }
 
@@ -124,10 +125,10 @@ class TeamsRepository(private val context: Context) {
                 }
                 pokemonTeams[teamIndex] = updatedTeam
                 updateDataStore()
-                mutableTeamsFlow.emit(pokemonTeams)
                 break
             }
         }
+        mutableTeamsFlow.emit(pokemonTeams)
     }
 
     fun getTeam(teamName: String): Team?{

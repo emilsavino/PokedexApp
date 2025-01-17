@@ -73,7 +73,7 @@ class DatabaseService<T : Any>(private val key: String, private val clazz: Class
 
     suspend fun addListenerForList(completion: (List<T>?) -> Unit): ListenerRegistration {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
-            ?: throw IllegalStateException("User not authenticated")
+            ?: return ListenerRegistration { }
         val docRef = FirebaseFirestore.getInstance()
             .collection("users")
             .document(userId)

@@ -1,16 +1,14 @@
 package com.example.pokedex.mainViews.MyTeamsView
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.ui.navigation.Screen
 import com.example.pokedex.dataClasses.Team
+import com.example.pokedex.ui.mainViews.addToTeamView.NewAddToTeamViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,11 +24,24 @@ class MyTeamsViewModel : ViewModel() {
     var isShowingDeletePokemonDialog by mutableStateOf(false)
     var teamToEdit by mutableStateOf("")
     var pokemonToDelete by mutableStateOf("")
+    var isShowingAddPokemon by mutableStateOf(false)
+    var addToTeamViewModel: NewAddToTeamViewModel? = null
 
-    private val _teamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Loading)
+    private val _teamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Empty)
     val teamsState: StateFlow<TeamsUIState> = _teamsState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            teamsRepository.teamsFlow.collect { teams ->
+                _teamsState.update {
+                    if (teams.isEmpty()) {
+                        TeamsUIState.Empty
+                    } else {
+                        TeamsUIState.Data(teams)
+                    }
+                }
+            }
+        }
         fetchTeams()
     }
 
@@ -38,19 +49,7 @@ class MyTeamsViewModel : ViewModel() {
         _teamsState.update {
             TeamsUIState.Loading
         }
-
-        teamsRepository.teamsFlow.collect { teams ->
-            if (teams.isEmpty()) {
-                _teamsState.update {
-                    TeamsUIState.Empty
-                }
-            } else {
-                Log.d("MyTeamsViewModel", "Teams Updated: ${teams.size} teams")
-                _teamsState.update {
-                    TeamsUIState.Data(teams)
-                }
-            }
-        }
+        teamsRepository.fetchTeams()
     }
 
     fun onDeleteTeamClicked(teamName: String) {
@@ -61,7 +60,6 @@ class MyTeamsViewModel : ViewModel() {
     fun deleteTeam(teamName: String) {
         viewModelScope.launch {
             teamsRepository.deleteTeam(teamName)
-            fetchTeams()
         }
         isShowingDialog = false
     }
@@ -74,16 +72,17 @@ class MyTeamsViewModel : ViewModel() {
 
     fun deletePokemonFromTeam() = viewModelScope.launch {
         teamsRepository.deletePokemonFromTeam(pokemonToDelete, teamToEdit)
-        fetchTeams()
         isShowingDeletePokemonDialog = false
     }
 
-    fun onAddPokemonClicked(navController: NavController ,name: String) {
+    fun onAddPokemonClicked(teamName: String) {
         if (connectivityRepository.isConnected.asLiveData().value == false) {
             showNoInternetAlert = true
             return
         }
-        navController.navigate(Screen.AddToTeam.createRoute(name))
+        teamToEdit = teamName
+        isShowingAddPokemon = true
+        addToTeamViewModel = NewAddToTeamViewModel(teamToEdit, {isShowingAddPokemon = false})
     }
 
 }

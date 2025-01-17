@@ -69,10 +69,6 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
                 atBottom = isAtBottom
             }
     }
-    if (atBottom) {
-        viewModel.searchOffset += 20
-        viewModel.searchPokemonList()
-    }
 
     Box(
         modifier = modifier
@@ -104,6 +100,11 @@ fun SearchView(modifier: Modifier = Modifier, navController: NavController, filt
 
                 is SearchUIState.Data -> {
                     MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
+                    if (atBottom && (viewModel.searchText.value != "" || viewModel.selectedSortOption.value.isNotEmpty() || viewModel.selectedFilterOptionsList.value.isNotEmpty())) {
+                        viewModel.searchOffset += 20
+                        viewModel.searchPokemonList()
+                        atBottom = false
+                    }
                 }
             }
         }

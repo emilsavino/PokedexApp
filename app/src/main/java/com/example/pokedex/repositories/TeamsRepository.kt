@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.dataClasses.Team
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 private val Context.dataStore by preferencesDataStore(name = "team_preferences")
 
 class TeamsRepository(private val context: Context) {
+    private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
     private val databaseService = DatabaseService("teams", Team::class.java)
     private val connectivityRepository = DependencyContainer.connectivityRepository
     private var hasInternet = connectivityRepository.isConnected.asLiveData()
@@ -135,8 +137,8 @@ class TeamsRepository(private val context: Context) {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    fun getTeam(index: Int): Team?{
-        return if (index in pokemonTeams.indices) pokemonTeams[index] else null
+    fun getTeam(teamName: String): Team?{
+        return pokemonTeams.firstOrNull { it.name == teamName }
     }
 
     private suspend fun updateDataStore() {
@@ -150,6 +152,29 @@ class TeamsRepository(private val context: Context) {
         val preferences = context.dataStore.data.first()
         val teamsJson = preferences[TEAMS_KEY] ?: "[]"
         return gson.fromJson(teamsJson, Array<Team>::class.java).toList()
+    }
+
+    suspend fun fetchTeamSuggestions(teamName: String) {
+        val team = getTeam(teamName)
+
+        val teamTypes = mutableListOf<String>()
+        val allTypes = PokemonTypeResources().getAllTypes()
+        val missingTypes = mutableListOf<String>()
+
+        if (team != null) {
+            for (pokemon in team.getPokemons()) {
+                for (types in pokemon.types) {
+                    teamTypes.add(types.type.name)
+                }
+            }
+        }
+        for (type in allTypes) {
+            if (!teamTypes.contains(type)) {
+                missingTypes.add(type)
+            }
+        }
+
+        recentlySearchedRepository.searchShuffledPokemons(missingTypes)
     }
 
 }

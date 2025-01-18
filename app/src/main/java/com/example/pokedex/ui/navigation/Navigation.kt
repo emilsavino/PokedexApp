@@ -13,7 +13,6 @@ import com.example.pokedex.mainViews.ProfileView.ProfileView
 import com.example.pokedex.mainViews.SavedPokemonsView.SavedView
 import com.example.pokedex.mainViews.SearchView.SearchView
 import com.example.pokedex.mainViews.WhoIsThatPokemon.WhoIsThatPokemonView
-import com.example.pokedex.mainViews.addToTeamView.AddToTeamView
 import com.example.pokedex.mainViews.pokemonTriviaView.PokemonTriviaView
 import com.example.pokedex.mainViews.signInView.SignInView
 import com.example.pokedex.mainViews.signInView.SignUpView
@@ -59,17 +58,6 @@ fun Navigation(navController: NavHostController) {
             SignUpView(navController = navController)
         }
         composable(
-            route = Screen.AddToTeam.route,
-            arguments = listOf(
-                navArgument("teamName") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val teamName = backStackEntry.arguments?.getString("teamName")
-            if (teamName != null) {
-                AddToTeamView(teamName = teamName, navController = navController)
-            }
-        }
-        composable(
             route = Screen.PokemonDetails.route,
             arguments = listOf(
                 navArgument("pokemonName") { type = NavType.StringType }
@@ -101,9 +89,6 @@ sealed class Screen(val route: String) {
     object SignIn : Screen("signIn")
     object Splash : Screen("splash")
     object SignUp : Screen("signUp")
-    object AddToTeam : Screen("addToTeam/{teamName}") {
-        fun createRoute(teamName:String) = "addToTeam/$teamName"
-    }
     object PokemonDetails : Screen("pokemonDetails/{pokemonName}") {
         fun createRoute(pokemonName: String) = "pokemonDetails/$pokemonName"
     }

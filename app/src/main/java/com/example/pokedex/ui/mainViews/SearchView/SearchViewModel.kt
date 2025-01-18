@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 
 open class SearchViewModel: ViewModel() {
     protected val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
+    protected val teamsRepository = DependencyContainer.teamsRepository
     protected var lastSentRequest : Int = 0
     val connectivityRepository = DependencyContainer.connectivityRepository
     var searchOffset = 0

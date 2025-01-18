@@ -8,7 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.dataClasses.Team
-import com.example.pokedex.ui.mainViews.addToTeamView.NewAddToTeamViewModel
+import com.example.pokedex.ui.mainViews.addToTeamView.AddToTeamViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +25,7 @@ class MyTeamsViewModel : ViewModel() {
     var teamToEdit by mutableStateOf("")
     var pokemonToDelete by mutableStateOf("")
     var isShowingAddPokemon by mutableStateOf(false)
-    var addToTeamViewModel: NewAddToTeamViewModel? = null
+    var addToTeamViewModel: AddToTeamViewModel? = null
 
     private val _teamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Empty)
     val teamsState: StateFlow<TeamsUIState> = _teamsState.asStateFlow()
@@ -82,7 +82,7 @@ class MyTeamsViewModel : ViewModel() {
         }
         teamToEdit = teamName
         isShowingAddPokemon = true
-        addToTeamViewModel = NewAddToTeamViewModel(teamToEdit, {isShowingAddPokemon = false})
+        addToTeamViewModel = AddToTeamViewModel(teamName, {isShowingAddPokemon = false})
     }
 
 }

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.dataClasses.PokemonTypeResources
+import com.example.pokedex.dataClasses.formatPokemonName
 import com.example.pokedex.mainViews.PokemonDetailView.typeResources
 import com.example.pokedex.mainViews.SearchView.SearchView
 import com.example.pokedex.ui.navigation.Screen
@@ -263,7 +264,7 @@ private fun DeleteTeamConfirmationDialog(teamName: String, viewModel: MyTeamsVie
 private fun DeletePokemonConfirmationDialog(viewModel: MyTeamsViewModel) {
     AlertDialog(
         onDismissRequest = { viewModel.isShowingDeletePokemonDialog = false },
-        title = { Text(text = "Are you sure you want to remove ${viewModel.pokemonToDelete} from ${viewModel.teamToEdit}? ") },
+        title = { Text(text = "Are you sure you want to remove ${viewModel.pokemonToDelete.formatPokemonName()} from ${viewModel.teamToEdit}? ") },
         text = {
             Text(text = "This action cannot be undone.")
         },

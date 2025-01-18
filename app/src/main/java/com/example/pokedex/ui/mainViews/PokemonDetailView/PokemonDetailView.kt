@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,6 +62,7 @@ import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.dataClasses.Team
 import com.example.pokedex.dataClasses.Type
 import com.example.pokedex.dataClasses.getSprite
+import com.example.pokedex.ui.shared.horizontalScrollBar
 
 val typeResources = PokemonTypeResources()
 
@@ -360,6 +362,7 @@ private fun CreateTypeBox(pokemon: PokemonAttributes, navController: NavControll
 
 @Composable
 private fun CreateWeaknessBox(pokemon: PokemonAttributes, navController: NavController) {
+    val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
             .padding(start = 8.dp)
@@ -377,7 +380,14 @@ private fun CreateWeaknessBox(pokemon: PokemonAttributes, navController: NavCont
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
+                    .horizontalScrollBar(
+                        scrollState = scrollState,
+                        height = 2.dp,
+                        showScrollBarTrack = false,
+                        scrollBarColor = Color.Gray,
+                    )
+                    .horizontalScroll(scrollState)
+                    .defaultMinSize(minWidth = 149.dp)
             ) {
                 pokemon.weaknesses.double_damage_from.forEach { weakness ->
                     val weaknessImage = typeResources.getTypeImage(weakness.name)

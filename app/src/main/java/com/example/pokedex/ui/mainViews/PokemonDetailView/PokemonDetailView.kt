@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.PokemonDetailView
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,8 +72,9 @@ fun PokemonDetailView(
     pokemonName: String,
     navController: NavController
 ) {
-    val viewModel =
-        viewModel<PokemonDetailViewModel>(key = pokemonName) { PokemonDetailViewModel(pokemonName) }
+    val viewModel = viewModel<PokemonDetailViewModel>(key = pokemonName) { PokemonDetailViewModel(pokemonName) }
+
+    BackHandler { viewModel.navigateToPrevious(navController) }
 
     when (val pokemon = viewModel.pokemon.collectAsState().value) {
         is PokemonDetailUIState.Empty -> {

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import org.threeten.bp.LocalDate
+import kotlin.random.Random
 
 private val Context.dataStore by preferencesDataStore(name = "pofd_preferences")
 
@@ -24,9 +25,7 @@ class PokemonOfTheDayRepository(private val context: Context) {
     private val gson = Gson()
 
     private var pokemonOfTheDay: Pokemon? = null
-    val date = LocalDate.now().dayOfMonth
     var allPokemons = mutableListOf<Result>()
-    var hasInternet = connectivityRepository.isConnected.asLiveData()
 
     private val mutablePokemonOfTheDayFlow = MutableSharedFlow<Pokemon?>()
     val pokemonOfTheDayFlow: Flow<Pokemon?> = mutablePokemonOfTheDayFlow.asSharedFlow()
@@ -40,7 +39,13 @@ class PokemonOfTheDayRepository(private val context: Context) {
         if (allPokemons.isEmpty()) {
             return null
         }
-        pokemonOfTheDay = dataStore.getPokemonFromMapFallBackAPI(allPokemons[date].name)
+
+        val currentDate = LocalDate.now().toString()
+        val seed = currentDate.hashCode()
+        val randomGen = Random(seed)
+
+        pokemonOfTheDay = dataStore.getPokemonFromMapFallBackAPI(allPokemons[randomGen.nextInt(allPokemons.size)].name)
+
         if (pokemonOfTheDay!!.name.isBlank()) {
             pokemonOfTheDay = fetchPokemonOfTheDayFromDataStore()
         } else {

@@ -1,12 +1,12 @@
 package com.example.pokedex.mainViews.SearchView
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -21,8 +22,10 @@ import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,21 +33,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.pokedex.R
-import com.example.pokedex.ui.navigation.Screen
 import com.example.pokedex.dataClasses.formatPokemonName
 import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.PokemonTypeResources
@@ -56,7 +53,8 @@ fun SearchView(
     modifier: Modifier = Modifier,
     navController: NavController,
     filterOption: String,
-    viewModel: SearchViewModel = viewModel()
+    viewModel: SearchViewModel = viewModel(),
+    dismiss: (() -> Unit)? = null
 ) {
     val scrollState : ScrollState = rememberScrollState()
     val pokemons = viewModel.pokemonList.collectAsState().value
@@ -76,6 +74,12 @@ fun SearchView(
             }
     }
 
+    BackHandler {
+        if (dismiss != null) {
+            dismiss()
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -88,7 +92,8 @@ fun SearchView(
                 .padding(16.dp)
                 .verticalScroll(scrollState)
         ) {
-            MakeSearchTools(viewModel = viewModel)
+
+            MakeSearchTools(viewModel, dismiss)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -118,8 +123,8 @@ fun SearchView(
 }
 
 @Composable
-private fun MakeSearchTools(viewModel: SearchViewModel) {
-    MakeSearchBar(viewModel)
+private fun MakeSearchTools(viewModel: SearchViewModel, dismiss: (() -> Unit)?) {
+    MakeSearchBar(viewModel, dismiss)
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -141,36 +146,61 @@ private fun MakeSearchTools(viewModel: SearchViewModel) {
 }
 
 @Composable
-private fun MakeSearchBar(viewModel: SearchViewModel) {
-    OutlinedTextField(
+private fun MakeSearchBar(viewModel: SearchViewModel, dismiss: (() -> Unit)?) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
             .background(Color.White)
-            .shadow(0.dp),
+            .shadow(0.dp)
+            .border(1.dp, Color.Black, RoundedCornerShape(24.dp)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (dismiss != null) {
+            Box(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(20.dp)
+            ) {
+                IconButton(
+                    onClick = { dismiss() },
+                    modifier = Modifier
+                        .size(20.dp)
+                ) {
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+            }
+        }
 
-        placeholder = { Text(
-            "Search...",
-            color = Color.Black
-        ) },
-
-        onValueChange = {
-            viewModel.searchText.value = it
-            viewModel.searchPokemonList()
-        },
-
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done,
-            autoCorrectEnabled = false
-        ),
-
-        keyboardActions = KeyboardActions.Default,
-        value = viewModel.searchText.value,
-        shape = RoundedCornerShape(24.dp),
-        singleLine = true,
-    )
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = {
+                Text(
+                    "Search...",
+                    color = Color.Black
+                )
+            },
+            onValueChange = {
+                viewModel.searchText.value = it
+                viewModel.searchPokemonList()
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                autoCorrectEnabled = false
+            ),
+            keyboardActions = KeyboardActions.Default,
+            value = viewModel.searchText.value,
+            shape = RoundedCornerShape(24.dp),
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent
+            )
+        )
+    }
 }
+
 
 @Composable
 private fun MakeFilterButton(

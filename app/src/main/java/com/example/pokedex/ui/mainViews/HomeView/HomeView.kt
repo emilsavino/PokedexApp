@@ -328,7 +328,7 @@ private fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavContro
                 modifier = Modifier
                     .padding(bottom = 4.dp)
                     .background(
-                        color = Color.Black.copy(alpha = 0.5f),
+                        color = Color.Black.copy(alpha = 0.3f),
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(4.dp)

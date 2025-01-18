@@ -324,11 +324,11 @@ private fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavContro
             Text(
                 text = pokemon.name.formatPokemonName(),
                 fontSize = 18.sp,
-                color = Color.White,
+                color = Color.Black,
                 modifier = Modifier
                     .padding(bottom = 4.dp)
                     .background(
-                        color = Color.Black.copy(alpha = 0.3f),
+                        color = Color.White.copy(alpha = 0.3f),
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(4.dp)

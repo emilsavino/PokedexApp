@@ -48,7 +48,6 @@ import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -61,7 +60,6 @@ import com.example.pokedex.dataClasses.PokemonAttributes
 import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.dataClasses.Team
 import com.example.pokedex.dataClasses.Type
-import com.example.pokedex.dataClasses.Types
 import com.example.pokedex.dataClasses.getSprite
 
 val typeResources = PokemonTypeResources()
@@ -254,7 +252,7 @@ private fun CreatePokemonBox(pokemon: PokemonAttributes) {
 }
 
 @Composable
-private fun CreateStatsText(nameOfStat: String, pokemon: PokemonAttributes, types: List<Type>) {
+fun CreateStatsText(nameOfStat: String, pokemon: PokemonAttributes, types: List<Type>) {
     val textColor = if (types.firstOrNull()?.name == "dark") {
         Color.LightGray
     } else {

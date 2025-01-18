@@ -30,7 +30,9 @@ data class Type(
 //Weaknesses and its data classes
 data class DamageRelationsResult(
     val double_damage_from: List<Type>,
-    val half_damage_from: List<Type>
+    val half_damage_from: List<Type>,
+    val double_damage_to: List<Type>,
+    val half_damage_to: List<Type>
 )
 
 data class DamageRelations(

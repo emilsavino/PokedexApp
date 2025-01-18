@@ -111,6 +111,7 @@ class TeamsRepository(private val context: Context) {
         return true
     }
 
+
     suspend fun deletePokemonFromTeam(name: String, teamName: String) {
         val teamIndex = pokemonTeams.indexOfFirst { it.name == teamName }
 
@@ -121,9 +122,12 @@ class TeamsRepository(private val context: Context) {
 
                 if (team.getPokemons().isEmpty()) {
                     deleteTeam(teamName)
+                    databaseService.storeList(pokemonTeams)
+                    updateDataStore()
                     return
                 }
                 pokemonTeams[teamIndex] = team
+                databaseService.storeList(pokemonTeams)
                 updateDataStore()
                 break
             }

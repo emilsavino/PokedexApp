@@ -72,7 +72,9 @@ class PokemonRepository {
         }
         return DamageRelationsResult(
             double_damage_from = combinedWeaknesses,
-            half_damage_from = emptyList()
+            half_damage_from = emptyList(),
+            double_damage_to = emptyList(),
+            half_damage_to = emptyList()
         )
     }
 

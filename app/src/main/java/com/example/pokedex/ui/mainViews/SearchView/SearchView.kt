@@ -3,6 +3,7 @@ package com.example.pokedex.mainViews.SearchView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
@@ -180,57 +182,105 @@ private fun MakeFilterButton(
     unselectedColor: Color
 ) {
     val typeResources = PokemonTypeResources()
-    var filterExpanded = remember { mutableStateOf(false) }
-    var maxVisibleItems = 5
-    Button(
-        onClick = { filterExpanded.value = true},
-        colors = buttonColors(containerColor = Color.White),
-        modifier = Modifier.shadow(2.dp, CircleShape)
-    ) {
-        Row (
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Icon(
-                imageVector = Icons.Filled.List,
-                contentDescription = "Filter",
-                tint = textColor
-            )
-            Spacer(modifier = Modifier.padding(2.dp))
+    val filterExpanded = remember { mutableStateOf(false) }
+    val maxVisibleItems = 5
 
-            Text(
-                text = "Filter",
-                color = Color.Black
-            )
+    Box {
+        Button(
+            onClick = { filterExpanded.value = !filterExpanded.value },
+            colors = buttonColors(containerColor = Color.White),
+            modifier = Modifier.shadow(2.dp, CircleShape)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.List,
+                    contentDescription = "Filter",
+                    tint = textColor
+                )
+                Spacer(modifier = Modifier.padding(2.dp))
+
+                Text(
+                    text = "Filter",
+                    color = Color.Black
+                )
+            }
         }
 
-        DropdownMenu(
-            expanded = filterExpanded.value,
-            onDismissRequest = { filterExpanded.value = false },
-            modifier = Modifier
-                .height((maxVisibleItems * 48).dp)
-                .background(Color.White)
-        ) {
-            val allFilterOptions = viewModel.getAllFilterOptions()
-            for (option in allFilterOptions) {
-                DropdownMenuItem(
-                    text = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = typeResources.getTypeImage(option),
-                                contentDescription = "${option.capitalize()} type icon",
-                                modifier = Modifier.size(24.dp).padding(end = 8.dp)
-                            )
-                            Text(option.capitalize(), color = textColor)
+        if (filterExpanded.value) {
+            Box(
+                modifier = Modifier
+                    .background(Color.White)
+                    .shadow(4.dp)
+                    .width(IntrinsicSize.Max)
+            ) {
+                val allFilterOptions = viewModel.getAllFilterOptions()
+                val scrollState = rememberScrollState()
+
+                Box {
+                    Column(
+                        modifier = Modifier
+                            .height((maxVisibleItems * 48).dp)
+                            .verticalScroll(scrollState)
+                            .padding(end = 8.dp)
+                    ) {
+                        allFilterOptions.forEach { option ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor
+                                    )
+                                    .padding(8.dp)
+                                    .clickable {
+                                        viewModel.selectFilterOption(option)
+                                        filterExpanded.value = false
+                                    },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = typeResources.getTypeImage(option),
+                                    contentDescription = "${option.capitalize()} type icon",
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .padding(end = 8.dp)
+                                )
+                                Text(option.capitalize(), color = textColor)
+                            }
                         }
-                    },
-                    modifier = Modifier.background(
-                        color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor
-                    ),
-                    onClick = {
-                        viewModel.selectFilterOption(option)
                     }
-                )
+
+                    val density = LocalDensity.current
+
+                    val totalScrollHeightPx = with(density) { scrollState.maxValue.toFloat() }
+
+                    val scrollFraction = scrollState.value.toFloat() / totalScrollHeightPx.coerceAtLeast(1f)
+
+                    val visibleContentHeightPx = with(density) { (maxVisibleItems * 48).dp.toPx() }
+                    val thumbHeightPx = (visibleContentHeightPx / (totalScrollHeightPx + visibleContentHeightPx)) * visibleContentHeightPx
+                    val thumbHeight = with(density) { thumbHeightPx.toDp() }
+
+                    val thumbOffsetPx = scrollFraction * (visibleContentHeightPx - thumbHeightPx)
+                    val thumbOffset = with(density) { thumbOffsetPx.toDp() }
+
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .fillMaxHeight()
+                            .width(6.dp)
+                            .background(Color.LightGray)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(thumbHeight.coerceAtLeast(20.dp))
+                                .offset(y = thumbOffset.coerceAtLeast(0.dp).coerceAtMost((maxVisibleItems * 48).dp - thumbHeight))
+                                .background(Color.DarkGray)
+                        )
+                    }
+                }
             }
         }
     }

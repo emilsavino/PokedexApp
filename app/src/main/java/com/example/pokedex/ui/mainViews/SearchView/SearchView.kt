@@ -294,48 +294,97 @@ private fun MakeSortButton(
     unselectedColor: Color
 ) {
     var sortExpanded = remember { mutableStateOf(false) }
-    val maxVisibleItems = 3
-    Button(
-        onClick = { sortExpanded.value = true },
-        colors = buttonColors(containerColor = Color.White),
-        modifier = Modifier.shadow(2.dp, CircleShape)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.MoreVert,
-                contentDescription = "Sort",
-                tint = textColor
-            )
-            Spacer(modifier = Modifier.padding(2.dp))
+    val maxVisibleItems = 5
 
-            Text(
-                text = "Sort",
-                color = Color.Black
-            )
+    Box {
+        Button(
+            onClick = { sortExpanded.value = !sortExpanded.value },
+            colors = buttonColors(containerColor = Color.White),
+            modifier = Modifier.shadow(2.dp, CircleShape)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "Sort",
+                    tint = textColor
+                )
+                Spacer(modifier = Modifier.padding(2.dp))
+
+                Text(
+                    text = "Sort",
+                    color = Color.Black
+                )
+            }
         }
 
-        DropdownMenu(
-            expanded = sortExpanded.value,
-            onDismissRequest = { sortExpanded.value = false },
-            modifier = Modifier
-                .height((maxVisibleItems * 48).dp)
-                .background(Color.White)
-        ) {
-            val allSortOptions = viewModel.getAllSortOptions()
-            for (option in allSortOptions) {
-                DropdownMenuItem(
-                    text = { Text(option, color = textColor) },
-                    modifier = Modifier.background(
-                        color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
-                    ),
-                    onClick = {
-                        sortExpanded.value = false
-                        viewModel.selectSortOption(option)
+        if (sortExpanded.value) {
+            Box(
+                modifier = Modifier
+                    .background(Color.White)
+                    .shadow(4.dp)
+                    .width(IntrinsicSize.Max)
+            ) {
+                val allSortOptions = viewModel.getAllSortOptions()
+                val scrollState = rememberScrollState()
+
+                Box {
+                    Column(
+                        modifier = Modifier
+                            .height((maxVisibleItems * 48).dp)
+                            .verticalScroll(scrollState)
+                            .padding(end = 8.dp)
+                    ) {
+                        allSortOptions.forEach { option ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
+                                    )
+                                    .padding(8.dp)
+                                    .clickable {
+                                        viewModel.selectSortOption(option)
+                                        sortExpanded.value = false
+                                    },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(option, color = textColor)
+                            }
+                        }
                     }
-                )
+
+                    val density = LocalDensity.current
+
+                    val totalScrollHeightPx = with(density) { scrollState.maxValue.toFloat() }
+
+                    val scrollFraction = scrollState.value.toFloat() / totalScrollHeightPx.coerceAtLeast(1f)
+
+                    val visibleContentHeightPx = with(density) { (maxVisibleItems * 48).dp.toPx() }
+                    val thumbHeightPx = (visibleContentHeightPx / (totalScrollHeightPx + visibleContentHeightPx)) * visibleContentHeightPx
+                    val thumbHeight = with(density) { thumbHeightPx.toDp() }
+
+                    val thumbOffsetPx = scrollFraction * (visibleContentHeightPx - thumbHeightPx)
+                    val thumbOffset = with(density) { thumbOffsetPx.toDp() }
+
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .fillMaxHeight()
+                            .width(6.dp)
+                            .background(Color.LightGray)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(thumbHeight.coerceAtLeast(20.dp))
+                                .offset(y = thumbOffset.coerceAtLeast(0.dp).coerceAtMost((maxVisibleItems * 48).dp - thumbHeight))
+                                .background(Color.DarkGray)
+                        )
+                    }
+                }
             }
         }
     }

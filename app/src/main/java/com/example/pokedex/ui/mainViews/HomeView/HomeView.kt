@@ -15,8 +15,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -324,13 +328,15 @@ private fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavContro
             Text(
                 text = pokemon.name.formatPokemonName(),
                 fontSize = 18.sp,
-                color = Color.Black,
-                modifier = Modifier
-                    .padding(bottom = 4.dp)
-                    .background(
-                        color = Color.White.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(8.dp)
+                color = Color.White,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    shadow = Shadow(
+                        color = Color.Black,
+                        offset = Offset(4f, 4f),
+                        blurRadius = 8f
                     )
+                ),
+                modifier = Modifier
                     .padding(4.dp)
             )
         }

@@ -466,6 +466,7 @@ private fun CreateEvoBox(
     pokemon: PokemonAttributes,
     viewModel: PokemonDetailViewModel
 ) {
+    val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -492,7 +493,13 @@ private fun CreateEvoBox(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
+                        .horizontalScrollBar(
+                            scrollState = scrollState,
+                            height = 2.dp,
+                            showScrollBarTrack = false,
+                            scrollBarColor = Color.Gray,
+                        )
+                        .horizontalScroll(scrollState)
                 ) {
                     pokemon.pokemons.forEachIndexed { index, localPokemon ->
                         Box(

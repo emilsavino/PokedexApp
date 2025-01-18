@@ -83,7 +83,6 @@ class RecentlySearchedRepository(private val context: Context) {
         val recentlySearched = fetchRecentsFromDataStore()
         recentlySearchedPokemon.clear()
         recentlySearchedPokemon.addAll(recentlySearched.toList())
-        fetchRecentlySearched()
     }
 
     suspend fun fetchRecentlySearched(searchID : Int = -1) {
@@ -304,21 +303,21 @@ class RecentlySearchedRepository(private val context: Context) {
     }
 
     suspend fun searchShuffledPokemons(types: List<String>) {
-        val allPokemons = pokemonDataStore.getAllPokemonResults()
-        allPokemons.shuffled()
+        var allPokemons = pokemonDataStore.getAllPokemonResults()
+        allPokemons = allPokemons.shuffled()
 
-        val shuffledListToReturn = mutableListOf<Pokemon>()
+        var shuffledListToReturn = mutableListOf<Pokemon>()
         for (pokemonResult in allPokemons) {
             val pokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(pokemonResult.name)
             if (pokemonIsTypeRelevant(pokemon, types)) {
                 shuffledListToReturn.add(pokemon)
             }
         }
-        val limit = shuffledListToReturn.take(20)
-        limit.shuffled()
+
+        shuffledListToReturn.take(20)
         val searchResult = SearchResult(
             indexOfSearch = -1,
-            pokemons = limit
+            pokemons = shuffledListToReturn
         )
         mutableSearchFlow.emit(searchResult)
     }

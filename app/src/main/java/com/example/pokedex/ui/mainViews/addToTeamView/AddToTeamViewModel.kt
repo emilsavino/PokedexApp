@@ -20,14 +20,6 @@ class AddToTeamViewModel(private val teamName: String, private val dismiss: () -
         {
             viewModelScope.launch {
                 teamsRepository.fetchTeamSuggestions(teamName)
-                recentlySearchedRepository.searchFlow.collect { newPokemonList ->
-                    if (newPokemonList.indexOfSearch == lastSentRequest || newPokemonList.indexOfSearch == -1) {
-                        _pokemonList.update {
-                            val shuffledList = newPokemonList.pokemons.shuffled()
-                            if (shuffledList.isEmpty()) SearchUIState.Empty else SearchUIState.Data(shuffledList)
-                        }
-                    }
-                }
             }
             return
         }
@@ -40,14 +32,6 @@ class AddToTeamViewModel(private val teamName: String, private val dismiss: () -
                 selectedSortOption.value,
                 ++lastSentRequest
             )
-            recentlySearchedRepository.searchFlow.collect { newPokemonList ->
-                if (newPokemonList.indexOfSearch == lastSentRequest || newPokemonList.indexOfSearch == -1) {
-                    _pokemonList.update {
-                        val shuffledList = newPokemonList.pokemons.shuffled()
-                        if (shuffledList.isEmpty()) SearchUIState.Empty else SearchUIState.Data(shuffledList)
-                    }
-                }
-            }
         }
     }
 

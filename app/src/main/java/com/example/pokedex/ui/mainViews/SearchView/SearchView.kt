@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -20,8 +22,10 @@ import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +47,6 @@ import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.ui.shared.ProgressIndicator
 import com.example.pokedex.dataClasses.getSprite
-import com.example.pokedex.ui.shared.BackButton
 
 @Composable
 fun SearchView(
@@ -90,14 +93,7 @@ fun SearchView(
                 .verticalScroll(scrollState)
         ) {
 
-            if (dismiss != null) {
-                BackButton(
-                    navController = navController,
-                    onClick = dismiss
-                )
-            }
-
-            MakeSearchTools(viewModel)
+            MakeSearchTools(viewModel, dismiss)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -127,8 +123,8 @@ fun SearchView(
 }
 
 @Composable
-private fun MakeSearchTools(viewModel: SearchViewModel) {
-    MakeSearchBar(viewModel)
+private fun MakeSearchTools(viewModel: SearchViewModel, dismiss: (() -> Unit)?) {
+    MakeSearchBar(viewModel, dismiss)
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -150,36 +146,61 @@ private fun MakeSearchTools(viewModel: SearchViewModel) {
 }
 
 @Composable
-private fun MakeSearchBar(viewModel: SearchViewModel) {
-    OutlinedTextField(
+private fun MakeSearchBar(viewModel: SearchViewModel, dismiss: (() -> Unit)?) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
             .background(Color.White)
-            .shadow(0.dp),
+            .shadow(0.dp)
+            .border(1.dp, Color.Black, RoundedCornerShape(24.dp)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (dismiss != null) {
+            Box(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(20.dp)
+            ) {
+                IconButton(
+                    onClick = { dismiss() },
+                    modifier = Modifier
+                        .size(20.dp)
+                ) {
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+            }
+        }
 
-        placeholder = { Text(
-            "Search...",
-            color = Color.Black
-        ) },
-
-        onValueChange = {
-            viewModel.searchText.value = it
-            viewModel.searchPokemonList()
-        },
-
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done,
-            autoCorrectEnabled = false
-        ),
-
-        keyboardActions = KeyboardActions.Default,
-        value = viewModel.searchText.value,
-        shape = RoundedCornerShape(24.dp),
-        singleLine = true,
-    )
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = {
+                Text(
+                    "Search...",
+                    color = Color.Black
+                )
+            },
+            onValueChange = {
+                viewModel.searchText.value = it
+                viewModel.searchPokemonList()
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                autoCorrectEnabled = false
+            ),
+            keyboardActions = KeyboardActions.Default,
+            value = viewModel.searchText.value,
+            shape = RoundedCornerShape(24.dp),
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent
+            )
+        )
+    }
 }
+
 
 @Composable
 private fun MakeFilterButton(

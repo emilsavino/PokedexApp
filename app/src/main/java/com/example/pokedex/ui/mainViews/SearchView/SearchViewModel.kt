@@ -46,7 +46,6 @@ open class SearchViewModel: ViewModel() {
                 }
             }
         }
-        searchPokemonList()
     }
 
     open fun searchPokemonList() {

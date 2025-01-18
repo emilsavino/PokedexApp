@@ -3,7 +3,6 @@ package com.example.pokedex.ui.mainViews.addToTeamView
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dataClasses.Pokemon
-import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.mainViews.SearchView.SearchUIState
 import com.example.pokedex.mainViews.SearchView.SearchViewModel
 import com.example.pokedex.ui.navigation.Screen
@@ -16,7 +15,7 @@ class AddToTeamViewModel(private val teamName: String, private val dismiss: () -
             SearchUIState.Loading
         }
 
-        if (searchText.value.isEmpty() && selectedFilterOptionsList.value.isEmpty() && selectedSortOption.value.isEmpty() && teamName != null)
+        if (searchText.value.isEmpty() && selectedFilterOptionsList.value.isEmpty() && selectedSortOption.value.isEmpty())
         {
             viewModelScope.launch {
                 teamsRepository.fetchTeamSuggestions(teamName)

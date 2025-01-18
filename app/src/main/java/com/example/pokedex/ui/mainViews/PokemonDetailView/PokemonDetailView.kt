@@ -413,48 +413,33 @@ private fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
             .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
-        Column {
+        Column (
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Text(
                 text = "Abilities",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
-
             )
-            Spacer(modifier = Modifier.padding(2.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                pokemon.abilities.chunked(2).forEachIndexed { chunkIndex, abilityChunk ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = if (chunkIndex == pokemon.abilities.lastIndex / 2) Arrangement.Center else Arrangement.Start
-                    ) {
-                        abilityChunk.forEachIndexed { index, ability ->
-                            Text(
-                                text = "Ability ${chunkIndex * 2 + index + 1}: ",
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Italic,
-                                fontSize = 16.sp
-                            )
 
-                            Text(
-                                text = ability.ability.name.formatPokemonName(),
-                                fontStyle = FontStyle.Italic,
-                                fontSize = 16.sp
-                            )
+            pokemon.abilities.forEachIndexed { index, ability ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Ability ${index + 1}: ",
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 16.sp
+                    )
 
-                            if (index < abilityChunk.size - 1) {
-                                Text(
-                                    text = "   |   ",
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
-                    }
+                    Text(
+                        text = ability.ability.name.formatPokemonName(),
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }

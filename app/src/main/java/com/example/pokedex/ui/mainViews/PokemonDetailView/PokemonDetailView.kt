@@ -472,7 +472,7 @@ private fun CreateEvoBox(
 
             if (pokemon.pokemons.isEmpty()) {
                 Text(
-                    text = "This Pokémon evolves in mysterious ways, we have yet to discover its Evolution Chain!",
+                    text = viewModel.getEmptyEvoText(),
                     color = Color.Black,
                     fontStyle = FontStyle.Italic
                 )

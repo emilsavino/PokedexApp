@@ -168,6 +168,14 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
         }
         recentlyViewedRepository.addToRecents(pokemon)
     }
+
+    fun getEmptyEvoText(): String {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            return "You need internet to see evolutions..."
+        }
+
+        return "This Pokémon evolves in mysterious ways, we have yet to discover its Evolution Chain!"
+    }
 }
 
 sealed class PokemonDetailUIState {

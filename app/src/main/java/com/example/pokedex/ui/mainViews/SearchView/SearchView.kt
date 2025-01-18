@@ -1,12 +1,11 @@
 package com.example.pokedex.mainViews.SearchView
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,33 +29,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.pokedex.R
-import com.example.pokedex.ui.navigation.Screen
 import com.example.pokedex.dataClasses.formatPokemonName
 import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.ui.shared.ProgressIndicator
 import com.example.pokedex.dataClasses.getSprite
+import com.example.pokedex.ui.shared.BackButton
 
 @Composable
 fun SearchView(
     modifier: Modifier = Modifier,
     navController: NavController,
     filterOption: String,
-    viewModel: SearchViewModel = viewModel()
+    viewModel: SearchViewModel = viewModel(),
+    dismiss: (() -> Unit)? = null
 ) {
     val scrollState : ScrollState = rememberScrollState()
     val pokemons = viewModel.pokemonList.collectAsState().value
@@ -76,6 +71,12 @@ fun SearchView(
             }
     }
 
+    BackHandler {
+        if (dismiss != null) {
+            dismiss()
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -88,7 +89,15 @@ fun SearchView(
                 .padding(16.dp)
                 .verticalScroll(scrollState)
         ) {
-            MakeSearchTools(viewModel = viewModel)
+
+            if (dismiss != null) {
+                BackButton(
+                    navController = navController,
+                    onClick = dismiss
+                )
+            }
+
+            MakeSearchTools(viewModel)
 
             Spacer(modifier = Modifier.height(16.dp))
 

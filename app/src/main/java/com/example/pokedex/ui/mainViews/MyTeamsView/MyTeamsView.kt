@@ -53,7 +53,8 @@ fun MyTeamsView(navController: NavController) {
         SearchView(
             navController = navController,
             filterOption = "",
-            viewModel = viewModel.addToTeamViewModel!!
+            viewModel = viewModel.addToTeamViewModel!!,
+            dismiss = { viewModel.isShowingAddPokemon = false }
         )
     } else {
         Column(

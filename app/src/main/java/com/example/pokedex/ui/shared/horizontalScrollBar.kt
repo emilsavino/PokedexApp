@@ -23,24 +23,30 @@ fun Modifier.horizontalScrollBar(
 ): Modifier {
     return drawWithContent {
         drawContent()
+
         val viewportWidth = this.size.width
         val totalContentWidth = scrollState.maxValue.toFloat() + viewportWidth
-        val scrollValue = scrollState.value.toFloat()
-        val scrollBarWidth = (viewportWidth / totalContentWidth) * viewportWidth
-        val scrollBarStartOffset = (scrollValue / totalContentWidth) * viewportWidth
-        if (showScrollBarTrack) {
+
+        if (totalContentWidth > viewportWidth) {
+            val scrollValue = scrollState.value.toFloat()
+            val scrollBarWidth = (viewportWidth / totalContentWidth) * viewportWidth
+            val scrollBarStartOffset = (scrollValue / totalContentWidth) * viewportWidth
+
+            if (showScrollBarTrack) {
+                drawRoundRect(
+                    cornerRadius = CornerRadius(scrollBarCornerRadius),
+                    color = scrollBarTrackColor,
+                    topLeft = Offset(0f, this.size.height - endPadding),
+                    size = Size(viewportWidth, height.toPx()),
+                )
+            }
+
             drawRoundRect(
                 cornerRadius = CornerRadius(scrollBarCornerRadius),
-                color = scrollBarTrackColor,
-                topLeft = Offset(0f, this.size.height - endPadding),
-                size = Size(viewportWidth, height.toPx()),
+                color = scrollBarColor,
+                topLeft = Offset(scrollBarStartOffset, this.size.height - endPadding),
+                size = Size(scrollBarWidth, height.toPx())
             )
         }
-        drawRoundRect(
-            cornerRadius = CornerRadius(scrollBarCornerRadius),
-            color = scrollBarColor,
-            topLeft = Offset(scrollBarStartOffset, this.size.height - endPadding),
-            size = Size(scrollBarWidth, height.toPx())
-        )
     }
 }

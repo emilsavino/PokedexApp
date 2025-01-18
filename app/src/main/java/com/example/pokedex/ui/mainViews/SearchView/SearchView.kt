@@ -182,105 +182,57 @@ private fun MakeFilterButton(
     unselectedColor: Color
 ) {
     val typeResources = PokemonTypeResources()
-    val filterExpanded = remember { mutableStateOf(false) }
-    val maxVisibleItems = 5
+    var filterExpanded = remember { mutableStateOf(false) }
+    var maxVisibleItems = 5
+    Button(
+        onClick = { filterExpanded.value = true},
+        colors = buttonColors(containerColor = Color.White),
+        modifier = Modifier.shadow(2.dp, CircleShape)
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Icon(
+                imageVector = Icons.Filled.List,
+                contentDescription = "Filter",
+                tint = textColor
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
 
-    Box {
-        Button(
-            onClick = { filterExpanded.value = !filterExpanded.value },
-            colors = buttonColors(containerColor = Color.White),
-            modifier = Modifier.shadow(2.dp, CircleShape)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.List,
-                    contentDescription = "Filter",
-                    tint = textColor
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-
-                Text(
-                    text = "Filter",
-                    color = Color.Black
-                )
-            }
+            Text(
+                text = "Filter",
+                color = Color.Black
+            )
         }
 
-        if (filterExpanded.value) {
-            Box(
-                modifier = Modifier
-                    .background(Color.White)
-                    .shadow(4.dp)
-                    .width(IntrinsicSize.Max)
-            ) {
-                val allFilterOptions = viewModel.getAllFilterOptions()
-                val scrollState = rememberScrollState()
-
-                Box {
-                    Column(
-                        modifier = Modifier
-                            .height((maxVisibleItems * 48).dp)
-                            .verticalScroll(scrollState)
-                            .padding(end = 8.dp)
-                    ) {
-                        allFilterOptions.forEach { option ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor
-                                    )
-                                    .padding(8.dp)
-                                    .clickable {
-                                        viewModel.selectFilterOption(option)
-                                        filterExpanded.value = false
-                                    },
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Image(
-                                    painter = typeResources.getTypeImage(option),
-                                    contentDescription = "${option.capitalize()} type icon",
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .padding(end = 8.dp)
-                                )
-                                Text(option.capitalize(), color = textColor)
-                            }
+        DropdownMenu(
+            expanded = filterExpanded.value,
+            onDismissRequest = { filterExpanded.value = false },
+            modifier = Modifier
+                .height((maxVisibleItems * 48).dp)
+                .background(Color.White)
+        ) {
+            val allFilterOptions = viewModel.getAllFilterOptions()
+            for (option in allFilterOptions) {
+                DropdownMenuItem(
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = typeResources.getTypeImage(option),
+                                contentDescription = "${option.capitalize()} type icon",
+                                modifier = Modifier.size(24.dp).padding(end = 8.dp)
+                            )
+                            Text(option.capitalize(), color = textColor)
                         }
+                    },
+                    modifier = Modifier.background(
+                        color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor
+                    ),
+                    onClick = {
+                        viewModel.selectFilterOption(option)
                     }
-
-                    val density = LocalDensity.current
-
-                    val totalScrollHeightPx = with(density) { scrollState.maxValue.toFloat() }
-
-                    val scrollFraction = scrollState.value.toFloat() / totalScrollHeightPx.coerceAtLeast(1f)
-
-                    val visibleContentHeightPx = with(density) { (maxVisibleItems * 48).dp.toPx() }
-                    val thumbHeightPx = (visibleContentHeightPx / (totalScrollHeightPx + visibleContentHeightPx)) * visibleContentHeightPx
-                    val thumbHeight = with(density) { thumbHeightPx.toDp() }
-
-                    val thumbOffsetPx = scrollFraction * (visibleContentHeightPx - thumbHeightPx)
-                    val thumbOffset = with(density) { thumbOffsetPx.toDp() }
-
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .fillMaxHeight()
-                            .width(6.dp)
-                            .background(Color.LightGray)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(thumbHeight.coerceAtLeast(20.dp))
-                                .offset(y = thumbOffset.coerceAtLeast(0.dp).coerceAtMost((maxVisibleItems * 48).dp - thumbHeight))
-                                .background(Color.DarkGray)
-                        )
-                    }
-                }
+                )
             }
         }
     }
@@ -294,97 +246,48 @@ private fun MakeSortButton(
     unselectedColor: Color
 ) {
     var sortExpanded = remember { mutableStateOf(false) }
-    val maxVisibleItems = 5
-
-    Box {
-        Button(
-            onClick = { sortExpanded.value = !sortExpanded.value },
-            colors = buttonColors(containerColor = Color.White),
-            modifier = Modifier.shadow(2.dp, CircleShape)
+    val maxVisibleItems = 3
+    Button(
+        onClick = { sortExpanded.value = true },
+        colors = buttonColors(containerColor = Color.White),
+        modifier = Modifier.shadow(2.dp, CircleShape)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "Sort",
-                    tint = textColor
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                contentDescription = "Sort",
+                tint = textColor
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
 
-                Text(
-                    text = "Sort",
-                    color = Color.Black
-                )
-            }
+            Text(
+                text = "Sort",
+                color = Color.Black
+            )
         }
 
-        if (sortExpanded.value) {
-            Box(
-                modifier = Modifier
-                    .background(Color.White)
-                    .shadow(4.dp)
-                    .width(IntrinsicSize.Max)
-            ) {
-                val allSortOptions = viewModel.getAllSortOptions()
-                val scrollState = rememberScrollState()
-
-                Box {
-                    Column(
-                        modifier = Modifier
-                            .height((maxVisibleItems * 48).dp)
-                            .verticalScroll(scrollState)
-                            .padding(end = 8.dp)
-                    ) {
-                        allSortOptions.forEach { option ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
-                                    )
-                                    .padding(8.dp)
-                                    .clickable {
-                                        viewModel.selectSortOption(option)
-                                        sortExpanded.value = false
-                                    },
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(option, color = textColor)
-                            }
-                        }
+        DropdownMenu(
+            expanded = sortExpanded.value,
+            onDismissRequest = { sortExpanded.value = false },
+            modifier = Modifier
+                .height((maxVisibleItems * 48).dp)
+                .background(Color.White)
+        ) {
+            val allSortOptions = viewModel.getAllSortOptions()
+            for (option in allSortOptions) {
+                DropdownMenuItem(
+                    text = { Text(option, color = textColor) },
+                    modifier = Modifier.background(
+                        color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
+                    ),
+                    onClick = {
+                        sortExpanded.value = false
+                        viewModel.selectSortOption(option)
                     }
-
-                    val density = LocalDensity.current
-
-                    val totalScrollHeightPx = with(density) { scrollState.maxValue.toFloat() }
-
-                    val scrollFraction = scrollState.value.toFloat() / totalScrollHeightPx.coerceAtLeast(1f)
-
-                    val visibleContentHeightPx = with(density) { (maxVisibleItems * 48).dp.toPx() }
-                    val thumbHeightPx = (visibleContentHeightPx / (totalScrollHeightPx + visibleContentHeightPx)) * visibleContentHeightPx
-                    val thumbHeight = with(density) { thumbHeightPx.toDp() }
-
-                    val thumbOffsetPx = scrollFraction * (visibleContentHeightPx - thumbHeightPx)
-                    val thumbOffset = with(density) { thumbOffsetPx.toDp() }
-
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .fillMaxHeight()
-                            .width(6.dp)
-                            .background(Color.LightGray)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(thumbHeight.coerceAtLeast(20.dp))
-                                .offset(y = thumbOffset.coerceAtLeast(0.dp).coerceAtMost((maxVisibleItems * 48).dp - thumbHeight))
-                                .background(Color.DarkGray)
-                        )
-                    }
-                }
+                )
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.example.pokedex.mainViews.splashScreen
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
@@ -20,7 +19,7 @@ class SplashScreenViewModel(val navController: NavController) : ViewModel() {
     init {
         viewModelScope.launch {
             pokemonDataStore.pokemonMapSizeFlow.collect { size ->
-                if (size > 500)
+                if (size > 500 && isSignedIn)
                 {
                     navController.navigate(Screen.Home.route)
                 }

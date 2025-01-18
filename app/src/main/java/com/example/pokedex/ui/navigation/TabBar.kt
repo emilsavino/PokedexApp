@@ -41,7 +41,7 @@ fun TabBar(navController: NavController) {
                 icon = {
                     if (tab.title == "Home") {
                         CreateHomeButton(tab)
-                    } else if (tab.title == "Profile" && viewModel.isAuthenticated) {
+                    } else if (tab.title == "Profile" && viewModel.isAuthenticated && viewModel.profilePicture != "") {
                         CreateProfileButton(tab, viewModel)
                     } else {
                         CreateOtherButtons(tab)

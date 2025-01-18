@@ -7,18 +7,21 @@ data class Team (
     val name: String,
     private var pokemons: MutableList<Pokemon> = emptyList<Pokemon>().toMutableList(),
     val weakAgainst: MutableList<String> = emptyList<String>().toMutableList(),
-    val strongAgainst: MutableList<String> = emptyList<String>().toMutableList()
+    val strongAgainst: MutableList<String> = emptyList<String>().toMutableList(),
+    var combinedHP: Int = 0
 ){
     fun addPokemon(pokemon: Pokemon)
     {
         pokemons.add(pokemon)
         updateWeakAndStrongness()
+        updateCombinedHP()
     }
 
     fun removePokemon(pokemon: Pokemon)
     {
         pokemons.remove(pokemon)
         updateWeakAndStrongness()
+        updateCombinedHP()
     }
 
     fun getPokemons(): List<Pokemon>
@@ -27,7 +30,7 @@ data class Team (
     }
 
     private fun updateWeakAndStrongness() = runBlocking {
-        var map : HashMap<String,Int> = HashMap()
+        val map : HashMap<String,Int> = HashMap()
         strongAgainst.clear()
         weakAgainst.clear()
 
@@ -111,4 +114,13 @@ data class Team (
         println(strongAgainst)
     }
 
+    private fun updateCombinedHP()
+    {
+        combinedHP = 0
+        for (pokemon in pokemons)
+        {
+            combinedHP += pokemon.stats[0].base_stat
+        }
+
+    }
 }

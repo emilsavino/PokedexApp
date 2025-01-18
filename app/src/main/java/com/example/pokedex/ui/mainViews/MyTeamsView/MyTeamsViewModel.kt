@@ -82,7 +82,7 @@ class MyTeamsViewModel : ViewModel() {
         }
         teamToEdit = teamName
         isShowingAddPokemon = true
-        addToTeamViewModel = AddToTeamViewModel(teamName, {isShowingAddPokemon = false})
+        addToTeamViewModel = AddToTeamViewModel(teamName) { isShowingAddPokemon = false }
     }
 
 }

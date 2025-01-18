@@ -1,13 +1,20 @@
 package com.example.pokedex.mainViews.MyTeamsView
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -25,6 +32,7 @@ import com.example.pokedex.dataClasses.Team
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -32,7 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.dataClasses.PokemonTypeResources
+import com.example.pokedex.mainViews.PokemonDetailView.typeResources
 import com.example.pokedex.mainViews.SearchView.SearchView
+import com.example.pokedex.ui.navigation.Screen
 import com.example.pokedex.ui.shared.AddToTeamGridItem
 import com.example.pokedex.ui.shared.EmptyGridItem
 import com.example.pokedex.ui.shared.NoInternetAlert
@@ -117,7 +127,9 @@ private fun MakeTeamsGrid(
     for (team in teams) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -142,11 +154,12 @@ private fun MakeTeamsGrid(
 
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(start = 16.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
         ) {
             val totalGridItems = 6
-            val pokemonChunks = team.pokemons.chunked(3)
-            val displayedPokemonCount = team.pokemons.size
+            val pokemonChunks = team.getPokemons().chunked(3)
+            val displayedPokemonCount = team.getPokemons().size
 
             for ((index, chunk) in pokemonChunks.withIndex()) {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -176,7 +189,7 @@ private fun MakeTeamsGrid(
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         val remainingSlots = 3
                         for (slot in 1..remainingSlots) {
-                            if (team.pokemons.size == 3 && slot == 1) {
+                            if (team.getPokemons().size == 3 && slot == 1) {
                                 AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(team.name) })
                             } else {
                                 EmptyGridItem(navController)
@@ -185,9 +198,41 @@ private fun MakeTeamsGrid(
                     }
                 }
             }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                StrongAndWeakAgainst(team.strongAgainst, "Strong Against", navController)
+                StrongAndWeakAgainst(team.weakAgainst, "Weak Against", navController)
+            }
         }
 
         teamNumber++
+    }
+}
+
+@Composable
+private fun StrongAndWeakAgainst(typeList: List<String>, text: String, navController: NavController) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally)  {
+        Text(
+            text = text,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
+        )
+
+        Row {
+            typeList.forEach { type ->
+                val typeImage = typeResources.getTypeImage(type)
+                Image(
+                    painter = typeImage,
+                    contentDescription = "${type} type image",
+                    modifier = Modifier
+                        .clickable { navController.navigate(Screen.Search.createRoute(type)) }
+                        .size(45.dp)
+                        .padding(4.dp)
+                )
+            }
+        }
     }
 }
 

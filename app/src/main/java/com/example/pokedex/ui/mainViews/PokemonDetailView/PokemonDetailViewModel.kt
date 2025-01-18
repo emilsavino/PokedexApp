@@ -107,7 +107,9 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
 
     fun onCreateTeamClicked(pokemon: Pokemon) = viewModelScope.launch {
         if (newTeamName.isNotBlank()) {
-            val teamNameIsTaken = !teamsRepository.addTeam(Team(name = newTeamName, pokemons = listOf(pokemon)))
+            val team = Team(newTeamName)
+            team.addPokemon(pokemon)
+            val teamNameIsTaken = !teamsRepository.addTeam(team)
             if (teamNameIsTaken) {
                 errorMessage = "This name is already in use"
                 return@launch

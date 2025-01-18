@@ -107,7 +107,9 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
 
     fun onCreateTeamClicked(pokemon: Pokemon) = viewModelScope.launch {
         if (newTeamName.isNotBlank()) {
-            val teamNameIsTaken = !teamsRepository.addTeam(Team(name = newTeamName, pokemons = listOf(pokemon)))
+            val team = Team(newTeamName)
+            team.addPokemon(pokemon)
+            val teamNameIsTaken = !teamsRepository.addTeam(team)
             if (teamNameIsTaken) {
                 errorMessage = "This name is already in use"
                 return@launch
@@ -165,6 +167,14 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
             PokemonDetailUIState.Data(pokemon.getOfflinePokemonAttributes())
         }
         recentlyViewedRepository.addToRecents(pokemon)
+    }
+
+    fun getEmptyEvoText(): String {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            return "You need internet to see evolutions..."
+        }
+
+        return "This Pokémon evolves in mysterious ways, we have yet to discover its Evolution Chain!"
     }
 }
 

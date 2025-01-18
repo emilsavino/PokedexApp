@@ -2,6 +2,7 @@ package com.example.pokedex.mainViews.pokemonTriviaView
 
 import PokemonTriviaRepository
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -23,24 +24,26 @@ class PokemonTriviaViewModel : ViewModel() {
     private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Empty)
     val triviaState: StateFlow<PokemonTriviaUIState> = _triviaState.asStateFlow()
 
-    private val _streakCount = MutableStateFlow(0)
-    val streakCount: StateFlow<Int> = _streakCount.asStateFlow()
-
+    var streakCount by mutableIntStateOf(0)
     var hasAnswered by mutableStateOf(false)
 
     init {
         viewModelScope.launch {
             repository.triviaFlow.collect { question ->
-                _triviaState.value = if (question != null) {
-                    PokemonTriviaUIState.Question(question)
-                } else {
-                    PokemonTriviaUIState.Empty
+                _triviaState.update {
+                    if (question == null) {
+                        PokemonTriviaUIState.Empty
+                    } else {
+                        PokemonTriviaUIState.Question(question)
+                    }
                 }
             }
         }
+        loadRandomQuestion()
     }
 
     fun loadRandomQuestion() = viewModelScope.launch {
+        _triviaState.update { PokemonTriviaUIState.Loading }
         repository.loadRandomUnansweredQuestion()
         hasAnswered = false
     }
@@ -51,9 +54,9 @@ class PokemonTriviaViewModel : ViewModel() {
             hasAnswered = true
 
             if (option.isCorrect) {
-                _streakCount.update { it + 1 }
+                streakCount++
             } else {
-                _streakCount.update { 0 }
+                streakCount = 0
             }
             viewModelScope.launch {
                 repository.markQuestionAsAnswered(currentState.trivia)
@@ -63,7 +66,7 @@ class PokemonTriviaViewModel : ViewModel() {
 
     fun resetTrivia() = viewModelScope.launch {
         repository.resetQuestions()
-        _streakCount.update { 0 }
+        streakCount = 0
         hasAnswered = false
     }
 

@@ -36,12 +36,12 @@ fun TabBar(navController: NavController) {
                 selected = index == viewModel.selectedTabIndex,
                 onClick = {
                     viewModel.selectedTabIndex = index
-                        navController.navigate(tab.route)
+                    navController.navigate(tab.route)
                 },
                 icon = {
                     if (tab.title == "Home") {
                         CreateHomeButton(tab)
-                    } else if (tab.title == "Profile" && viewModel.isAuthenticated) {
+                    } else if (tab.title == "Profile" && viewModel.isAuthenticated && viewModel.profilePicture != "") {
                         CreateProfileButton(tab, viewModel)
                     } else {
                         CreateOtherButtons(tab)

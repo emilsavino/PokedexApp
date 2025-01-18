@@ -1,12 +1,16 @@
 package com.example.pokedex.mainViews.MyTeamsView
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -32,6 +36,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.dataClasses.PokemonTypeResources
+import com.example.pokedex.dataClasses.formatPokemonName
+import com.example.pokedex.mainViews.PokemonDetailView.typeResources
+import com.example.pokedex.mainViews.SearchView.SearchView
+import com.example.pokedex.ui.navigation.Screen
 import com.example.pokedex.ui.shared.AddToTeamGridItem
 import com.example.pokedex.ui.shared.EmptyGridItem
 import com.example.pokedex.ui.shared.NoInternetAlert
@@ -40,29 +48,39 @@ import com.example.pokedex.ui.shared.ProgressIndicator
 @Composable
 fun MyTeamsView(navController: NavController) {
     val viewModel = viewModel<MyTeamsViewModel>()
-    Column(
-        modifier = Modifier
-            .background(PokemonTypeResources().appGradient())
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        MakeHeader()
 
-        MakeContent(navController, viewModel)
+    if (viewModel.isShowingAddPokemon) {
+        SearchView(
+            navController = navController,
+            filterOption = "",
+            viewModel = viewModel.addToTeamViewModel!!,
+            dismiss = { viewModel.isShowingAddPokemon = false }
+        )
+    } else {
+        Column(
+            modifier = Modifier
+                .background(PokemonTypeResources().appGradient())
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            MakeHeader()
 
-        Spacer(modifier = Modifier.padding(10.dp))
+            MakeContent(navController, viewModel)
 
-        if (viewModel.isShowingDialog) {
-            DeleteTeamConfirmationDialog(viewModel.teamToEdit, viewModel)
-        }
+            Spacer(modifier = Modifier.padding(10.dp))
 
-        if (viewModel.isShowingDeletePokemonDialog) {
-            DeletePokemonConfirmationDialog(viewModel)
-        }
+            if (viewModel.isShowingDialog) {
+                DeleteTeamConfirmationDialog(viewModel.teamToEdit, viewModel)
+            }
 
-        if (viewModel.showNoInternetAlert) {
-            NoInternetAlert("add to a team", { viewModel.showNoInternetAlert = false })
+            if (viewModel.isShowingDeletePokemonDialog) {
+                DeletePokemonConfirmationDialog(viewModel)
+            }
+
+            if (viewModel.showNoInternetAlert) {
+                NoInternetAlert("add to a team", { viewModel.showNoInternetAlert = false })
+            }
         }
     }
 }
@@ -73,7 +91,7 @@ private fun MakeHeader() {
         text = "Teams",
         fontSize = 40.sp,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier.padding(top = 8.dp),
     )
 
 }
@@ -107,7 +125,10 @@ private fun MakeTeamsGrid(
     for (team in teams) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .padding(top = 10.dp)
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -123,7 +144,6 @@ private fun MakeTeamsGrid(
             )
 
             IconButton(
-                modifier = Modifier.padding(start = 8.dp),
                 onClick = { viewModel.onDeleteTeamClicked(team.name) }
             ) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
@@ -132,11 +152,17 @@ private fun MakeTeamsGrid(
 
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(start = 16.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            val totalGridItems = 6
-            val pokemonChunks = team.pokemons.chunked(3)
-            val displayedPokemonCount = team.pokemons.size
+            val pokemonChunks = team.getPokemons().chunked(3)
+            val displayedPokemonCount = team.getPokemons().size
+
+            Text(
+                text = "Total HP: ${team.combinedHP}",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
 
             for ((index, chunk) in pokemonChunks.withIndex()) {
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -151,7 +177,7 @@ private fun MakeTeamsGrid(
                         val remainingSlots = 3 - chunk.size
                         repeat(remainingSlots) {
                             if (displayedPokemonCount + it == displayedPokemonCount) {
-                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(navController, team.name) })
+                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(team.name) })
                             } else {
                                 EmptyGridItem(navController)
                             }
@@ -166,8 +192,8 @@ private fun MakeTeamsGrid(
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         val remainingSlots = 3
                         for (slot in 1..remainingSlots) {
-                            if (team.pokemons.size == 3 && slot == 1) {
-                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(navController, team.name) })
+                            if (team.getPokemons().size == 3 && slot == 1) {
+                                AddToTeamGridItem( onClick = { viewModel.onAddPokemonClicked(team.name) })
                             } else {
                                 EmptyGridItem(navController)
                             }
@@ -175,9 +201,41 @@ private fun MakeTeamsGrid(
                     }
                 }
             }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                StrongAndWeakAgainst(team.strongAgainst, "Strong Against", navController)
+                StrongAndWeakAgainst(team.weakAgainst, "Weak Against", navController)
+            }
         }
 
         teamNumber++
+    }
+}
+
+@Composable
+private fun StrongAndWeakAgainst(typeList: List<String>, text: String, navController: NavController) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally)  {
+        Text(
+            text = text,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
+        )
+
+        Row {
+            typeList.forEach { type ->
+                val typeImage = typeResources.getTypeImage(type)
+                Image(
+                    painter = typeImage,
+                    contentDescription = "${type} type image",
+                    modifier = Modifier
+                        .clickable { navController.navigate(Screen.Search.createRoute(type)) }
+                        .size(45.dp)
+                        .padding(4.dp)
+                )
+            }
+        }
     }
 }
 
@@ -207,7 +265,7 @@ private fun DeleteTeamConfirmationDialog(teamName: String, viewModel: MyTeamsVie
 private fun DeletePokemonConfirmationDialog(viewModel: MyTeamsViewModel) {
     AlertDialog(
         onDismissRequest = { viewModel.isShowingDeletePokemonDialog = false },
-        title = { Text(text = "Are you sure you want to remove ${viewModel.pokemonToDelete} from ${viewModel.teamToEdit}? ") },
+        title = { Text(text = "Are you sure you want to remove ${viewModel.pokemonToDelete.formatPokemonName()} from ${viewModel.teamToEdit}? ") },
         text = {
             Text(text = "This action cannot be undone.")
         },

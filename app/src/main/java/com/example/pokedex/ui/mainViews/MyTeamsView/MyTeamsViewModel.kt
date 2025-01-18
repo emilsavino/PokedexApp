@@ -6,10 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.pokedex.dependencyContainer.DependencyContainer
-import com.example.pokedex.ui.navigation.Screen
 import com.example.pokedex.dataClasses.Team
+import com.example.pokedex.ui.mainViews.addToTeamView.AddToTeamViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +24,8 @@ class MyTeamsViewModel : ViewModel() {
     var isShowingDeletePokemonDialog by mutableStateOf(false)
     var teamToEdit by mutableStateOf("")
     var pokemonToDelete by mutableStateOf("")
+    var isShowingAddPokemon by mutableStateOf(false)
+    var addToTeamViewModel: AddToTeamViewModel? = null
 
     private val _teamsState = MutableStateFlow<TeamsUIState>(TeamsUIState.Empty)
     val teamsState: StateFlow<TeamsUIState> = _teamsState.asStateFlow()
@@ -74,12 +75,14 @@ class MyTeamsViewModel : ViewModel() {
         isShowingDeletePokemonDialog = false
     }
 
-    fun onAddPokemonClicked(navController: NavController ,name: String) {
+    fun onAddPokemonClicked(teamName: String) {
         if (connectivityRepository.isConnected.asLiveData().value == false) {
             showNoInternetAlert = true
             return
         }
-        navController.navigate(Screen.AddToTeam.createRoute(name))
+        teamToEdit = teamName
+        isShowingAddPokemon = true
+        addToTeamViewModel = AddToTeamViewModel(teamName) { isShowingAddPokemon = false }
     }
 
 }

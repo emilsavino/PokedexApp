@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,7 +49,6 @@ import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -60,24 +60,29 @@ import com.example.pokedex.dataClasses.formatPokemonName
 import com.example.pokedex.dataClasses.PokemonAttributes
 import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.dataClasses.Team
+import com.example.pokedex.dataClasses.Type
 import com.example.pokedex.dataClasses.getSprite
+import com.example.pokedex.ui.shared.horizontalScrollBar
 
 val typeResources = PokemonTypeResources()
 
 @Composable
 fun PokemonDetailView(
-        pokemonName: String,
-        navController: NavController
+    pokemonName: String,
+    navController: NavController
 ) {
-    val viewModel = viewModel<PokemonDetailViewModel>(key = pokemonName) { PokemonDetailViewModel(pokemonName) }
+    val viewModel =
+        viewModel<PokemonDetailViewModel>(key = pokemonName) { PokemonDetailViewModel(pokemonName) }
 
     when (val pokemon = viewModel.pokemon.collectAsState().value) {
         is PokemonDetailUIState.Empty -> {
             EmptyState()
         }
+
         is PokemonDetailUIState.Loading -> {
             LoadingState()
         }
+
         is PokemonDetailUIState.Data -> {
             PokemonDetailContent(navController, pokemon.pokemon, viewModel)
         }
@@ -133,7 +138,7 @@ private fun PokemonDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CreateTypeWeaknessBox(pokemon,navController)
+        CreateTypeWeaknessBox(pokemon, navController)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -231,8 +236,8 @@ private fun CreatePokemonBox(pokemon: PokemonAttributes) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            CreateStatsText("hp",pokemon)
-            CreateStatsText("speed", pokemon)
+            CreateStatsText("hp", pokemon, pokemon.types.types)
+            CreateStatsText("speed", pokemon, pokemon.types.types)
         }
 
         Column(
@@ -242,30 +247,31 @@ private fun CreatePokemonBox(pokemon: PokemonAttributes) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            CreateStatsText("attack", pokemon)
-            CreateStatsText("defense", pokemon)
+            CreateStatsText("attack", pokemon, pokemon.types.types)
+            CreateStatsText("defense", pokemon, pokemon.types.types)
         }
     }
 }
 
 @Composable
-private fun CreateStatsText(nameOfStat: String, pokemon: PokemonAttributes) {
+fun CreateStatsText(nameOfStat: String, pokemon: PokemonAttributes, types: List<Type>) {
+    val textColor = if (types.firstOrNull()?.name == "dark") {
+        Color.LightGray
+    } else {
+        Color.Black
+    }
+
     Text(
         text = buildAnnotatedString {
             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
                 append("${nameOfStat.uppercase()}: ")
             }
             withStyle(style = SpanStyle(fontStyle = FontStyle.Italic, fontSize = 16.sp)) {
-                append("${pokemon.pokemon.stats.firstOrNull { it.stat.name == nameOfStat.lowercase() }?.base_stat}")
+                append("${pokemon.pokemon.stats.firstOrNull { it.stat.name == nameOfStat.lowercase() }?.base_stat ?: "N/A"}")
             }
         },
         style = TextStyle(
-            color = Color.Black,
-            shadow = androidx.compose.ui.graphics.Shadow(
-                color = Color.White,
-                offset = Offset(1f, 1f),
-                blurRadius = 4f
-            ),
+            color = textColor
         ),
         modifier = Modifier
             .padding(2.dp)
@@ -356,6 +362,7 @@ private fun CreateTypeBox(pokemon: PokemonAttributes, navController: NavControll
 
 @Composable
 private fun CreateWeaknessBox(pokemon: PokemonAttributes, navController: NavController) {
+    val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
             .padding(start = 8.dp)
@@ -373,7 +380,14 @@ private fun CreateWeaknessBox(pokemon: PokemonAttributes, navController: NavCont
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
+                    .horizontalScrollBar(
+                        scrollState = scrollState,
+                        height = 2.dp,
+                        showScrollBarTrack = false,
+                        scrollBarColor = Color.Gray,
+                    )
+                    .horizontalScroll(scrollState)
+                    .defaultMinSize(minWidth = 149.dp)
             ) {
                 pokemon.weaknesses.double_damage_from.forEach { weakness ->
                     val weaknessImage = typeResources.getTypeImage(weakness.name)
@@ -413,13 +427,13 @@ private fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 pokemon.abilities.chunked(2).forEachIndexed { chunkIndex, abilityChunk ->
-                    Row (
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = if (chunkIndex == pokemon.abilities.lastIndex / 2) Arrangement.Center else Arrangement.Start
-                    ){
-                        abilityChunk.forEachIndexed {index, ability ->
+                    ) {
+                        abilityChunk.forEachIndexed { index, ability ->
                             Text(
                                 text = "Ability ${chunkIndex * 2 + index + 1}: ",
                                 fontWeight = FontWeight.Bold,
@@ -452,6 +466,7 @@ private fun CreateEvoBox(
     pokemon: PokemonAttributes,
     viewModel: PokemonDetailViewModel
 ) {
+    val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -468,7 +483,7 @@ private fun CreateEvoBox(
 
             if (pokemon.pokemons.isEmpty()) {
                 Text(
-                    text = "This Pokémon evolves in mysterious ways, we have yet to discover its Evolution Chain!",
+                    text = viewModel.getEmptyEvoText(),
                     color = Color.Black,
                     fontStyle = FontStyle.Italic
                 )
@@ -478,9 +493,15 @@ private fun CreateEvoBox(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
+                        .horizontalScrollBar(
+                            scrollState = scrollState,
+                            height = 2.dp,
+                            showScrollBarTrack = false,
+                            scrollBarColor = Color.Gray,
+                        )
+                        .horizontalScroll(scrollState)
                 ) {
-                    pokemon.pokemons.forEachIndexed {index, localPokemon ->
+                    pokemon.pokemons.forEachIndexed { index, localPokemon ->
                         Box(
                             modifier = Modifier
                                 .size(100.dp)

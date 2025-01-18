@@ -17,7 +17,7 @@ data class Pokemon(
                 Language("en")
             ),
             types = Types(this.types.map { it.type }),
-            weaknesses = DamageRelationsResult(emptyList(), emptyList()),
+            weaknesses = DamageRelationsResult(emptyList(), emptyList(), emptyList(), emptyList()),
             abilities = this.abilities,
             pokemons = emptyList()
         )

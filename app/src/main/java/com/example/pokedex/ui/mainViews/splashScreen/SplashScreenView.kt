@@ -15,28 +15,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pokedex.R
+import com.example.pokedex.ui.shared.ProgressIndicator
 import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun MakeSplashScreen(navController: NavController) {
-    val viewModel = viewModel<SplashScreenViewModel>()
+    val viewModel : SplashScreenViewModel = SplashScreenViewModel(navController)
 
     LaunchedEffect(Dispatchers.IO) {
         viewModel.onAppear(navController)
     }
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.loading_screen),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-        CircularProgressIndicator(
-            color = Color.Blue,
-            strokeWidth = 4.dp
-        )
-    }
+
+    ProgressIndicator()
 }

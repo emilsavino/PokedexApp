@@ -1,11 +1,12 @@
 package com.example.pokedex.mainViews.pokemonTriviaView
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,17 +24,17 @@ import com.example.pokedex.ui.shared.BackButton
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.dataClasses.PokemonTriviaModel
 import com.example.pokedex.dataClasses.PokemonTypeResources
+import com.example.pokedex.ui.shared.ProgressIndicator
 
 @Composable
 fun PokemonTriviaView(navController: NavController) {
     val viewModel: PokemonTriviaViewModel = viewModel()
-    val triviaState by viewModel.triviaState.collectAsState()
-    val streakCount by viewModel.streakCount.collectAsState()
+    val triviaState = viewModel.triviaState.collectAsState().value
 
     Box(
         modifier = Modifier
@@ -54,7 +54,7 @@ fun PokemonTriviaView(navController: NavController) {
             )
 
             Text(
-                text = "Correct Streak: $streakCount",
+                text = "Correct Streak: ${viewModel.streakCount}",
                 modifier = Modifier.padding(vertical = 8.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
@@ -75,36 +75,11 @@ fun PokemonTriviaView(navController: NavController) {
                 }
 
                 is PokemonTriviaUIState.Question -> {
-                    val trivia = (triviaState as PokemonTriviaUIState.Question).trivia
-                    Text(
-                        text = trivia.question,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .align(Alignment.Start),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
-                        textAlign = TextAlign.Start,
-                    )
-
-                    Spacer(modifier = Modifier.size(16.dp))
-
-                    AnswerButtons(viewModel, trivia)
-
-                    if (viewModel.hasAnswered) {
-                        Spacer(modifier = Modifier.size(16.dp))
-                        Button(
-                            onClick = { viewModel.loadRandomQuestion() },
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(top = 16.dp)
-                        ) {
-                            Text(text = "Next Question")
-                        }
-                    }
+                    MakeQuestion(viewModel, triviaState.trivia)
                 }
 
-                else -> {
-                    Text(text = "Loading...", fontSize = 18.sp)
+                is PokemonTriviaUIState.Loading -> {
+                    ProgressIndicator()
                 }
             }
         }
@@ -112,28 +87,59 @@ fun PokemonTriviaView(navController: NavController) {
 }
 
 @Composable
+private fun MakeQuestion(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = trivia.question,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            fontWeight = FontWeight.Bold,
+            fontSize = 22.sp,
+            textAlign = TextAlign.Center,
+        )
+    }
+
+    Spacer(modifier = Modifier.size(16.dp))
+
+    AnswerButtons(viewModel, trivia)
+
+    if (viewModel.hasAnswered) {
+        Button(
+            onClick = { viewModel.loadRandomQuestion() },
+            modifier = Modifier.padding(top = 10.dp)
+        ) {
+            Text(text = "Next Question")
+        }
+    }
+}
+
+@Composable
 private fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel) {
     trivia.options.forEach { option ->
-        Box(
+        Button (
+            onClick = { viewModel.handleAnswer(option) },
             modifier = Modifier
-                .size(300.dp, 80.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(viewModel.getOptionColor(option))
-                .clickable(enabled = !viewModel.hasAnswered) {
-                    viewModel.handleAnswer(option)
-                },
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .height(100.dp)
+                .padding(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = viewModel.getOptionColor(option),
+                disabledContainerColor = viewModel.getOptionColor(option)
+            ),
+            shape = RoundedCornerShape(16.dp),
+            enabled = !viewModel.hasAnswered
         ) {
             Text(
                 text = option.name,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 textAlign = TextAlign.Center
             )
         }
-
-        Spacer(modifier = Modifier.size(8.dp))
     }
 }

@@ -1,7 +1,7 @@
 import com.example.pokedex.dataClasses.Option
 import com.example.pokedex.dataClasses.PokemonTriviaModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 class PokemonTriviaRepository {
@@ -9,7 +9,7 @@ class PokemonTriviaRepository {
     private val answeredQuestions = mutableSetOf<PokemonTriviaModel>()
 
     private val mutableTriviaFlow = MutableSharedFlow<PokemonTriviaModel?>()
-    val triviaFlow: SharedFlow<PokemonTriviaModel?> = mutableTriviaFlow.asSharedFlow()
+    val triviaFlow: Flow<PokemonTriviaModel?> = mutableTriviaFlow.asSharedFlow()
 
     private val triviaQuestions = listOf(
         PokemonTriviaModel(
@@ -81,22 +81,19 @@ class PokemonTriviaRepository {
         val unansweredQuestions = triviaQuestions.filterNot { answeredQuestions.contains(it) }
 
         if (unansweredQuestions.isEmpty()) {
-            println("All questions have been answered.")
             mutableTriviaFlow.emit(null)
         } else {
             val question = unansweredQuestions.random()
-            println("Loaded question: ${question.question}")
             mutableTriviaFlow.emit(question)
         }
     }
 
-    suspend fun markQuestionAsAnswered(question: PokemonTriviaModel) {
+    fun markQuestionAsAnswered(question: PokemonTriviaModel) {
         answeredQuestions.add(question)
     }
 
     suspend fun resetQuestions() {
         answeredQuestions.clear()
-        println("Questions have been reset.")
         loadRandomUnansweredQuestion()
     }
 }

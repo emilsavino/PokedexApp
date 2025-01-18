@@ -1,5 +1,6 @@
 package com.example.pokedex.mainViews.SavedPokemonsView
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -39,6 +41,7 @@ import androidx.navigation.NavController
 import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.mainViews.SavedPokemonsView.SavedViewModel.SavedUIState
+import com.example.pokedex.mainViews.SearchView.SearchViewModel
 import com.example.pokedex.ui.shared.PokemonGridItem
 import com.example.pokedex.ui.shared.ProgressIndicator
 
@@ -126,16 +129,18 @@ private fun MakeFilterButton(
     selectedColor: Color,
     unselectedColor: Color
 ) {
+    val typeResources = PokemonTypeResources()
     var filterExpanded = remember { mutableStateOf(false) }
+    var maxVisibleItems = 5
     Button(
-        onClick = { filterExpanded.value = true },
+        onClick = { filterExpanded.value = true},
         colors = buttonColors(containerColor = Color.White),
         modifier = Modifier.shadow(2.dp, CircleShape)
     ) {
-        Row(
+        Row (
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
-        ) {
+        ){
             Icon(
                 imageVector = Icons.Filled.List,
                 contentDescription = "Filter",
@@ -149,25 +154,37 @@ private fun MakeFilterButton(
             )
         }
 
-        // Dropdown menu for filter options
         DropdownMenu(
             expanded = filterExpanded.value,
-            onDismissRequest = { filterExpanded.value = false }
+            onDismissRequest = { filterExpanded.value = false },
+            modifier = Modifier
+                .height((maxVisibleItems * 48).dp)
+                .background(Color.White)
         ) {
-            for (option in viewModel.getAllFilterOptions()) {
+            val allFilterOptions = viewModel.getAllFilterOptions()
+            for (option in allFilterOptions) {
                 DropdownMenuItem(
-                    text = { Text(option.capitalize(Locale.current), color = textColor) },
-                    modifier = Modifier.background(color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor),
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = typeResources.getTypeImage(option),
+                                contentDescription = "${option.capitalize()} type icon",
+                                modifier = Modifier.size(24.dp).padding(end = 8.dp)
+                            )
+                            Text(option.capitalize(), color = textColor)
+                        }
+                    },
+                    modifier = Modifier.background(
+                        color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor
+                    ),
                     onClick = {
                         viewModel.selectFilterOption(option)
-                        filterExpanded.value = false
                     }
                 )
             }
         }
     }
 }
-
 @Composable
 private fun MakeSortButton(
     viewModel: SavedViewModel,
@@ -176,6 +193,7 @@ private fun MakeSortButton(
     unselectedColor: Color
 ) {
     var sortExpanded = remember { mutableStateOf(false) }
+    val maxVisibleItems = 3
     Button(
         onClick = { sortExpanded.value = true },
         colors = buttonColors(containerColor = Color.White),
@@ -200,21 +218,28 @@ private fun MakeSortButton(
 
         DropdownMenu(
             expanded = sortExpanded.value,
-            onDismissRequest = { sortExpanded.value = false }
+            onDismissRequest = { sortExpanded.value = false },
+            modifier = Modifier
+                .height((maxVisibleItems * 48).dp)
+                .background(Color.White)
         ) {
-            for (option in viewModel.getAllSortOptions()) {
+            val allSortOptions = viewModel.getAllSortOptions()
+            for (option in allSortOptions) {
                 DropdownMenuItem(
                     text = { Text(option, color = textColor) },
-                    modifier = Modifier.background(color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor),
+                    modifier = Modifier.background(
+                        color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
+                    ),
                     onClick = {
-                        viewModel.selectSortOption(option)
                         sortExpanded.value = false
+                        viewModel.selectSortOption(option)
                     }
                 )
             }
         }
     }
 }
+
 
 @Composable
 private fun SavedList(navController: NavController, savedPokemons: List<Pokemon>) {

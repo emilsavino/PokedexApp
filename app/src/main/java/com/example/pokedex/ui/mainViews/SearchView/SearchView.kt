@@ -191,6 +191,7 @@ private fun MakeFilterButton(
         contentAlignment = Alignment.TopStart,
         modifier = Modifier.wrapContentSize()
     ) {
+
         Button(
             onClick = { filterExpanded = !filterExpanded },
             colors = buttonColors(containerColor = Color.White),
@@ -216,7 +217,7 @@ private fun MakeFilterButton(
         if (filterExpanded) {
             Box(
                 modifier = Modifier
-                    .offset(y = 8.dp)
+                    .offset(y = 56.dp)
                     .width(IntrinsicSize.Min)
                     .background(Color.White, shape = RoundedCornerShape(8.dp))
                     .shadow(4.dp, shape = RoundedCornerShape(8.dp))

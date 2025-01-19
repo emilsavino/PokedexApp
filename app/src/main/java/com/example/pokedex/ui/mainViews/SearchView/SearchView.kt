@@ -184,49 +184,47 @@ private fun MakeFilterButton(
 ) {
     val typeResources = PokemonTypeResources()
     var filterExpanded by remember { mutableStateOf(false) }
-    val scrollState = rememberScrollState() // Scroll state for vertical scrolling
+    val scrollState = rememberScrollState()
     val maxVisibleItems = 5
 
-    Button(
-        onClick = { filterExpanded = true },
-        colors = buttonColors(containerColor = Color.White),
-        modifier = Modifier.shadow(2.dp, CircleShape)
+    Box(
+        contentAlignment = Alignment.TopStart,
+        modifier = Modifier.wrapContentSize()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+        // The Filter Button
+        Button(
+            onClick = { filterExpanded = !filterExpanded },
+            colors = buttonColors(containerColor = Color.White),
+            modifier = Modifier.shadow(2.dp, CircleShape)
         ) {
-            Icon(
-                imageVector = Icons.Filled.List,
-                contentDescription = "Filter",
-                tint = textColor
-            )
-            Spacer(modifier = Modifier.padding(2.dp))
-            Text(
-                text = "Filter",
-                color = Color.Black
-            )
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.List,
+                    contentDescription = "Filter",
+                    tint = textColor
+                )
+                Spacer(modifier = Modifier.padding(2.dp))
+                Text(
+                    text = "Filter",
+                    color = Color.Black
+                )
+            }
         }
-    }
 
-    if (filterExpanded) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x80000000))
-                .clickable { filterExpanded = false }
-        ) {
+        if (filterExpanded) {
             Box(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 100.dp)
-                    .width(200.dp)
+                    .offset(y = 8.dp)
                     .background(Color.White, shape = RoundedCornerShape(8.dp))
                     .shadow(4.dp, shape = RoundedCornerShape(8.dp))
+                    .wrapContentSize()
             ) {
                 Column(
                     modifier = Modifier
-                        .height((maxVisibleItems * 48).dp)
+                        .heightIn(max = (maxVisibleItems * 48).dp)
                         .verticalScrollbar(
                             scrollState = scrollState,
                             showScrollBarTrack = false,

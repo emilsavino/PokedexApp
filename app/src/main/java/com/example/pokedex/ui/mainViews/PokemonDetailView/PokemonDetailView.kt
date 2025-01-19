@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,6 +46,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.TopStart
@@ -54,6 +56,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import com.example.pokedex.ui.navigation.Screen
 import com.example.pokedex.ui.shared.BackButton
@@ -415,50 +418,68 @@ private fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
             .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = CenterHorizontally
+        ) {
+
             Text(
                 text = "Abilities",
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-
-            )
-            Spacer(modifier = Modifier.padding(2.dp))
-            Column(
+                fontSize = 18.sp,
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                pokemon.abilities.chunked(2).forEachIndexed { chunkIndex, abilityChunk ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = if (chunkIndex == pokemon.abilities.lastIndex / 2) Arrangement.Center else Arrangement.Start
-                    ) {
-                        abilityChunk.forEachIndexed { index, ability ->
-                            Text(
-                                text = "Ability ${chunkIndex * 2 + index + 1}: ",
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Italic,
-                                fontSize = 16.sp
-                            )
+                    .align(Alignment.Start)
+            )
 
-                            Text(
-                                text = ability.ability.name.formatPokemonName(),
-                                fontStyle = FontStyle.Italic,
-                                fontSize = 16.sp
-                            )
-
-                            if (index < abilityChunk.size - 1) {
-                                Text(
-                                    text = "   |   ",
-                                    fontSize = 16.sp
+            val abilities = pokemon.abilities
+            if (abilities.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = when (abilities.size) {
+                        1 -> Arrangement.Center
+                        2 -> Arrangement.SpaceEvenly
+                        else -> Arrangement.SpaceAround
+                    },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    abilities.forEachIndexed { index, ability ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            if (ability.is_hidden) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = "Hidden Ability",
+                                    modifier = Modifier
+                                        .size(14.dp)
+                                        .padding(end = 4.dp)
                                 )
                             }
+                            Text(
+                                text = ability.ability.name.formatPokemonName(),
+                                fontSize = 16.sp
+                            )
+                        }
+
+                        if (index < abilities.size - 1) {
+                            Text(
+                                text = "|",
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
                         }
                     }
                 }
             }
+            Text(
+                text = "★ is a hidden ability",
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(top = 8.dp)
+            )
         }
     }
 }

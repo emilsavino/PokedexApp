@@ -45,7 +45,8 @@ data class Abilities(
 )
 
 data class Ability(
-    val ability: AbilityDetails
+    val ability: AbilityDetails,
+    val is_hidden: Boolean
 )
 
 data class AbilityDetails(

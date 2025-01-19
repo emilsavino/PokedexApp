@@ -47,6 +47,7 @@ import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.ui.shared.ProgressIndicator
 import com.example.pokedex.dataClasses.getSprite
+import com.example.pokedex.ui.shared.verticalScrollbar
 
 @Composable
 fun SearchView(
@@ -212,6 +213,7 @@ private fun MakeFilterButton(
     val typeResources = PokemonTypeResources()
     var filterExpanded = remember { mutableStateOf(false) }
     var maxVisibleItems = 5
+    val scrollState = rememberScrollState()
     Button(
         onClick = { filterExpanded.value = true},
         colors = buttonColors(containerColor = Color.White),
@@ -240,6 +242,12 @@ private fun MakeFilterButton(
             modifier = Modifier
                 .height((maxVisibleItems * 48).dp)
                 .background(Color.White)
+                .verticalScrollbar(
+                    scrollState = scrollState,
+                    showScrollBarTrack = false,
+                    scrollBarColor = Color.Gray
+                ),
+            scrollState = scrollState
         ) {
             val allFilterOptions = viewModel.getAllFilterOptions()
             for (option in allFilterOptions) {
@@ -274,7 +282,8 @@ private fun MakeSortButton(
     unselectedColor: Color
 ) {
     var sortExpanded = remember { mutableStateOf(false) }
-    val maxVisibleItems = 3
+    val maxVisibleItems = 5
+    val scrollState = rememberScrollState()
     Button(
         onClick = { sortExpanded.value = true },
         colors = buttonColors(containerColor = Color.White),
@@ -303,6 +312,12 @@ private fun MakeSortButton(
             modifier = Modifier
                 .height((maxVisibleItems * 48).dp)
                 .background(Color.White)
+                .verticalScrollbar(
+                    scrollState = scrollState,
+                    showScrollBarTrack = false,
+                    scrollBarColor = Color.Gray
+                ),
+            scrollState = scrollState
         ) {
             val allSortOptions = viewModel.getAllSortOptions()
             for (option in allSortOptions) {

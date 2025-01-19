@@ -413,9 +413,9 @@ private fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
             .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
     ) {
-        Column (
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = "Abilities",
@@ -423,23 +423,37 @@ private fun CreateAbilitiesBox(pokemon: PokemonAttributes) {
                 fontSize = 18.sp
             )
 
-            pokemon.abilities.forEachIndexed { index, ability ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Ability ${index + 1}: ",
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        fontSize = 16.sp
-                    )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.Absolute.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                pokemon.abilities.forEachIndexed { index, ability ->
+                    Column (
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = ability.ability.name.formatPokemonName(),
+                            fontSize = 16.sp
+                        )
 
-                    Text(
-                        text = ability.ability.name.formatPokemonName(),
-                        fontStyle = FontStyle.Italic,
-                        fontSize = 16.sp
-                    )
+                        if (ability.is_hidden) {
+                            Text(
+                                text = "Hidden",
+                                fontSize = 8.sp,
+                                fontStyle = FontStyle.Italic
+                            )
+                        }
+                    }
+                    if (index < pokemon.abilities.size - 1) {
+                        Text(
+                            text = "|",
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(horizontal = 2.dp)
+                        )
+                    }
                 }
             }
         }

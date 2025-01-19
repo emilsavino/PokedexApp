@@ -268,49 +268,71 @@ private fun MakeSortButton(
     selectedColor: Color,
     unselectedColor: Color
 ) {
-    var sortExpanded = remember { mutableStateOf(false) }
+    var sortExpanded by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
     val maxVisibleItems = 3
-    Button(
-        onClick = { sortExpanded.value = true },
-        colors = buttonColors(containerColor = Color.White),
-        modifier = Modifier.shadow(2.dp, CircleShape)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.MoreVert,
-                contentDescription = "Sort",
-                tint = textColor
-            )
-            Spacer(modifier = Modifier.padding(2.dp))
 
-            Text(
-                text = "Sort",
-                color = Color.Black
-            )
+    Box(
+        contentAlignment = Alignment.TopStart,
+        modifier = Modifier.wrapContentSize()
+    ) {
+
+        Button(
+            onClick = { sortExpanded = !sortExpanded },
+            colors = buttonColors(containerColor = Color.White),
+            modifier = Modifier.shadow(2.dp, CircleShape)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "Sort",
+                    tint = textColor
+                )
+                Spacer(modifier = Modifier.padding(2.dp))
+                Text(
+                    text = "Sort",
+                    color = Color.Black
+                )
+            }
         }
 
-        DropdownMenu(
-            expanded = sortExpanded.value,
-            onDismissRequest = { sortExpanded.value = false },
-            modifier = Modifier
-                .height((maxVisibleItems * 48).dp)
-                .background(Color.White)
-        ) {
-            val allSortOptions = viewModel.getAllSortOptions()
-            for (option in allSortOptions) {
-                DropdownMenuItem(
-                    text = { Text(option, color = textColor) },
-                    modifier = Modifier.background(
-                        color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
-                    ),
-                    onClick = {
-                        sortExpanded.value = false
-                        viewModel.selectSortOption(option)
+        if (sortExpanded) {
+            Box(
+                modifier = Modifier
+                    .offset(y = 56.dp)
+                    .width(IntrinsicSize.Min)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    .shadow(4.dp, shape = RoundedCornerShape(8.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .heightIn(max = (maxVisibleItems * 48).dp)
+                        .verticalScrollbar(
+                            scrollState = scrollState,
+                            showScrollBarTrack = false,
+                            scrollBarColor = Color.Gray
+                        )
+                        .verticalScroll(scrollState)
+                ) {
+                    val allSortOptions = viewModel.getAllSortOptions()
+                    for (option in allSortOptions) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(option, color = textColor)
+                            },
+                            modifier = Modifier.background(
+                                color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
+                            ),
+                            onClick = {
+                                viewModel.selectSortOption(option)
+                                sortExpanded = false
+                            }
+                        )
                     }
-                )
+                }
             }
         }
     }

@@ -52,6 +52,7 @@ import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.ui.shared.ProgressIndicator
 import com.example.pokedex.dataClasses.getSprite
+import com.example.pokedex.ui.shared.verticalScrollbar
 
 @Composable
 fun SearchView(
@@ -182,57 +183,81 @@ private fun MakeFilterButton(
     unselectedColor: Color
 ) {
     val typeResources = PokemonTypeResources()
-    var filterExpanded = remember { mutableStateOf(false) }
-    var maxVisibleItems = 5
+    var filterExpanded by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState() // Scroll state for vertical scrolling
+    val maxVisibleItems = 5
+
     Button(
-        onClick = { filterExpanded.value = true},
+        onClick = { filterExpanded = true },
         colors = buttonColors(containerColor = Color.White),
         modifier = Modifier.shadow(2.dp, CircleShape)
     ) {
-        Row (
+        Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Icon(
                 imageVector = Icons.Filled.List,
                 contentDescription = "Filter",
                 tint = textColor
             )
             Spacer(modifier = Modifier.padding(2.dp))
-
             Text(
                 text = "Filter",
                 color = Color.Black
             )
         }
+    }
 
-        DropdownMenu(
-            expanded = filterExpanded.value,
-            onDismissRequest = { filterExpanded.value = false },
+    if (filterExpanded) {
+        Box(
             modifier = Modifier
-                .height((maxVisibleItems * 48).dp)
-                .background(Color.White)
+                .fillMaxSize()
+                .background(Color(0x80000000))
+                .clickable { filterExpanded = false }
         ) {
-            val allFilterOptions = viewModel.getAllFilterOptions()
-            for (option in allFilterOptions) {
-                DropdownMenuItem(
-                    text = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = typeResources.getTypeImage(option),
-                                contentDescription = "${option.capitalize()} type icon",
-                                modifier = Modifier.size(24.dp).padding(end = 8.dp)
-                            )
-                            Text(option.capitalize(), color = textColor)
-                        }
-                    },
-                    modifier = Modifier.background(
-                        color = if (viewModel.selectedFilterOptionsList.value.contains(option)) selectedColor else unselectedColor
-                    ),
-                    onClick = {
-                        viewModel.selectFilterOption(option)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 100.dp)
+                    .width(200.dp)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    .shadow(4.dp, shape = RoundedCornerShape(8.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .height((maxVisibleItems * 48).dp)
+                        .verticalScrollbar(
+                            scrollState = scrollState,
+                            showScrollBarTrack = false,
+                            scrollBarColor = Color.Gray
+                        )
+                        .verticalScroll(scrollState)
+                ) {
+                    val allFilterOptions = viewModel.getAllFilterOptions()
+                    for (option in allFilterOptions) {
+                        DropdownMenuItem(
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        painter = typeResources.getTypeImage(option),
+                                        contentDescription = "${option.capitalize()} type icon",
+                                        modifier = Modifier.size(24.dp).padding(end = 8.dp)
+                                    )
+                                    Text(option.capitalize(), color = textColor)
+                                }
+                            },
+                            modifier = Modifier.background(
+                                color = if (viewModel.selectedFilterOptionsList.value.contains(option))
+                                    selectedColor else unselectedColor
+                            ),
+                            onClick = {
+                                viewModel.selectFilterOption(option)
+                                filterExpanded = false
+                            }
+                        )
                     }
-                )
+                }
             }
         }
     }

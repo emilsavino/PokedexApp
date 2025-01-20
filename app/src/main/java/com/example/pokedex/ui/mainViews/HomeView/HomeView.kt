@@ -315,18 +315,29 @@ private fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavContro
                 painter = rememberAsyncImagePainter(model = pokemon.getSprite()),
                 contentDescription = pokemon.name,
                 modifier = Modifier
-                    .fillMaxSize(1f)
+                    .fillMaxSize()
                     .aspectRatio(1f)
                     .weight(1f)
-                    .padding(4.dp),
+                    .clip(RoundedCornerShape(28.dp))
+                    .padding(8.dp),
                 contentScale = ContentScale.Fit
             )
-            Text(
-                text = pokemon.name.formatPokemonName(),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center
-            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray, RoundedCornerShape(Padding)),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                Text(
+                    text = pokemon.name.formatPokemonName(),
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1
+                )
+            }
         }
     }
 }

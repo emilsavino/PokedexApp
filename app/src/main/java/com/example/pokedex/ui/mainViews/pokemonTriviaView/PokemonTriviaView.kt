@@ -53,8 +53,18 @@ fun PokemonTriviaView(navController: NavController) {
                 modifier = Modifier.align(Alignment.Start)
             )
 
+
             Text(
                 text = "Correct Streak: ${viewModel.streakCount}",
+                modifier = Modifier.padding(vertical = 8.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.Black
+            )
+
+            Text(
+                text = "Best Streak: ${viewModel.bestStreak}",
                 modifier = Modifier.padding(vertical = 8.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,

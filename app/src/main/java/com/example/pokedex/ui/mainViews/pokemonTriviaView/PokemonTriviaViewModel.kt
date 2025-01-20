@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import androidx.lifecycle.ViewModel
 import com.example.pokedex.dataClasses.PokemonTriviaModel
 import androidx.lifecycle.viewModelScope
@@ -25,6 +26,7 @@ class PokemonTriviaViewModel : ViewModel() {
     val triviaState: StateFlow<PokemonTriviaUIState> = _triviaState.asStateFlow()
 
     var streakCount by mutableIntStateOf(0)
+    var bestStreak by mutableIntStateOf(0)
     var hasAnswered by mutableStateOf(false)
 
     init {
@@ -56,8 +58,12 @@ class PokemonTriviaViewModel : ViewModel() {
             if (option.isCorrect) {
                 streakCount++
             } else {
+                if (streakCount > bestStreak){
+                    bestStreak = streakCount
+                }
                 streakCount = 0
             }
+
             viewModelScope.launch {
                 repository.markQuestionAsAnswered(currentState.trivia)
             }
@@ -65,6 +71,9 @@ class PokemonTriviaViewModel : ViewModel() {
     }
 
     fun resetTrivia() = viewModelScope.launch {
+        if (streakCount > bestStreak){
+            bestStreak = streakCount
+        }
         repository.resetQuestions()
         streakCount = 0
         hasAnswered = false

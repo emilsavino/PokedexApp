@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.callbackFlow
 
 
 class EmailAuthManager {
-    private val auth = Firebase.auth
+    val auth = Firebase.auth
 
     fun createAccountWithEmail(email: String, password: String): Flow<AuthResponse> = callbackFlow {
         auth.createUserWithEmailAndPassword(email, password)

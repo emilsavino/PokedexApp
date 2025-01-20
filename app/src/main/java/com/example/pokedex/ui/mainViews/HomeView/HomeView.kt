@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -321,6 +322,22 @@ private fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavContro
                     .padding(8.dp),
                 contentScale = ContentScale.Fit
             )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray, RoundedCornerShape(Padding)),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                Text(
+                    text = pokemon.name.formatPokemonName(),
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1
+                )
+            }
         }
     }
 }

@@ -117,7 +117,7 @@ class FavouritesRepository(private val context: Context) {
         filterOptions: List<String>,
         sortOption: String,
     ) {
-        var mutableFilteredList = mutableListOf<Pokemon>()
+        var mutableFilteredList: MutableList<Pokemon>
 
         val allSavedPokemons = favouritePokemons
 
@@ -131,11 +131,22 @@ class FavouritesRepository(private val context: Context) {
             }
         }.toMutableList()
 
-        when (sortOption) {
-            "NameASC" -> mutableFilteredList.sortBy { it.name }
-            "NameDSC" -> mutableFilteredList.sortByDescending { it.name }
+        when {
+            sortOption == "NameASC" -> mutableFilteredList.sortBy { it.name }
+            sortOption == "NameDSC" -> mutableFilteredList.sortByDescending { it.name }
+            sortOption.contains("ASC") -> {
+                val statToSort = sortOption.removeSuffix("ASC").lowercase()
+                mutableFilteredList.sortWith(compareBy { pokemon ->
+                    pokemon.stats.firstOrNull { it.stat.name.lowercase() == statToSort }?.base_stat ?: Int.MAX_VALUE
+                })
+            }
+            sortOption.contains("DSC") -> {
+                val statToSort = sortOption.removeSuffix("DSC").lowercase()
+                mutableFilteredList.sortWith(compareByDescending { pokemon ->
+                    pokemon.stats.firstOrNull { it.stat.name.lowercase() == statToSort }?.base_stat ?: Int.MIN_VALUE
+                })
+            }
         }
-
         mutableSavedPokemonsFlow.emit(mutableFilteredList)
     }
 }

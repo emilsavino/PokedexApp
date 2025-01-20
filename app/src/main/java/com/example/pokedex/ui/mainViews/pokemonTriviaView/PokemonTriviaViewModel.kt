@@ -52,6 +52,7 @@ class PokemonTriviaViewModel : ViewModel() {
         _triviaState.update { PokemonTriviaUIState.Loading }
         repository.loadRandomUnansweredQuestion()
         hasAnswered = false
+        getBackground()
     }
 
     fun handleAnswer(option: Option) {

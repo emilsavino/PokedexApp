@@ -39,7 +39,7 @@ fun PokemonTriviaView(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(PokemonTypeResources().appGradient())
+            .background(viewModel.background)
     ) {
         Column(
             modifier = Modifier

@@ -5,24 +5,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.pokedex.dataClasses.PokemonTriviaModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.dataClasses.Option
+import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 class PokemonTriviaViewModel : ViewModel() {
     private val repository: PokemonTriviaRepository = DependencyContainer.pokemonTriviaRepository
+    private val dataStore = DependencyContainer.pokemonDataStore
 
     private val _triviaState = MutableStateFlow<PokemonTriviaUIState>(PokemonTriviaUIState.Empty)
     val triviaState: StateFlow<PokemonTriviaUIState> = _triviaState.asStateFlow()
+    var background by mutableStateOf(PokemonTypeResources().appGradient())
 
     var streakCount by mutableIntStateOf(0)
     var hasAnswered by mutableStateOf(false)
@@ -40,6 +45,7 @@ class PokemonTriviaViewModel : ViewModel() {
             }
         }
         loadRandomQuestion()
+        getBackground()
     }
 
     fun loadRandomQuestion() = viewModelScope.launch {
@@ -74,6 +80,19 @@ class PokemonTriviaViewModel : ViewModel() {
         if (option.isCorrect) Color.Green else Color.Red
     } else {
         Color.Gray
+    }
+
+    private fun getBackground() = viewModelScope.launch {
+        if (triviaState.value is PokemonTriviaUIState.Question) {
+            (triviaState.value as PokemonTriviaUIState.Question).trivia.options.forEach { option ->
+                if (option.isCorrect) {
+                    runBlocking {
+                        val pokemon = dataStore.getPokemonFromMapFallBackAPI(option.name)
+                        background = PokemonTypeResources().getTypeGradient(pokemon.types[0].type.name)
+                    }
+                }
+            }
+        }
     }
 }
 

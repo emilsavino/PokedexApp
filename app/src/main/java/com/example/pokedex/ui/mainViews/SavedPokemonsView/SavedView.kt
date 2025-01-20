@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
@@ -44,6 +45,7 @@ import com.example.pokedex.mainViews.SavedPokemonsView.SavedViewModel.SavedUISta
 import com.example.pokedex.mainViews.SearchView.SearchViewModel
 import com.example.pokedex.ui.shared.PokemonGridItem
 import com.example.pokedex.ui.shared.ProgressIndicator
+import com.example.pokedex.ui.shared.verticalScrollbar
 
 @Composable
 fun SavedView(navController: NavController) {
@@ -132,6 +134,7 @@ private fun MakeFilterButton(
     val typeResources = PokemonTypeResources()
     var filterExpanded = remember { mutableStateOf(false) }
     var maxVisibleItems = 5
+    val scrollState = rememberScrollState()
     Button(
         onClick = { filterExpanded.value = true},
         colors = buttonColors(containerColor = Color.White),
@@ -160,6 +163,12 @@ private fun MakeFilterButton(
             modifier = Modifier
                 .height((maxVisibleItems * 48).dp)
                 .background(Color.White)
+                .verticalScrollbar(
+                    scrollState = scrollState,
+                    showScrollBarTrack = false,
+                    scrollBarColor = Color.Gray
+                ),
+            scrollState = scrollState
         ) {
             val allFilterOptions = viewModel.getAllFilterOptions()
             for (option in allFilterOptions) {
@@ -185,6 +194,7 @@ private fun MakeFilterButton(
         }
     }
 }
+
 @Composable
 private fun MakeSortButton(
     viewModel: SavedViewModel,
@@ -193,7 +203,8 @@ private fun MakeSortButton(
     unselectedColor: Color
 ) {
     var sortExpanded = remember { mutableStateOf(false) }
-    val maxVisibleItems = 3
+    val maxVisibleItems = 5
+    val scrollState = rememberScrollState()
     Button(
         onClick = { sortExpanded.value = true },
         colors = buttonColors(containerColor = Color.White),
@@ -222,6 +233,12 @@ private fun MakeSortButton(
             modifier = Modifier
                 .height((maxVisibleItems * 48).dp)
                 .background(Color.White)
+                .verticalScrollbar(
+                    scrollState = scrollState,
+                    showScrollBarTrack = false,
+                    scrollBarColor = Color.Gray
+                ),
+            scrollState = scrollState
         ) {
             val allSortOptions = viewModel.getAllSortOptions()
             for (option in allSortOptions) {

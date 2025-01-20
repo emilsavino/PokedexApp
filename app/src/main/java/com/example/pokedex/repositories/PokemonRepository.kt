@@ -79,7 +79,7 @@ class PokemonRepository {
     }
 
     private fun fetchPokemonAbilities(pokemon: Pokemon): List<Ability> {
-        return pokemon.abilities.map { Ability(AbilityDetails(it.ability.name)) }
+        return pokemon.abilities.map { Ability(AbilityDetails(it.ability.name), it.is_hidden) }
     }
 
     private suspend fun fetchPokemonDescription(name: String): FlavorTextEntry {

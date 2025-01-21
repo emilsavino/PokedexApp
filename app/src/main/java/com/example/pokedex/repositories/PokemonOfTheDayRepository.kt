@@ -30,14 +30,11 @@ class PokemonOfTheDayRepository(private val context: Context) {
     private val mutablePokemonOfTheDayFlow = MutableSharedFlow<Pokemon?>()
     val pokemonOfTheDayFlow: Flow<Pokemon?> = mutablePokemonOfTheDayFlow.asSharedFlow()
 
-    suspend fun getPokemonOfTheDayByName(){
-        mutablePokemonOfTheDayFlow.emit(pokemonOfTheDay)
-    }
-
-    suspend fun determinePokemonOfTheDay(): Pokemon? {
+    suspend fun determinePokemonOfTheDay() {
         allPokemons.addAll(dataStore.getAllPokemonResults())
+
         if (allPokemons.isEmpty()) {
-            return null
+            return
         }
 
         val currentDate = LocalDate.now().toString()
@@ -53,6 +50,9 @@ class PokemonOfTheDayRepository(private val context: Context) {
         }
 
         mutablePokemonOfTheDayFlow.emit(pokemonOfTheDay)
+    }
+
+    fun getPokemonOfTheDay(): Pokemon? {
         return pokemonOfTheDay
     }
 

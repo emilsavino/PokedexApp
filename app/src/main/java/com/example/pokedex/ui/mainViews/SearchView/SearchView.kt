@@ -104,8 +104,10 @@ fun SearchView(
             Spacer(modifier = Modifier.height(16.dp))
 
             val searchText = viewModel.searchText.value
+            val filterOptionz = viewModel.selectedFilterOptionsList.value
+            val sortOption = viewModel.selectedSortOption.value
 
-            if (searchText.isEmpty()) {
+            if (searchText.isEmpty() && filterOptionz.isEmpty() && sortOption.isEmpty()) {
                 Text(
                     text = viewModel.suggestionText,
                     fontSize = 20.sp,

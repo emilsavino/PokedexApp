@@ -272,7 +272,7 @@ class RecentlySearchedRepository(private val context: Context) {
                 if (!typeRelevant)
                 {
                     index++
-                    continue;
+                    continue
                 }
 
                 mutableFilteredList.add(pokemon)
@@ -314,7 +314,7 @@ class RecentlySearchedRepository(private val context: Context) {
             }
         }
 
-        shuffledListToReturn.take(20)
+        shuffledListToReturn = shuffledListToReturn.take(20).toMutableList()
         val searchResult = SearchResult(
             indexOfSearch = -1,
             pokemons = shuffledListToReturn

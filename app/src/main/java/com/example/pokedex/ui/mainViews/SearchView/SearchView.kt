@@ -107,15 +107,6 @@ fun SearchView(
             val filterOptionz = viewModel.selectedFilterOptionsList.value
             val sortOption = viewModel.selectedSortOption.value
 
-            if (searchText.isEmpty() && filterOptionz.isEmpty() && sortOption.isEmpty()) {
-                Text(
-                    text = viewModel.suggestionText,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                )
-            }
             when(pokemons) {
                 is SearchUIState.Empty -> {
                     Text(
@@ -129,7 +120,17 @@ fun SearchView(
                 }
 
                 is SearchUIState.Data -> {
+                    if (searchText.isEmpty() && filterOptionz.isEmpty() && sortOption.isEmpty()) {
+                        Text(
+                            text = viewModel.suggestionText,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                        )
+                    }
                     MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
+
                     if (atBottom && (viewModel.searchText.value != "" || viewModel.selectedSortOption.value.isNotEmpty() || viewModel.selectedFilterOptionsList.value.isNotEmpty())) {
                         viewModel.searchOffset += 20
                         viewModel.searchPokemonList()

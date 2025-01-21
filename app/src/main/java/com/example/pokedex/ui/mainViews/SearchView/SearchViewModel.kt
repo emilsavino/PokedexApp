@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 open class SearchViewModel: ViewModel() {
-    open val suggestionText: String = "Recents"
+    open var suggestionText: String = "Recents"
     protected val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
     protected val teamsRepository = DependencyContainer.teamsRepository
     protected var lastSentRequest : Int = 0
@@ -36,6 +36,7 @@ open class SearchViewModel: ViewModel() {
                     {
                         if (searchText.value == "")
                         {
+                            suggestionText = ""
                             viewModelScope.launch {
                                 recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,searchOffset, selectedFilterOptionsList.value, selectedSortOption.value,++lastSentRequest)
                             }
@@ -66,6 +67,7 @@ open class SearchViewModel: ViewModel() {
         if (searchText.value.isEmpty() && selectedFilterOptionsList.value.isEmpty() && selectedSortOption.value.isEmpty())
         {
             viewModelScope.launch {
+                suggestionText = "Recently Searched"
                recentlySearchedRepository.fetchRecentlySearched(++lastSentRequest)
             }
             return

@@ -48,6 +48,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.draw.clip
@@ -75,8 +76,11 @@ fun PokemonDetailView(
     pokemonName: String,
     navController: NavController
 ) {
-    val viewModel = viewModel<PokemonDetailViewModel>(key = pokemonName) { PokemonDetailViewModel(pokemonName) }
-
+    val viewModel = viewModel<PokemonDetailViewModel>()
+    LaunchedEffect(Unit) {
+        viewModel.currentPokemonName = pokemonName
+        viewModel.getPokemonByName()
+    }
     BackHandler { viewModel.navigateToPrevious(navController) }
 
     when (val pokemon = viewModel.pokemon.collectAsState().value) {

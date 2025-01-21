@@ -20,6 +20,7 @@ class HomeViewModel : ViewModel() {
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
     private val pokemonOfTheDayRepository = DependencyContainer.pokemonOfTheDayRepository
     private val connectivityRepository = DependencyContainer.connectivityRepository
+    val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
     var showNoInternetAlert by mutableStateOf(false)
 
 
@@ -63,7 +64,7 @@ class HomeViewModel : ViewModel() {
         _pokemonOfTheDay.update {
             HomeUIState.Loading
         }
-        pokemonOfTheDayRepository.getPokemonOfTheDayByName()
+        pokemonOfTheDayRepository.determinePokemonOfTheDay()
     }
 
     fun getRecentlyViewedPokemons() = viewModelScope.launch {

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,11 +23,11 @@ import com.example.pokedex.ui.shared.BackButton
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pokedex.dataClasses.PokemonTriviaModel
-import com.example.pokedex.dataClasses.PokemonTypeResources
+import com.example.pokedex.dataClasses.formatPokemonName
+import com.example.pokedex.ui.shared.OptionButton
 import com.example.pokedex.ui.shared.ProgressIndicator
 
 @Composable
@@ -120,26 +119,10 @@ private fun MakeQuestion(viewModel: PokemonTriviaViewModel, trivia: PokemonTrivi
 @Composable
 private fun AnswerButtons(viewModel: PokemonTriviaViewModel, trivia: PokemonTriviaModel) {
     trivia.options.forEach { option ->
-        Button (
-            onClick = { viewModel.handleAnswer(option) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = viewModel.getOptionColor(option),
-                disabledContainerColor = viewModel.getOptionColor(option)
-            ),
-            shape = RoundedCornerShape(16.dp),
-            enabled = !viewModel.hasAnswered
-        ) {
-            Text(
-                text = option.name,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-        }
+        OptionButton(
+            text = option.name.formatPokemonName(),
+            color = viewModel.getOptionColor(option),
+            onClick = { viewModel.handleAnswer(option) }
+        )
     }
 }

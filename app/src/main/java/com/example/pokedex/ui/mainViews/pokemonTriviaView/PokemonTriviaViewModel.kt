@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.pokedex.dataClasses.PokemonTriviaModel
@@ -80,7 +79,7 @@ class PokemonTriviaViewModel : ViewModel() {
     fun getOptionColor(option: Option) = if (hasAnswered) {
         if (option.isCorrect) Color.Green else Color.Red
     } else {
-        Color.Gray
+        Color.White
     }
 
     private fun getBackground() = viewModelScope.launch {

@@ -100,4 +100,9 @@ class RecentlyViewedRepository(private val context: Context) {
         val pokemonJson = preferences[RECENTLY_VIEWED_KEY] ?: "[]"
         return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()
     }
+    suspend fun clearAllCache() {
+        recentlyViewedPokemons.clear()
+        updateDataStore()
+        fetchRecents()
+    }
 }

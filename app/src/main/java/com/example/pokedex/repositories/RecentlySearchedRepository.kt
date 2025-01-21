@@ -324,4 +324,10 @@ class RecentlySearchedRepository(private val context: Context) {
         )
         mutableSearchFlow.emit(searchResult)
     }
+
+    suspend fun clearAllCache() {
+        recentlySearchedPokemon.clear()
+        updateDataStore()
+        fetchRecentlySearched()
+    }
 }

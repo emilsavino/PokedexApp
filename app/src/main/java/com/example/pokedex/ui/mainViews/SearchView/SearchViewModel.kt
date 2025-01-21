@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 open class SearchViewModel: ViewModel() {
+    open val suggestionText: String = "Recents"
     protected val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
     protected val teamsRepository = DependencyContainer.teamsRepository
     protected var lastSentRequest : Int = 0

@@ -164,6 +164,12 @@ private fun CreateTopRow(
     viewModel: PokemonDetailViewModel,
     showDialog: () -> Unit
 ) {
+    val textColor = if (pokemon.types.types.firstOrNull()?.name == "dark" ) {
+        Color.LightGray
+    } else {
+        Color.Black
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -176,6 +182,7 @@ private fun CreateTopRow(
         Text(
             text = pokemon.pokemon.name.formatPokemonName(),
             fontSize = 24.sp,
+            color = textColor,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.weight(1f)
         )

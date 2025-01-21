@@ -32,8 +32,8 @@ class RecentlySearchedRepository(private val context: Context) {
     private val RECENTLY_SEARCHED_KEY = stringPreferencesKey("recently_searched")
     private val gson = Gson()
 
-    private var sortingMap : HashMap<String, List<Result>> = HashMap()
-
+    //private var sortingMap : HashMap<String, List<Result>> = HashMap()
+    private var sortingMap : HashMap<String, HashMap<String, List<Result>>> = HashMap()
 
     val filterOptions = PokemonTypeResources().getAllTypes()
     val sortOptions = listOf("NameASC","NameDSC", "Evolutions","HPASC","HPDSC","SpeedASC","SpeedDSC","AttackASC","AttackDSC","DefenseASC","DefenseDSC")
@@ -155,9 +155,9 @@ class RecentlySearchedRepository(private val context: Context) {
 
             var newList = mutableListOf<Result>()
 
-            if (sortingMap.containsKey(sortOption))
+            if (sortingMap.containsKey(filterOptions.toString()) && sortingMap[filterOptions.toString()]!!.containsKey(sortOption))
             {
-                newList = sortingMap[sortOption]!!.toMutableList()
+                newList = sortingMap[filterOptions.toString()]!![sortOption]!!.toMutableList()
             }
 
             if (sortOption.contains("DSC"))
@@ -202,12 +202,12 @@ class RecentlySearchedRepository(private val context: Context) {
                         }
                     }
                     newList.add(bestPokemonSoFar)
-                    if (newList.size == elementsToFind)
+                    if (newList.size >= elementsToFind)
                     {
                         break
                     }
                 }
-                allPokemonResults = newList.toList()
+                allPokemonResults = newList.toList().subList(0,elementsToFind)
             }
             else if (sortOption.contains("ASC"))
             {
@@ -250,14 +250,18 @@ class RecentlySearchedRepository(private val context: Context) {
                         }
                     }
                     newList.add(bestPokemonSoFar)
-                    if (newList.size == elementsToFind)
+                    if (newList.size >= elementsToFind)
                     {
                         break
                     }
                 }
                 allPokemonResults = newList.toList()
             }
-            sortingMap.put(sortOption,allPokemonResults)
+            if (!sortingMap.containsKey(filterOptions.toString()))
+            {
+                sortingMap.put(filterOptions.toString(),HashMap())
+            }
+            sortingMap[filterOptions.toString()]!!.put(sortOption,allPokemonResults)
         }
 
 

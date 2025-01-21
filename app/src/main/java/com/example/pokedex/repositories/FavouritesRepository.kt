@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import com.example.pokedex.data.DatabaseService
 import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.example.pokedex.dataClasses.Pokemon
+import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,9 @@ class FavouritesRepository(private val context: Context) {
     private val favouritePokemons = mutableListOf<Pokemon>()
     private val FAVOURITE_POKEMONS_KEY = stringPreferencesKey("favourite_pokemons")
     private val gson = Gson()
+
+    val filterOptions = PokemonTypeResources().getAllTypes()
+    val sortOptions = listOf("NameASC","NameDSC", "Evolutions","HPASC","HPDSC","SpeedASC","SpeedDSC","AttackASC","AttackDSC","DefenseASC","DefenseDSC")
 
     private val mutableSavedPokemonsFlow = MutableSharedFlow<List<Pokemon>>()
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
@@ -103,5 +107,46 @@ class FavouritesRepository(private val context: Context) {
         val preferences = context.dataStore.data.first()
         val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"
         return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()
+    }
+
+    fun getCachedPokemon(name: String): Pokemon? {
+        return favouritePokemons.find { it.name == name }
+    }
+
+    suspend fun savedPokemonByNameAndFilterWithSort(
+        filterOptions: List<String>,
+        sortOption: String,
+    ) {
+        var mutableFilteredList: MutableList<Pokemon>
+
+        val allSavedPokemons = favouritePokemons
+
+        mutableFilteredList = allSavedPokemons.filter { pokemon ->
+            if (filterOptions.isEmpty()) {
+                return@filter true
+            }
+
+            pokemon.types.any { type ->
+                filterOptions.contains(type.type.name)
+            }
+        }.toMutableList()
+
+        when {
+            sortOption == "NameASC" -> mutableFilteredList.sortBy { it.name }
+            sortOption == "NameDSC" -> mutableFilteredList.sortByDescending { it.name }
+            sortOption.contains("ASC") -> {
+                val statToSort = sortOption.removeSuffix("ASC").lowercase()
+                mutableFilteredList.sortWith(compareBy { pokemon ->
+                    pokemon.stats.firstOrNull { it.stat.name.lowercase() == statToSort }?.base_stat ?: Int.MAX_VALUE
+                })
+            }
+            sortOption.contains("DSC") -> {
+                val statToSort = sortOption.removeSuffix("DSC").lowercase()
+                mutableFilteredList.sortWith(compareByDescending { pokemon ->
+                    pokemon.stats.firstOrNull { it.stat.name.lowercase() == statToSort }?.base_stat ?: Int.MIN_VALUE
+                })
+            }
+        }
+        mutableSavedPokemonsFlow.emit(mutableFilteredList)
     }
 }

@@ -79,7 +79,7 @@ class PokemonTriviaViewModel : ViewModel() {
     fun getOptionColor(option: Option) = if (hasAnswered) {
         if (option.isCorrect) Color.Green else Color.Red
     } else {
-        Color.White
+        Color.Black
     }
 
     private fun getBackground() = viewModelScope.launch {

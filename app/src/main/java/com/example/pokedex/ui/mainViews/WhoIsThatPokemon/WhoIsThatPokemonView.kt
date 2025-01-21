@@ -25,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pokedex.ui.shared.BackButton
@@ -67,14 +68,16 @@ fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavContro
                     }
                 }
 
-                Text(text = "Who Is That Pokemon",
+                Text(
+                    text = "Who Is That Pokemon",
                     fontSize = 35.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = modifier.padding(10.dp)
+                    modifier = modifier.padding(10.dp),
+                    textAlign = TextAlign.Center
                 )
 
                 AsyncImage(
-                    modifier = modifier.height(250.dp),
+                    modifier = modifier.height(200.dp),
                     model = whoIsThatPokemon.pokemon.pokemon.getSprite(),
                     contentDescription = "Blacked out image of pokemon"
                 )

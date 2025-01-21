@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AddToTeamViewModel(private val teamName: String, private val dismiss: () -> Unit) : SearchViewModel() {
-    override val suggestionText: String = "Suggested"
+    override var suggestionText: String = "Suggested"
 
     override fun searchPokemonList() {
         _pokemonList.update {

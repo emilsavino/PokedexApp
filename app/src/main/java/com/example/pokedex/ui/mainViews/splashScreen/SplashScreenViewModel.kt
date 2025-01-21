@@ -18,7 +18,7 @@ class SplashScreenViewModel(val navController: NavController) : ViewModel() {
     init {
         viewModelScope.launch {
             pokemonDataStore.pokemonMapSizeFlow.collect { size ->
-                if (size > 500 && isSignedIn)
+                if (isSignedIn)
                 {
                     navController.navigate(Screen.Home.route)
                 }

@@ -30,7 +30,19 @@ class FavouritesRepository(private val context: Context) {
     private val gson = Gson()
 
     val filterOptions = PokemonTypeResources().getAllTypes()
-    val sortOptions = listOf("NameASC","NameDSC", "Evolutions","HPASC","HPDSC","SpeedASC","SpeedDSC","AttackASC","AttackDSC","DefenseASC","DefenseDSC")
+    val sortOptions = listOf(
+        "NameASC",
+        "NameDSC",
+        "Evolutions",
+        "HPASC",
+        "HPDSC",
+        "SpeedASC",
+        "SpeedDSC",
+        "AttackASC",
+        "AttackDSC",
+        "DefenseASC",
+        "DefenseDSC"
+    )
 
     private val mutableSavedPokemonsFlow = MutableSharedFlow<List<Pokemon>>()
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
@@ -137,5 +149,11 @@ class FavouritesRepository(private val context: Context) {
         }
 
         mutableSavedPokemonsFlow.emit(mutableFilteredList)
+    }
+
+    suspend fun clearAllCache() {
+        favouritePokemons.clear()
+        updateDataStore()
+        mutableSavedPokemonsFlow.emit(favouritePokemons)
     }
 }

@@ -176,5 +176,9 @@ class TeamsRepository(private val context: Context) {
 
         recentlySearchedRepository.searchShuffledPokemons(missingTypes)
     }
-
+    suspend fun clearAllCache() {
+        pokemonTeams.clear()
+        updateDataStore()
+        fetchTeams()
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.pokedex.manager
 
+import com.example.pokedex.dependencyContainer.DependencyContainer
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.channels.awaitClose

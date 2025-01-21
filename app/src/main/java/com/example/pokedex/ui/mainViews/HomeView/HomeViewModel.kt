@@ -20,6 +20,7 @@ class HomeViewModel : ViewModel() {
     private val recentlyViewedRepository = DependencyContainer.recentlyViewedRepository
     private val pokemonOfTheDayRepository = DependencyContainer.pokemonOfTheDayRepository
     private val connectivityRepository = DependencyContainer.connectivityRepository
+    val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
     var showNoInternetAlert by mutableStateOf(false)
 
 

@@ -12,14 +12,13 @@ class SplashScreenViewModel(val navController: NavController) : ViewModel() {
     private val authManager = DependencyContainer.googleAuthenticationManager
     private val connectivityRepository = DependencyContainer.connectivityRepository
     private val dataStore = DependencyContainer.pokemonDataStore
-    private val recentlySearchedRepository = DependencyContainer.recentlySearchedRepository
 
     private var isSignedIn = authManager.fetchSignedIn()
 
     init {
         viewModelScope.launch {
             pokemonDataStore.pokemonMapSizeFlow.collect { size ->
-                if (size > 500 && isSignedIn)
+                if (isSignedIn)
                 {
                     navController.navigate(Screen.Home.route)
                 }

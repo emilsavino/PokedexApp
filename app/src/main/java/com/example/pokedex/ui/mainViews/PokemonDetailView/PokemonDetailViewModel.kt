@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PokemonDetailViewModel(private val name: String) : ViewModel() {
+class PokemonDetailViewModel : ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
     private val favouritesRepository = DependencyContainer.favouritesRepository
     private val teamsRepository = DependencyContainer.teamsRepository
@@ -31,7 +31,7 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
     var errorMessage by mutableStateOf<String?>(null)
     var showTeamCreationDialog by mutableStateOf(false)
     private var previousPokemonsName = mutableListOf<String>()
-    private var currentPokemonName by mutableStateOf(name)
+    var currentPokemonName by mutableStateOf("")
 
     private val _pokemon = MutableStateFlow<PokemonDetailUIState>(PokemonDetailUIState.Empty)
     val pokemon: StateFlow<PokemonDetailUIState> = _pokemon
@@ -58,10 +58,9 @@ class PokemonDetailViewModel(private val name: String) : ViewModel() {
             }
         }
         getTeams()
-        getPokemonByName()
     }
 
-    private fun getPokemonByName() = viewModelScope.launch {
+    fun getPokemonByName() = viewModelScope.launch {
         _pokemon.update {
             PokemonDetailUIState.Loading
         }

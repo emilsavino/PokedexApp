@@ -64,7 +64,7 @@ class HomeViewModel : ViewModel() {
         _pokemonOfTheDay.update {
             HomeUIState.Loading
         }
-        pokemonOfTheDayRepository.getPokemonOfTheDayByName()
+        pokemonOfTheDayRepository.determinePokemonOfTheDay()
     }
 
     fun getRecentlyViewedPokemons() = viewModelScope.launch {

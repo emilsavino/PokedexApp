@@ -254,9 +254,10 @@ private fun MakePokemonTriviaBox() {
         Image(
             painter = painterResource(id = R.drawable.pokemon_trivia),
             contentDescription = "Pokémon Trivia",
-            contentScale = ContentScale.FillHeight,
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier
-                .fillMaxSize()
+                .width(255.dp)
+                .height(170.dp)
         )
         Text(
             text = "Pokémon Trivia",

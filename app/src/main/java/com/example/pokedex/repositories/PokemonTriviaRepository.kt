@@ -67,12 +67,12 @@ class PokemonTriviaRepository {
             )
         ),
         PokemonTriviaModel(
-            question = "What type is the legendary pokemon Moltres",
+            question = "What is the name of the legendary firebird?",
             options = listOf(
-                Option("Ice", false),
-                Option("Fire", true),
-                Option("Lightning", false),
-                Option("Dragon", false)
+                Option("Charizard", false),
+                Option("Moltres", true),
+                Option("Charmander", false),
+                Option("Piff", false)
             )
         ),
     )

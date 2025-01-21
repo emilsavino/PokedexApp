@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ import com.example.pokedex.ui.shared.ProgressIndicator
 import com.example.pokedex.dataClasses.WhoIsThatPokemon
 import com.example.pokedex.dataClasses.formatPokemonName
 import com.example.pokedex.dataClasses.getSprite
+import com.example.pokedex.ui.shared.OptionButton
 
 @Composable
 fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavController) {
@@ -92,23 +92,11 @@ fun WhoIsThatPokemonView(modifier: Modifier = Modifier, navController: NavContro
 private fun Options (viewModel: WhoIsThatPokemonViewModel, whoIsThatPokemon : WhoIsThatPokemon) {
     LazyColumn (modifier = Modifier.fillMaxHeight()) {
         items(whoIsThatPokemon.options) { item: Option ->
-            OptionComposable(option = item, viewModel = viewModel)
+            OptionButton(
+                text = item.name.formatPokemonName(),
+                color = viewModel.getColor(item),
+                onClick = { viewModel.guessed() }
+            )
         }
-    }
-}
-
-@Composable
-private fun OptionComposable(modifier : Modifier = Modifier, option : Option, viewModel: WhoIsThatPokemonViewModel) {
-    Button(
-        modifier = modifier
-            .padding(5.dp)
-            .height(90.dp)
-            .fillMaxWidth(),
-        onClick = { viewModel.guessed() }
-    ) {
-        Text(text = option.name.formatPokemonName(),
-            color = viewModel.getColor(option),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold)
     }
 }

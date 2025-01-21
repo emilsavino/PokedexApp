@@ -23,6 +23,7 @@ private val Context.dataStore by preferencesDataStore(name = "pokemon_preference
 class FavouritesRepository(private val context: Context) {
     private val databaseService = DatabaseService("favorites", Pokemon::class.java)
     private val connectivityRepository = DependencyContainer.connectivityRepository
+    private val pokemonDataStore = DependencyContainer.pokemonDataStore
     private var hasInternet = connectivityRepository.isConnected.asLiveData()
     private var wasOffline = false
     private val favouritePokemons = mutableListOf<Pokemon>()
@@ -134,6 +135,26 @@ class FavouritesRepository(private val context: Context) {
         when {
             sortOption == "NameASC" -> mutableFilteredList.sortBy { it.name }
             sortOption == "NameDSC" -> mutableFilteredList.sortByDescending { it.name }
+            sortOption == "Evolutions" ->
+                {
+                    val list = mutableListOf<Pokemon>()
+                    for (pokemon in pokemonDataStore.getAllPokemonResults())
+                    {
+                        for (innerPokemon in mutableFilteredList)
+                        {
+                            if (pokemon.name == innerPokemon.name)
+                            {
+                                list.add(innerPokemon)
+                                break
+                            }
+                        }
+                    }
+                    mutableFilteredList = list
+                }
+
+
+
+
             sortOption.contains("ASC") -> {
                 val statToSort = sortOption.removeSuffix("ASC").lowercase()
                 mutableFilteredList.sortWith(compareBy { pokemon ->

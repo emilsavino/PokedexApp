@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PokemonDetailViewModel() : ViewModel() {
+class PokemonDetailViewModel : ViewModel() {
     private val pokemonRepository = DependencyContainer.pokemonRepository
     private val favouritesRepository = DependencyContainer.favouritesRepository
     private val teamsRepository = DependencyContainer.teamsRepository

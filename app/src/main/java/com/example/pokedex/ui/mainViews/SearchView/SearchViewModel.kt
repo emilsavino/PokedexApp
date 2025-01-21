@@ -33,8 +33,17 @@ open class SearchViewModel: ViewModel() {
                 {
                     if (newPokemonList.pokemons.isEmpty())
                     {
-                        _pokemonList.update {
-                            SearchUIState.Empty
+                        if (searchText.value == "")
+                        {
+                            viewModelScope.launch {
+                                recentlySearchedRepository.searchPokemonByNameAndFilterWithSort(searchText.value,searchOffset, selectedFilterOptionsList.value, selectedSortOption.value,++lastSentRequest)
+                            }
+                        }
+                        else
+                        {
+                            _pokemonList.update {
+                                SearchUIState.Empty
+                            }
                         }
                     }
                     else

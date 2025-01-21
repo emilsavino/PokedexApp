@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,9 +63,10 @@ fun SavedView(navController: NavController) {
     ) {
         Text(
             text = "Saved Pokemons",
-            fontSize = 40.sp,
+            fontSize = 35.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp),
+            textAlign = TextAlign.Center
         )
 
         when (savedState) {

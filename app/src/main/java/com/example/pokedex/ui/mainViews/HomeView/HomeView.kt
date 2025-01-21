@@ -53,6 +53,7 @@ fun HomeView(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .background(PokemonTypeResources().appGradient())
+            .padding(horizontal = 8.dp)
             .verticalScroll(rememberScrollState()),
     ) {
         when (pokemonOfTheDay) {

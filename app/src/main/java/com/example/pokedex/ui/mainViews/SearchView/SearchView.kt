@@ -90,7 +90,12 @@ fun SearchView(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(2.dp)
+                .verticalScrollbar(
+                    scrollState = scrollState,
+                    showScrollBarTrack = false,
+                    scrollBarColor = Color.Gray
+                )
                 .verticalScroll(scrollState)
         ) {
 
@@ -151,6 +156,7 @@ private fun MakeSearchBar(viewModel: SearchViewModel, dismiss: (() -> Unit)?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(14.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(Color.White)
             .shadow(0.dp)
@@ -356,6 +362,7 @@ private fun SearchListItem(pokemon: Pokemon, navController: NavController, viewM
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 14.dp)
             .shadow(3.dp, RoundedCornerShape(24.dp))
             .clip(RoundedCornerShape(24.dp))
             .background(shape = RoundedCornerShape(24.dp), color = Color.White)

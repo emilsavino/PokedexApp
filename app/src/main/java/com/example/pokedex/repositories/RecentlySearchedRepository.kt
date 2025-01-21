@@ -32,7 +32,6 @@ class RecentlySearchedRepository(private val context: Context) {
     private val RECENTLY_SEARCHED_KEY = stringPreferencesKey("recently_searched")
     private val gson = Gson()
 
-    //private var sortingMap : HashMap<String, List<Result>> = HashMap()
     private var sortingMap : HashMap<String, HashMap<String, List<Result>>> = HashMap()
 
     val filterOptions = PokemonTypeResources().getAllTypes()

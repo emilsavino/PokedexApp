@@ -224,8 +224,9 @@ private fun MakeWhosThatPokemonBox() {
         Image(
             painter = painterResource(id = R.drawable.whos_that_pokemon),
             contentDescription = "Who's that Pokémon?",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier
+                .fillMaxSize()
         )
         Text(
             text = "Who's that Pokémon?",
@@ -253,8 +254,10 @@ private fun MakePokemonTriviaBox() {
         Image(
             painter = painterResource(id = R.drawable.pokemon_trivia),
             contentDescription = "Pokémon Trivia",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .width(255.dp)
+                .height(170.dp)
         )
         Text(
             text = "Pokémon Trivia",

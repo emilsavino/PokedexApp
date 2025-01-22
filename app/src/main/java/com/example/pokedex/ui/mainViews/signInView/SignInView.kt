@@ -110,18 +110,16 @@ fun SignInView(navController: NavController){
 
             )
 
-            if (viewModel.failedToSignIn) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "You need internet to sign in",
-                        color = Color.Red
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = viewModel.authError.value ?: "",
+                    color = Color.Red
+                )
             }
         }
     }

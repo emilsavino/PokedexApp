@@ -27,7 +27,7 @@ class SignInViewModel : ViewModel() {
 
     fun signInWithGoogle(navController: NavController) {
         if (connectivityRepository.isConnected.asLiveData().value == false) {
-            failedToSignIn = true
+            authError.value = "No internet connection"
             return
         }
         viewModelScope.launch {
@@ -39,7 +39,6 @@ class SignInViewModel : ViewModel() {
                         profilePictureUrl.value = currentUser?.photoUrl?.toString()
                         authError.value = null
                         navController.navigate(Screen.Home.route)
-                        failedToSignIn = false
                     }
 
                     is AuthResponse.Error -> {
@@ -56,7 +55,7 @@ class SignInViewModel : ViewModel() {
         navController: NavController
     ) {
         if (connectivityRepository.isConnected.asLiveData().value == false) {
-            failedToSignIn = true
+            authError.value = "No internet connection"
             return
         }
         viewModelScope.launch {
@@ -83,6 +82,10 @@ class SignInViewModel : ViewModel() {
         enteredPassword: String,
         navController: NavController
     ) {
+        if (connectivityRepository.isConnected.asLiveData().value == false) {
+            authError.value = "No internet connection"
+            return
+        }
         viewModelScope.launch {
             emailAuthManager.createAccountWithEmail(enteredEmail, enteredPassword)
                 .collectLatest { response ->

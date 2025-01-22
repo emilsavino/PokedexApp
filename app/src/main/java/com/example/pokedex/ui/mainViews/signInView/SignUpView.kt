@@ -110,6 +110,18 @@ fun SignUpView(
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic
             )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = viewModel.authError.value ?: "",
+                    color = Color.Red
+                )
+            }
         }
     }
 }

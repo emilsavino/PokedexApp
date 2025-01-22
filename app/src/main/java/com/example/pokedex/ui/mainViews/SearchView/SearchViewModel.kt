@@ -1,6 +1,8 @@
 package com.example.pokedex.mainViews.SearchView
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -23,6 +25,9 @@ open class SearchViewModel: ViewModel() {
     var selectedFilterOptionsList = mutableStateOf<List<String>>(emptyList())
     var selectedSortOption = mutableStateOf("")
     var searchText = mutableStateOf("")
+    var atBottom by mutableStateOf(false)
+    var filterExpanded by mutableStateOf(false)
+    var sortExpanded by mutableStateOf(false)
 
     protected val _pokemonList: MutableStateFlow<SearchUIState> = MutableStateFlow(SearchUIState.Empty)
     val pokemonList: StateFlow<SearchUIState> = _pokemonList.asStateFlow()
@@ -108,6 +113,7 @@ open class SearchViewModel: ViewModel() {
 
     fun selectSortOption(option : String)
     {
+        sortExpanded = false
         if (selectedSortOption.value == option)
         {
             selectedSortOption.value = ""
@@ -125,6 +131,12 @@ open class SearchViewModel: ViewModel() {
         viewModelScope.launch {
             recentlySearchedRepository.addToRecentlySearched(name)
         }
+    }
+
+    fun onBottomReached() {
+        searchOffset += 20
+        searchPokemonList()
+        atBottom = false
     }
 
     open fun onPokemonClicked(pokemon: Pokemon, navController: NavController) {

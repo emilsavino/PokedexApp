@@ -36,7 +36,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -66,12 +65,12 @@ fun SearchView(
             viewModel.selectFilterOption(filterOption)
         }
     }
-    var atBottom by remember { mutableStateOf(false) }
+
     LaunchedEffect(scrollState) {
         snapshotFlow { scrollState.value }
             .collect { currentScrollPosition ->
                 val isAtBottom = currentScrollPosition >= scrollState.maxValue
-                atBottom = isAtBottom
+                viewModel.atBottom = isAtBottom
             }
     }
 
@@ -131,10 +130,8 @@ fun SearchView(
                     }
                     MakeSearchList(pokemons = pokemons.pokemonList, navController = navController, viewModel)
 
-                    if (atBottom && (viewModel.searchText.value != "" || viewModel.selectedSortOption.value.isNotEmpty() || viewModel.selectedFilterOptionsList.value.isNotEmpty())) {
-                        viewModel.searchOffset += 20
-                        viewModel.searchPokemonList()
-                        atBottom = false
+                    if (viewModel.atBottom && (viewModel.searchText.value != "" || viewModel.selectedSortOption.value.isNotEmpty() || viewModel.selectedFilterOptionsList.value.isNotEmpty())) {
+                        viewModel.onBottomReached()
                     }
                 }
             }
@@ -231,11 +228,11 @@ private fun MakeFilterButton(
     unselectedColor: Color
 ) {
     val typeResources = PokemonTypeResources()
-    var filterExpanded = remember { mutableStateOf(false) }
+
     var maxVisibleItems = 5
     val scrollState = rememberScrollState()
     Button(
-        onClick = { filterExpanded.value = true},
+        onClick = { viewModel.filterExpanded = true},
         colors = buttonColors(containerColor = Color.White),
         modifier = Modifier.shadow(2.dp, CircleShape)
     ) {
@@ -257,8 +254,8 @@ private fun MakeFilterButton(
         }
 
         DropdownMenu(
-            expanded = filterExpanded.value,
-            onDismissRequest = { filterExpanded.value = false },
+            expanded = viewModel.filterExpanded,
+            onDismissRequest = { viewModel.filterExpanded = false },
             modifier = Modifier
                 .height((maxVisibleItems * 48).dp)
                 .background(Color.White)
@@ -301,11 +298,10 @@ private fun MakeSortButton(
     selectedColor: Color,
     unselectedColor: Color
 ) {
-    var sortExpanded = remember { mutableStateOf(false) }
     val maxVisibleItems = 5
     val scrollState = rememberScrollState()
     Button(
-        onClick = { sortExpanded.value = true },
+        onClick = { viewModel.sortExpanded = true },
         colors = buttonColors(containerColor = Color.White),
         modifier = Modifier.shadow(2.dp, CircleShape)
     ) {
@@ -327,8 +323,8 @@ private fun MakeSortButton(
         }
 
         DropdownMenu(
-            expanded = sortExpanded.value,
-            onDismissRequest = { sortExpanded.value = false },
+            expanded = viewModel.sortExpanded,
+            onDismissRequest = { viewModel.sortExpanded = false },
             modifier = Modifier
                 .height((maxVisibleItems * 48).dp)
                 .background(Color.White)
@@ -347,7 +343,6 @@ private fun MakeSortButton(
                         color = if (viewModel.selectedSortOption.value == option) selectedColor else unselectedColor
                     ),
                     onClick = {
-                        sortExpanded.value = false
                         viewModel.selectSortOption(option)
                     }
                 )
@@ -400,20 +395,6 @@ private fun SearchListItem(pokemon: Pokemon, navController: NavController, viewM
             color = Color.Black,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
-private fun NoInternetView() {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "No Internet Connection",
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center
         )
     }
 }

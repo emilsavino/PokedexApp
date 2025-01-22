@@ -22,6 +22,13 @@ object DependencyContainer {
         this.application = application
     }
 
+    fun didSignIn() {
+        recentlyViewedRepository.didSignIn()
+        favouritesRepository.didSignIn()
+        teamsRepository.didSignIn()
+        recentlySearchedRepository.didSignIn()
+    }
+
     val pokemonRepository: PokemonRepository by lazy {
         PokemonRepository()
     }

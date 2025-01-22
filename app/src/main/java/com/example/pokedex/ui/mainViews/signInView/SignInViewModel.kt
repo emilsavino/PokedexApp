@@ -18,7 +18,6 @@ class SignInViewModel : ViewModel() {
     var email = mutableStateOf("")
     var profilePictureUrl = mutableStateOf<String?>(null)
     var authError = mutableStateOf<String?>(null)
-    var failedToSignIn by mutableStateOf(false)
     var password = mutableStateOf("")
 
     val googleAuthManager = DependencyContainer.googleAuthenticationManager
@@ -34,6 +33,7 @@ class SignInViewModel : ViewModel() {
             googleAuthManager.signInWithGoogle().collectLatest { response ->
                 when (response) {
                     is AuthResponse.Success -> {
+                        DependencyContainer.didSignIn()
                         val currentUser = googleAuthManager.auth.currentUser
                         email.value = currentUser?.email ?: "Unknown User"
                         profilePictureUrl.value = currentUser?.photoUrl?.toString()

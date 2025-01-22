@@ -34,6 +34,15 @@ class RecentlyViewedRepository(private val context: Context) {
         mutableRecentlyViewedPokemonsFlow.asSharedFlow()
 
     init {
+        didSignIn()
+    }
+
+    fun didSignIn() {
+        fetchSavedData()
+        setObserver()
+    }
+
+    private fun fetchSavedData() {
         CoroutineScope(Dispatchers.IO).launch {
             initializeDatabase()
             if (recentlyViewedPokemons.isEmpty()) {
@@ -41,7 +50,9 @@ class RecentlyViewedRepository(private val context: Context) {
             }
             mutableRecentlyViewedPokemonsFlow.emit(recentlyViewedPokemons)
         }
+    }
 
+    private fun setObserver() {
         hasInternet.observeForever { isConnected ->
             if (isConnected == true && wasOffline) {
                 CoroutineScope(Dispatchers.IO).launch {

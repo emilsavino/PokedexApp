@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.DropdownMenu
@@ -24,6 +25,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
@@ -135,6 +137,8 @@ fun SearchView(
                     }
                 }
             }
+
+            FailedToAddToTeamDialog(viewModel)
         }
     }
 }
@@ -395,6 +399,24 @@ private fun SearchListItem(pokemon: Pokemon, navController: NavController, viewM
             color = Color.Black,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun FailedToAddToTeamDialog(viewModel: SearchViewModel) {
+    if (viewModel.showErrorAlert) {
+        AlertDialog(
+            onDismissRequest = { viewModel.showErrorAlert = false },
+            title = { Text(text = "Error") },
+            text = {
+                Text(text = viewModel.errorMessage)
+            },
+            confirmButton = {
+                TextButton(onClick = { viewModel.showErrorAlert = false }) {
+                    Text(text = "Okay")
+                }
+            }
         )
     }
 }

@@ -28,6 +28,8 @@ open class SearchViewModel: ViewModel() {
     var atBottom by mutableStateOf(false)
     var filterExpanded by mutableStateOf(false)
     var sortExpanded by mutableStateOf(false)
+    var errorMessage by mutableStateOf("")
+    var showErrorAlert by mutableStateOf(false)
 
     protected val _pokemonList: MutableStateFlow<SearchUIState> = MutableStateFlow(SearchUIState.Empty)
     val pokemonList: StateFlow<SearchUIState> = _pokemonList.asStateFlow()

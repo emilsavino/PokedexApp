@@ -106,22 +106,26 @@ class TeamsRepository(private val context: Context) {
         mutableTeamsFlow.emit(pokemonTeams)
     }
 
-    suspend fun addToTeam(pokemon: Pokemon, teamName: String): Boolean {
+    suspend fun addToTeam(pokemon: Pokemon, teamName: String): String {
         val teamIndex = pokemonTeams.indexOfFirst { it.name == teamName }
 
         if (teamIndex == -1) {
-            return false
+            return "Team not found"
+        }
+
+        if (pokemonTeams[teamIndex].getPokemons().any { it.name == pokemon.name }) {
+            return "Pokemon already in team"
         }
 
         val team = pokemonTeams[teamIndex]
         if (team.getPokemons().size >= 6) {
-            return false
+            return "Team is full"
         }
         team.addPokemon(pokemon)
         pokemonTeams[teamIndex] = team
         databaseService.storeList(pokemonTeams)
         updateDataStore()
-        return true
+        return ""
     }
 
 

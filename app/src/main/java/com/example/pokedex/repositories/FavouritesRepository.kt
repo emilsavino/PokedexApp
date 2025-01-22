@@ -49,6 +49,15 @@ class FavouritesRepository(private val context: Context) {
     val savedPokemonsFlow: Flow<List<Pokemon>> = mutableSavedPokemonsFlow.asSharedFlow()
 
     init {
+        didSignIn()
+    }
+
+    fun didSignIn() {
+        fetchSavedData()
+        setObserver()
+    }
+
+    private fun fetchSavedData() {
         CoroutineScope(Dispatchers.IO).launch {
             initializeDatabase()
             if (favouritePokemons.isEmpty()) {
@@ -56,7 +65,9 @@ class FavouritesRepository(private val context: Context) {
             }
             mutableSavedPokemonsFlow.emit(favouritePokemons)
         }
+    }
 
+    private fun setObserver() {
         hasInternet.observeForever { isConnected ->
             if (isConnected == true && wasOffline) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -120,10 +131,6 @@ class FavouritesRepository(private val context: Context) {
         val preferences = context.dataStore.data.first()
         val pokemonJson = preferences[FAVOURITE_POKEMONS_KEY] ?: "[]"
         return gson.fromJson(pokemonJson, Array<Pokemon>::class.java).toList()
-    }
-
-    fun getCachedPokemon(name: String): Pokemon? {
-        return favouritePokemons.find { it.name == name }
     }
 
     suspend fun savedPokemonByNameAndFilterWithSort(

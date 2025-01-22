@@ -37,6 +37,15 @@ class TeamsRepository(private val context: Context) {
     val teamsFlow: Flow<List<Team>> = mutableTeamsFlow.asSharedFlow()
 
     init {
+        didSignIn()
+    }
+
+    fun didSignIn() {
+        fetchSavedData()
+        setObserver()
+    }
+
+    private fun fetchSavedData() {
         CoroutineScope(Dispatchers.IO).launch {
             initializeDatabase()
             if (pokemonTeams.isEmpty()) {
@@ -44,7 +53,9 @@ class TeamsRepository(private val context: Context) {
             }
             mutableTeamsFlow.emit(pokemonTeams)
         }
+    }
 
+    private fun setObserver() {
         hasInternet.observeForever { isConnected ->
             if (isConnected == true && wasOffline) {
                 CoroutineScope(Dispatchers.IO).launch {

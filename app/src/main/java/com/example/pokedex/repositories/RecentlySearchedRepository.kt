@@ -41,15 +41,25 @@ class RecentlySearchedRepository(private val context: Context) {
     val searchFlow: Flow<SearchResult> = mutableSearchFlow.asSharedFlow()
 
     init {
+        didSignIn()
+    }
+
+    fun didSignIn() {
+        fetchSavedData()
+        setObserver()
+    }
+
+    private fun fetchSavedData() {
         CoroutineScope(Dispatchers.IO).launch {
             initializeDataBase()
-            if (recentlySearchedPokemon.isEmpty())
-            {
+            if (recentlySearchedPokemon.isEmpty()) {
                 initializeCache()
             }
             fetchRecentlySearched()
         }
+    }
 
+    private fun setObserver() {
         hasInternet.observeForever { isConnected ->
             if (isConnected == true && wasOffline) {
                 CoroutineScope(Dispatchers.IO).launch {

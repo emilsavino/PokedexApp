@@ -165,7 +165,12 @@ private fun MakeTeamsGrid(
             )
 
             for ((index, chunk) in pokemonChunks.withIndex()) {
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     for (pokemon in chunk) {
                         PokemonGridItem(
                             navController = navController,
@@ -189,7 +194,12 @@ private fun MakeTeamsGrid(
             val currentRowCount = pokemonChunks.size
             if (currentRowCount < 2) {
                 repeat(2 - currentRowCount) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 15.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
                         val remainingSlots = 3
                         for (slot in 1..remainingSlots) {
                             if (team.getPokemons().size == 3 && slot == 1) {

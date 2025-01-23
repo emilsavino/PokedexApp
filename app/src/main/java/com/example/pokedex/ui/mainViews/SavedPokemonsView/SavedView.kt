@@ -265,7 +265,7 @@ private fun SavedList(navController: NavController, savedPokemons: List<Pokemon>
     val pokemonsChunked = savedPokemons.chunked(3)
     LazyColumn(
         modifier = Modifier,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(pokemonsChunked) { item ->
             SavedRow(pokemons = item, navController = navController)
@@ -276,11 +276,17 @@ private fun SavedList(navController: NavController, savedPokemons: List<Pokemon>
 @Composable
 private fun SavedRow(modifier: Modifier = Modifier, pokemons: List<Pokemon>, navController: NavController) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(19.dp)
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         for (pokemon in pokemons) {
             PokemonGridItem(navController, pokemon = pokemon)
+
+            if (pokemons.size < 3 && pokemons.indexOf(pokemon) == pokemons.size - 1) {
+                for (i in 0 until 3 - pokemons.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
         }
     }
 }

@@ -276,6 +276,10 @@ private fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController:
                 ) {
                     for(pokemon in pokemons) {
                         RecentlyViewedPokemonItem(pokemon, navController)
+
+                        if (pokemons.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
                     }
                 }
             }

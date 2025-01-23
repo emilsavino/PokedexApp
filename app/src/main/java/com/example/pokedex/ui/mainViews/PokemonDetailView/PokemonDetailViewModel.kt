@@ -90,11 +90,11 @@ class PokemonDetailViewModel : ViewModel() {
 
     fun addToTeam(pokemon: Pokemon, teamName: String) = viewModelScope.launch {
         val success = teamsRepository.addToTeam(pokemon, teamName)
-        if (success) {
+        if (success == "") {
             showDialog = false
             errorMessage = null
         } else {
-            errorMessage = "Team is full"
+            errorMessage = success
         }
     }
 

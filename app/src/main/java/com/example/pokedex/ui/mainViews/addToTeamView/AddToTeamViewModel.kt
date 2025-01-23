@@ -1,5 +1,8 @@
 package com.example.pokedex.ui.mainViews.addToTeamView
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.pokedex.dataClasses.Pokemon
@@ -38,8 +41,13 @@ class AddToTeamViewModel(private val teamName: String, private val dismiss: () -
 
     override fun onPokemonClicked(pokemon: Pokemon, navController: NavController) {
         viewModelScope.launch {
-            teamsRepository.addToTeam(pokemon, teamName)
-            dismiss()
+            val message = teamsRepository.addToTeam(pokemon, teamName)
+            if (message == "") {
+                dismiss()
+            } else {
+                errorMessage = message
+                showErrorAlert = true
+            }
         }
     }
 

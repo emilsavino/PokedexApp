@@ -96,7 +96,7 @@ class RecentlySearchedRepository(private val context: Context) {
 
     suspend fun fetchRecentlySearched(searchID : Int = -1) {
         val mutableList : MutableList<Pokemon> = mutableListOf()
-        for (name in recentlySearchedPokemon)
+        for (name in recentlySearchedPokemon.toList())
         {
             val pokemon = pokemonDataStore.getPokemonFromMapFallBackAPI(name)
             mutableList.add(pokemon)

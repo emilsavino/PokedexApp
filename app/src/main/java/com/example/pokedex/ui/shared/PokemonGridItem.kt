@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,10 +26,11 @@ import com.example.pokedex.dataClasses.getSprite
 import com.example.pokedex.ui.navigation.Screen
 
 @Composable
-fun PokemonGridItem(navController: NavController, pokemon: Pokemon, onLongClick: () -> Unit = {}) {
+fun RowScope.PokemonGridItem(navController: NavController, pokemon: Pokemon, onLongClick: () -> Unit = {}) {
     Box(
         modifier = Modifier
-            .size(110.dp)
+            .weight(1f)
+            .height(110.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.Gray.copy(alpha = 0.5f))
             .pointerInput(Unit) {
@@ -46,9 +49,10 @@ fun PokemonGridItem(navController: NavController, pokemon: Pokemon, onLongClick:
 }
 
 @Composable
-fun AddToTeamGridItem(onClick: () -> Unit) {
+fun RowScope.AddToTeamGridItem(onClick: () -> Unit) {
     Box(
         modifier = Modifier
+            .weight(1f)
             .size(110.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.Gray.copy(alpha = 0.6f))
@@ -66,9 +70,10 @@ fun AddToTeamGridItem(onClick: () -> Unit) {
 }
 
 @Composable
-fun EmptyGridItem(navController: NavController) {
+fun RowScope.EmptyGridItem(navController: NavController) {
     Box(
         modifier = Modifier
+            .weight(1f)
             .size(110.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.Gray.copy(alpha = 0.6f))

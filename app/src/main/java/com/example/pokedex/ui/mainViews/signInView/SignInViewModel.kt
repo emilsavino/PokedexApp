@@ -1,8 +1,6 @@
 package com.example.pokedex.mainViews.signInView
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -63,6 +61,7 @@ class SignInViewModel : ViewModel() {
                 .collectLatest { response ->
                     when (response) {
                         is AuthResponse.Success -> {
+                            DependencyContainer.didSignIn()
                             email.value = enteredEmail
                             profilePictureUrl.value = null
                             authError.value = null
@@ -91,6 +90,7 @@ class SignInViewModel : ViewModel() {
                 .collectLatest { response ->
                     when (response) {
                         is AuthResponse.Success -> {
+                            DependencyContainer.didSignIn()
                             email.value = enteredEmail
                             profilePictureUrl.value = null
                             authError.value = null

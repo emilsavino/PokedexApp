@@ -177,14 +177,14 @@ private fun GamesRow(navController: NavController, viewModel: HomeViewModel) {
 }
 
 @Composable
-private fun HomePageBox(
+private fun RowScope.HomePageBox(
     color: Color,
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .width(190.dp)
+            .weight(1f)
             .height(160.dp)
             .padding(6.dp)
             .background(color, RoundedCornerShape(Padding))
@@ -276,6 +276,10 @@ private fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController:
                 ) {
                     for(pokemon in pokemons) {
                         RecentlyViewedPokemonItem(pokemon, navController)
+
+                        if (pokemons.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
                     }
                 }
             }
@@ -284,7 +288,7 @@ private fun RecentlyViewedPokemons(recentPokemons: List<Pokemon>, navController:
 }
 
 @Composable
-private fun RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
+private fun RowScope.RecentlyViewedPokemonItem(pokemon: Pokemon, navController: NavController) {
     HomePageBox(
         color = Color.Gray.copy(0.5f),
         onClick = { navController.navigate(Screen.PokemonDetails.createRoute(pokemon.name)) }

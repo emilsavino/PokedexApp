@@ -32,9 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +41,6 @@ import androidx.navigation.NavController
 import com.example.pokedex.dataClasses.Pokemon
 import com.example.pokedex.dataClasses.PokemonTypeResources
 import com.example.pokedex.mainViews.SavedPokemonsView.SavedViewModel.SavedUIState
-import com.example.pokedex.mainViews.SearchView.SearchViewModel
 import com.example.pokedex.ui.shared.PokemonGridItem
 import com.example.pokedex.ui.shared.ProgressIndicator
 import com.example.pokedex.ui.shared.verticalScrollbar
@@ -69,9 +66,10 @@ fun SavedView(navController: NavController) {
             textAlign = TextAlign.Center
         )
 
+        MakeSavedTools(viewModel)
+
         when (savedState) {
             is SavedUIState.Empty -> {
-                MakeSavedTools(viewModel)
                 Text(text = "No saved pokemons")
             }
 
@@ -80,14 +78,7 @@ fun SavedView(navController: NavController) {
             }
 
             is SavedUIState.Data -> {
-                if (savedState.saved.isEmpty()) {
-                    Text(text = "No saved pokemons")
-                    viewModel.savedIsEmpty()
-                    MakeSavedTools(viewModel)
-                } else {
-                    MakeSavedTools(viewModel)
-                    SavedList(navController, savedState.saved)
-                }
+                SavedList(navController, savedState.saved)
             }
         }
     }
